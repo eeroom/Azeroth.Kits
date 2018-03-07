@@ -64,7 +64,6 @@ namespace Excel.Extension
             if (this.dbHelper == null)
                 throw new ArgumentException("不支持指定的数据库");
             List<string> lstTableName = this.dbHelper.InitDrpTableListByMssql(tmp.Item2);
-            this.drpTablelist.Items.Clear();
             var drpItem = this.Factory.CreateRibbonDropDownItem();
             drpItem.Label = ALL;
             drpItem.Tag = ALL;
@@ -76,6 +75,7 @@ namespace Excel.Extension
                 drpItem.Tag = tname;
                 this.drpTablelist.Items.Add(drpItem);
             }
+            this.drpTablelist.SelectedItemIndex = this.drpTablelist.Items.Count - 1;
         }
 
         void btnDBSourceSetting_Click(object sender, RibbonControlEventArgs e)
