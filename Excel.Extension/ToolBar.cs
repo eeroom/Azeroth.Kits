@@ -8,20 +8,55 @@ namespace Excel.Extension
 {
     public partial class ToolBar
     {
+        
         string[] HeardTexts=new string[5]{"名称","类型","长度","可空","备注"};
         const string ALL = "全部";
         const string TableRemarkColName = "_TableName_";
 
         IDBHelper dbHelper;
-        private void ToolBar_Load(object sender, RibbonUIEventArgs e)
+        private void InitToolBar(object sender, RibbonUIEventArgs e)
         {
+            
+            
             this.InitDrpDBSource(null,null);
             this.drpDBlist.SelectionChanged += drpDBlist_SelectionChanged;
             this.drpTablelist.SelectionChanged += drpTablelist_SelectionChanged;
             this.btnDBSourceSetting.Click+=btnDBSourceSetting_Click;
             this.btnTableSchemal.Click += btnTableSchemal_Click;
             this.btnTableSave.Click += btnTableSave_Click;
+            this.btnVisioSchemal.Click += BtnVisioSchemal_Click;
         }
+
+        MouseHookWrapper hookWrapper;
+        private void BtnVisioSchemal_Click(object sender, RibbonControlEventArgs e)
+        {
+            if(hookWrapper==null)
+            {
+                this.hookWrapper = new MouseHookWrapper();
+                hookWrapper.Hook(OnMouseWheel, HookLevel.WH_MOUSE);
+            }
+            else
+            {
+                this.hookWrapper.UnHook();
+                this.hookWrapper = null;
+            }
+            var tmp = this.btnVisioSchemal.Label;
+            this.btnVisioSchemal.Label = this.btnVisioSchemal.Tag.ToString();
+            this.btnVisioSchemal.Tag = tmp;
+        }
+
+        Microsoft.VisualBasic.Devices.Keyboard keyBoard = new Microsoft.VisualBasic.Devices.Keyboard();
+        private void OnMouseWheel(int nCode, IntPtr wParam, IntPtr lParam)
+        {
+            MouseButtonAction at = (MouseButtonAction)(int)wParam;
+            if (at != MouseButtonAction.WM_Wheel ||!keyBoard.ShiftKeyDown)
+                return;
+            MouseHookWrapper.LParamStruct rst =
+                (MouseHookWrapper.LParamStruct)System.Runtime.InteropServices.Marshal.PtrToStructure(lParam,typeof(MouseHookWrapper.LParamStruct));
+            Globals.ThisAddIn.Application.ActiveWindow.SmallScroll(ToRight: keyBoard.CtrlKeyDown?-1:1);
+
+        }
+
         void InitDrpDBSource(object sender, System.Windows.Forms.FormClosedEventArgs e)
         {
             this.drpDBlist.Items.Clear();
@@ -123,9 +158,9 @@ namespace Excel.Extension
                 System.Windows.Forms.MessageBox.Show("重命名成功");
             }
         }
-
         void btnTableSchemal_Click(object sender, RibbonControlEventArgs e)
         {
+            System.Windows.Forms.MessageBox.Show(IntPtr.Size.ToString());
             if (!CheckDrpSelectedValue(drpDBlist, drpTablelist))
                 return;
             string cnnstr = ((Tuple<string, string>)drpDBlist.SelectedItem.Tag).Item2;
@@ -146,7 +181,8 @@ namespace Excel.Extension
 
         private Microsoft.Office.Interop.Excel.Range GetTableSchemalByMssqlInternal(string cnnstr, string tableName, Microsoft.Office.Interop.Excel.Range cell)
         {
-             System.Data.DataTable tableRemark;
+            
+            System.Data.DataTable tableRemark;
              System.Data.DataTable table;
              this.dbHelper.GetTableSchemalByMssqlInternal(cnnstr, tableName, out  table, out  tableRemark);
             int colIndex = 0;
@@ -160,7 +196,7 @@ namespace Excel.Extension
             cell.Offset[rowIndex, colIndex++].Value2 = HeardTexts[colIndex-1];
             var tmp = tableRemark.Select().FirstOrDefault(x =>TableRemarkColName.Equals( x["name"]));//借用colIndex处理表的备注
             cell.Offset[rowIndex - 1, colIndex - 1].Value2 = tmp == null ? string.Empty : tmp["value"];
-            var metaRows = table.Select();
+            var metaRows = table.Select().OrderBy(x => x["ColumnName"].ToString()).ToList();
             var remarkRows = tableRemark.Select();
             foreach (var row in metaRows)
             {
@@ -194,6 +230,7 @@ namespace Excel.Extension
         {
             foreach (var item in drps)
             {
+                
                 if (item.SelectedItem == null || item.SelectedItem.Tag == null)
                     return false;
             }

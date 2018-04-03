@@ -34,7 +34,7 @@ namespace Excel.Extension
                     }
                 }
             }
-            return lstTableName;
+            return lstTableName.OrderBy(x=>x).ToList();
         }
 
         public void GetTableSchemalByMssqlInternal(string cnnstr, string tableName, out System.Data.DataTable table, out System.Data.DataTable tableRemark)
