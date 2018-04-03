@@ -160,7 +160,6 @@ namespace Excel.Extension
         }
         void btnTableSchemal_Click(object sender, RibbonControlEventArgs e)
         {
-            System.Windows.Forms.MessageBox.Show(IntPtr.Size.ToString());
             if (!CheckDrpSelectedValue(drpDBlist, drpTablelist))
                 return;
             string cnnstr = ((Tuple<string, string>)drpDBlist.SelectedItem.Tag).Item2;
