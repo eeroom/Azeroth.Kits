@@ -5,6 +5,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Excel.Function", "Excel.Fun
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Excel.Extension", "Excel.Extension\Excel.Extension.csproj", "{A84BAED1-5A3E-4441-BE34-2C2457BD87CD}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "T41", "T41\T41.csproj", "{CBEE4F15-AC02-4D9F-A1FA-9791BD008DD0}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -19,6 +21,10 @@ Global
 		{A84BAED1-5A3E-4441-BE34-2C2457BD87CD}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A84BAED1-5A3E-4441-BE34-2C2457BD87CD}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A84BAED1-5A3E-4441-BE34-2C2457BD87CD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CBEE4F15-AC02-4D9F-A1FA-9791BD008DD0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CBEE4F15-AC02-4D9F-A1FA-9791BD008DD0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CBEE4F15-AC02-4D9F-A1FA-9791BD008DD0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CBEE4F15-AC02-4D9F-A1FA-9791BD008DD0}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
