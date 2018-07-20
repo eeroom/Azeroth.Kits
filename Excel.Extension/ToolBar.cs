@@ -126,7 +126,7 @@ namespace Excel.Extension
                 return;
             var range = Globals.ThisAddIn.Application.Selection;
             string cnnstr=((Tuple<string, string>)drpDBlist.SelectedItem.Tag).Item2;
-            List<string> lstTableName = drpTablelist.Items.Select(x => x.Tag.ToString()).ToList();
+            List<string> lstTableName = drpTablelist.Items.Select(x => ((object)(x.Tag)).ToString()).ToList();
             if (range.Rows.Count <= 2)
                 return;
             object[,] value = range.Value2;
