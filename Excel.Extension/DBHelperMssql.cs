@@ -1,20 +1,30 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Linq;
 using System.Text;
 
 namespace Excel.Extension
 {
-    public class DBHelperMssql:IDBHelper
+    public class DbHandlerMssqlserver:IDbHandler
     {
         const string ALL = "全部";
         const string TableRemarkColName = "_TableName_";
-        public DBProvider GetProvider()
+
+        DbIndex IDbHandler.DbIndex
         {
-            return DBProvider.mssql;
+            get
+            {
+               return DbIndex.mssql;
+            }
         }
 
-        public List<string> InitDrpTableListByMssql(string cnnstr)
+        public DbIndex GetProvider()
+        {
+            return DbIndex.mssql;
+        }
+
+        public List<string> GetAllTableName(string cnnstr)
         {
             List<string> lstTableName = new List<string>();
             using (System.Data.SqlClient.SqlConnection cnn = new System.Data.SqlClient.SqlConnection(cnnstr))
@@ -281,6 +291,118 @@ namespace Excel.Extension
                     }
                 }
             }
+        }
+
+        string cnnstr=string.Empty;
+
+        void IDbHandler.SetDbConnectionString(string cnnstr)
+        {
+            if (string.IsNullOrEmpty(cnnstr))
+                throw new ArgumentNullException("cnnstr");
+            this.cnnstr = cnnstr;
+        }
+
+        List<string> IDbHandler.GetAllTableName()
+        {
+            if (string.IsNullOrEmpty(this.cnnstr))
+                throw new ArgumentException("必须指定数据库连接字符串");
+            List<string> lst = new List<string>();
+            using (System.Data.SqlClient.SqlConnection cnn = new System.Data.SqlClient.SqlConnection(cnnstr))
+            {
+                using (System.Data.SqlClient.SqlCommand cmd = cnn.CreateCommand())
+                {
+                    cnn.Open();
+                    cmd.CommandText = @"select TABLE_NAME
+                                                            from INFORMATION_SCHEMA.TABLES
+                                                            where TABLE_TYPE='BASE TABLE'";
+                    using (System.Data.SqlClient.SqlDataReader reader = cmd.ExecuteReader())
+                    {
+                        while (reader.Read())
+                        {
+                            lst.Add(reader["TABLE_NAME"].ToString());
+                        }
+                    }
+                }
+            }
+            return lst.OrderBy(x => x).ToList();
+        }
+
+        TableMeta IDbHandler.GetTableMeta(string tableName)
+        {
+            System.Data.DataTable Colummeta;
+            using (System.Data.SqlClient.SqlConnection cnn = new System.Data.SqlClient.SqlConnection(cnnstr))
+            {
+                using (var cmd = cnn.CreateCommand())
+                {
+                    cnn.Open();
+                    cmd.CommandText = string.Format("select * from {0}", tableName);
+                    using (var reader = cmd.ExecuteReader(System.Data.CommandBehavior.SchemaOnly))
+                    {
+                        Colummeta = reader.GetSchemaTable();
+                      
+                    }
+                }
+            }
+            string cmdstr = string.Format(@"select cl.name as ColumnName,ep.value as Description
+                                            from sys.columns cl
+                                            inner join sys.extended_properties ep on cl.column_id=ep.minor_id
+                                            where cl.object_id=OBJECT_ID('{0}') and ep.major_id=OBJECT_ID('{0}')
+                                            union all
+                                            select '{0}',value 
+                                            from sys.extended_properties 
+                                            where sys.extended_properties.major_id=OBJECT_ID('{0}') and minor_id=0", tableName);
+            System.Data.DataTable ColumetaDescription=new DataTable();
+            using (System.Data.SqlClient.SqlDataAdapter adpater = new System.Data.SqlClient.SqlDataAdapter(cmdstr, cnnstr))
+            {
+                adpater.Fill(ColumetaDescription);
+            }
+            var lstcolunmeta = Colummeta.Select().Select(x => new ColumnMeta()
+            {
+                AllowDBNull = (bool)x["AllowDBNull"],
+                ColumnName = x["ColumnName"].ToString(),
+                ColumnSize = (int)x["ColumnSize"],
+                DataTypeName = x["DataTypeName"].ToString(),
+            }).ToList();
+            var dictDescription = ColumetaDescription.Select().ToDictionary(x=>x["ColumnName"].ToString(),x=>x["Description"] as string);
+            lstcolunmeta.ForEach(x=>x.Description=dictDescription.ContainsKey(x.ColumnName)?dictDescription[x.ColumnName]:string.Empty);
+            return new TableMeta() {  Columns=lstcolunmeta,
+                Description =dictDescription.ContainsKey(tableName)?dictDescription[tableName]:string.Empty,
+                Name =tableName};
+        }
+
+        bool IDbHandler.AddTable(TableMeta tablemeta)
+        {
+            throw new NotImplementedException();
+        }
+
+        void IDbHandler.AddTableMetaByMssqlWithDDL(string cnnstr, string tableName, object[,] value)
+        {
+            throw new NotImplementedException();
+        }
+
+        bool IDbHandler.ReName(TableMeta meta,Dictionary<string, string> dictName)
+        {
+            throw new NotImplementedException();
+        }
+
+        void IDbHandler.EditTableMetaByMssqlWithDDL(string cnnstr, string tableName, object[,] value)
+        {
+            throw new NotImplementedException();
+        }
+
+        bool IDbHandler.EditTable(TableMeta tablemeta)
+        {
+            throw new NotImplementedException();
+        }
+
+        void IDbHandler.EditTableMetaByMssqlWithReName(string cnnstr, string tableName, object[,] value)
+        {
+            throw new NotImplementedException();
+        }
+
+        List<TableMeta> IDbHandler.GetTableMeta()
+        {
+            throw new NotImplementedException();
         }
     }
 }
