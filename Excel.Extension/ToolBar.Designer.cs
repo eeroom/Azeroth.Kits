@@ -42,10 +42,8 @@
             this.btnTableSchemal = this.Factory.CreateRibbonButton();
             this.btnTableSave = this.Factory.CreateRibbonButton();
             this.group1 = this.Factory.CreateRibbonGroup();
-            this.btnVisioSchemal = this.Factory.CreateRibbonButton();
             this.tab1.SuspendLayout();
             this.group2.SuspendLayout();
-            this.group1.SuspendLayout();
             this.SuspendLayout();
             // 
             // tab1
@@ -101,21 +99,12 @@
             // 
             // group1
             // 
-            this.group1.Items.Add(this.btnVisioSchemal);
             this.group1.Label = "辅助功能";
             this.group1.Name = "group1";
             // 
-            // btnVisioSchemal
-            // 
-            this.btnVisioSchemal.ControlSize = Microsoft.Office.Core.RibbonControlSize.RibbonControlSizeLarge;
-            this.btnVisioSchemal.Label = "打开Visio\r\n浏览模式";
-            this.btnVisioSchemal.Name = "btnVisioSchemal";
-            this.btnVisioSchemal.ShowImage = true;
-            this.btnVisioSchemal.Tag = "关闭Visio\r\n浏览模式";
-            // 
             // ToolBar
             // 
-            this.Name = "AzerothToolBar";
+            this.Name = "ToolBar";
             this.RibbonType = "Microsoft.Excel.Workbook";
             this.Tabs.Add(this.tab1);
             this.Load += new Microsoft.Office.Tools.Ribbon.RibbonUIEventHandler(this.InitToolBar);
@@ -123,8 +112,6 @@
             this.tab1.PerformLayout();
             this.group2.ResumeLayout(false);
             this.group2.PerformLayout();
-            this.group1.ResumeLayout(false);
-            this.group1.PerformLayout();
             this.ResumeLayout(false);
 
         }
@@ -139,7 +126,6 @@
         internal Microsoft.Office.Tools.Ribbon.RibbonDropDown drpTablelist;
         internal Microsoft.Office.Tools.Ribbon.RibbonButton btnTableSave;
         internal Microsoft.Office.Tools.Ribbon.RibbonGroup group1;
-        internal Microsoft.Office.Tools.Ribbon.RibbonButton btnVisioSchemal;
     }
 
     partial class ThisRibbonCollection

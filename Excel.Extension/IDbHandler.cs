@@ -32,37 +32,33 @@ namespace Excel.Extension
         /// <returns></returns>
         TableMeta GetTableMeta(string tableName);
 
+        /// <summary>
+        /// 获取所有表格的元数据
+        /// </summary>
+        /// <returns></returns>
         List<TableMeta> GetTableMeta();
-
-
-        void GetTableSchemalByMssqlInternal(string cnnstr, string tableName, out System.Data.DataTable table, out System.Data.DataTable tableRemark);
 
         /// <summary>
         /// 添加表格
         /// </summary>
         /// <param name="tablemeta"></param>
         /// <returns></returns>
-        bool AddTable(TableMeta tablemeta);
-
-        void AddTableMetaByMssqlWithDDL(string cnnstr, string tableName, object[,] value);
+        bool TableAdd(TableMeta tablemeta);
 
         /// <summary>
         /// 重命名，表名称，列名称
         /// </summary>
         /// <param name="dictName"></param>
         /// <returns></returns>
-        bool ReName(TableMeta tablemeta, Dictionary<string,string> dictName);
-
-        void EditTableMetaByMssqlWithDDL(string cnnstr, string tableName, object[,] value);
+        bool TableDesignerReName(TableMeta tablemeta, Dictionary<string,string> dictName);
 
         /// <summary>
-        /// 修改表设计
+        /// 修改表设计，新增，修改，删除 列，没有重命名
         /// </summary>
         /// <param name="tablemeta"></param>
         /// <returns></returns>
-        bool EditTable(TableMeta tablemeta);
+        bool TableDesigner(TableMeta tablemeta);
 
-        void EditTableMetaByMssqlWithReName(string cnnstr, string tableName, object[,] value);
     }
 
     /// <summary>
@@ -77,7 +73,7 @@ namespace Excel.Extension
         /// <summary>
         /// 长度
         /// </summary>
-        public int ColumnSize { get; set; }
+        public double ColumnSize { get; set; }
         /// <summary>
         /// 数据类型
         /// </summary>
@@ -94,6 +90,10 @@ namespace Excel.Extension
 
     public class TableMeta
     {
+        public TableMeta()
+        {
+            this.Columns = new List<ColumnMeta>();
+        }
         /// <summary>
         /// 列信息
         /// </summary>
@@ -106,5 +106,27 @@ namespace Excel.Extension
         /// 描述
         /// </summary>
         public string Description { get; set; }
+
+        /// <summary>
+        /// 新名称
+        /// </summary>
+        public string ReName { get; set; }
+    }
+
+    public class ColumnMetaComparer : IEqualityComparer<ColumnMeta>
+    {
+        public bool Equals(ColumnMeta x, ColumnMeta y)
+        {
+            if (string.IsNullOrEmpty(x.ColumnName) || string.IsNullOrEmpty(y.ColumnName))
+                return false;
+            return x.ColumnName.Equals(y.ColumnName, StringComparison.CurrentCultureIgnoreCase);
+        }
+
+        public int GetHashCode(ColumnMeta obj)
+        {
+            if (obj == null)
+                return 0;
+            return obj.ColumnName.GetHashCode();
+        }
     }
 }

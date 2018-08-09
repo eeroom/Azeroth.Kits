@@ -6,57 +6,36 @@ using Microsoft.Office.Tools.Ribbon;
 
 namespace Excel.Extension
 {
+    public enum HeadTexts
+    {
+        名称=1,
+        类型=2,
+        长度=3,
+        可空=4,
+        备注=5,
+        重命名=6
+    }
     public partial class ToolBar
     {
-        
-        string[] HeardTexts=new string[6]{"名称","类型","长度","可空","备注","重命名"};
         const string ALL = "全部";
-        const string TableRemarkColName = "_TableName_";
 
         IDbHandler dbHelper;
+
         private void InitToolBar(object sender, RibbonUIEventArgs e)
         {
-            
-            
             this.InitDrpDBSource(null,null);
+            this.btnDBSourceSetting.Click += btnDBSourceSetting_Click;
             this.drpDBlist.SelectionChanged += drpDBlist_SelectionChanged;
             this.drpTablelist.SelectionChanged += drpTablelist_SelectionChanged;
-            this.btnDBSourceSetting.Click+=btnDBSourceSetting_Click;
-            this.btnTableSchemal.Click += btnTableSchemal_Click;
-            this.btnTableSave.Click += btnTableSave_Click;
-            this.btnVisioSchemal.Click += BtnVisioSchemal_Click;
+            this.btnTableSchemal.Click += DisplayTableMeta;
+            this.btnTableSave.Click += SaveTableMeta;
         }
 
-        MouseHookWrapper hookWrapper;
-        private void BtnVisioSchemal_Click(object sender, RibbonControlEventArgs e)
-        {
-            if(hookWrapper==null)
-            {
-                this.hookWrapper = new MouseHookWrapper();
-                hookWrapper.Hook(OnMouseWheel, HookLevel.WH_MOUSE);
-            }
-            else
-            {
-                this.hookWrapper.UnHook();
-                this.hookWrapper = null;
-            }
-            var tmp = this.btnVisioSchemal.Label;
-            this.btnVisioSchemal.Label = this.btnVisioSchemal.Tag.ToString();
-            this.btnVisioSchemal.Tag = tmp;
-        }
-
-        Microsoft.VisualBasic.Devices.Keyboard keyBoard = new Microsoft.VisualBasic.Devices.Keyboard();
-        private void OnMouseWheel(int nCode, IntPtr wParam, IntPtr lParam)
-        {
-            MouseButtonAction at = (MouseButtonAction)(int)wParam;
-            if (at != MouseButtonAction.WM_Wheel ||!keyBoard.ShiftKeyDown)
-                return;
-            MouseHookWrapper.LParamStruct rst =
-                (MouseHookWrapper.LParamStruct)System.Runtime.InteropServices.Marshal.PtrToStructure(lParam,typeof(MouseHookWrapper.LParamStruct));
-            Globals.ThisAddIn.Application.ActiveWindow.SmallScroll(ToRight: keyBoard.CtrlKeyDown?-1:1);
-
-        }
-
+        /// <summary>
+        /// 初始化数据库下拉列表
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         void InitDrpDBSource(object sender, System.Windows.Forms.FormClosedEventArgs e)
         {
             this.drpDBlist.Items.Clear();
@@ -75,6 +54,11 @@ namespace Excel.Extension
             }
         }
 
+        /// <summary>
+        /// 切换表格下拉列表的响应方法
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         void drpTablelist_SelectionChanged(object sender, RibbonControlEventArgs e)
         {
             if (this.drpTablelist.SelectedItem == null)
@@ -84,18 +68,23 @@ namespace Excel.Extension
                 range.Activate();
         }
 
+        /// <summary>
+        /// 切换数据库下拉列表的响应方法
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         void drpDBlist_SelectionChanged(object sender, RibbonControlEventArgs e)
         {
             this.drpTablelist.Items.Clear();
             this.drpTablelist.Label = string.Empty;
             var tmp = this.drpDBlist.SelectedItem.Tag as Tuple<string, string>;
-            DbIndex provider;
-            if (tmp == null || !System.Enum.TryParse<DbIndex>(tmp.Item1, out provider))
+            DbIndex dbIndex;
+            if (tmp == null || !System.Enum.TryParse<DbIndex>(tmp.Item1, out dbIndex))
                 return;
-            var nameTmp = typeof(IDbHandler).Name;
-            var lstDBHelper = System.Reflection.Assembly.GetExecutingAssembly().GetTypes().Where(x => x.GetInterfaces().Count(a => a.Name.Equals(nameTmp)) > 0)
+            var dbHandlerMeta = typeof(IDbHandler).FullName;
+            var lstDBHelper = System.Reflection.Assembly.GetExecutingAssembly().GetTypes().Where(x => x.GetInterface(dbHandlerMeta)!=null)
                 .Select(x => (IDbHandler)System.Activator.CreateInstance(x)).ToList();
-            this.dbHelper = lstDBHelper.FirstOrDefault(x => x.DbIndex == provider);
+            this.dbHelper = lstDBHelper.FirstOrDefault(x => x.DbIndex == dbIndex);
             if (this.dbHelper == null)
                 throw new ArgumentException("不支持指定的数据库");
             this.dbHelper.SetDbConnectionString(tmp.Item2);
@@ -111,17 +100,27 @@ namespace Excel.Extension
                 drpItem.Tag = tname;
                 this.drpTablelist.Items.Add(drpItem);
             }
-            this.drpTablelist.SelectedItemIndex = this.drpTablelist.Items.Count - 1;
+            this.drpTablelist.SelectedItemIndex = 0;
         }
 
+        /// <summary>
+        /// 设置数据源
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         void btnDBSourceSetting_Click(object sender, RibbonControlEventArgs e)
         {
-            FrmDBSourceSetting window = new FrmDBSourceSetting();
+            Views.DBSourceSetting window = new Views.DBSourceSetting();
             window.FormClosed += InitDrpDBSource;
             window.ShowDialog();
         }
 
-        void btnTableSave_Click(object sender, RibbonControlEventArgs e)
+        /// <summary>
+        /// 保存设计
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        void SaveTableMeta(object sender, RibbonControlEventArgs e)
         {
             if (!CheckDrpSelectedValue(drpDBlist, drpTablelist))
                 return;
@@ -132,53 +131,59 @@ namespace Excel.Extension
                 throw new ArgumentException("请选中需要处理的表的区域");
             object[,] rangeValue = range.Value2;
             TableMeta meta = new TableMeta();
-            meta.Name= rangeValue[1, 1] as string;
+            meta.Name= rangeValue[1, (int)HeadTexts.名称] as string;
+            meta.Description = rangeValue[1, 5] as string;
             if (string.IsNullOrEmpty(meta.Name))
                 throw new ArgumentException("必须填写表名称");
-            if (rangeValue.GetUpperBound(1) != HeardTexts.Length && rangeValue.GetUpperBound(1) != HeardTexts.Length - 1)//因为 range.Value2里面的数组从1，1开始，+1的情况表示修改名称
+            var headNames= System.Enum.GetNames(typeof(HeadTexts)).Cast<string>().ToArray();
+            if (rangeValue.GetUpperBound(1) != headNames.Length && rangeValue.GetUpperBound(1) != headNames.Length - 1)//因为 range.Value2里面的数组从1，1开始，+1的情况表示修改名称
                 throw new ArgumentException("选择区域的数据与模版格式不一致！");
-            var heardTextTmp = System.Linq.Enumerable.Range(1, rangeValue.GetUpperBound(1)).Select(x => rangeValue.GetValue(2, x)).ToArray();
-            if (heardTextTmp.Except(HeardTexts).Count()>0)
+            var heardTextTmp = System.Linq.Enumerable.Range(1, rangeValue.GetUpperBound(1)).Select(x => rangeValue.GetValue(2, x) as string).ToArray();
+            if (heardTextTmp.Except(headNames).Count()>0)
                 throw new ArgumentException("选择区域的数据与模版格式不一致！");
-            for (int i = 3; i < rangeValue.GetUpperBound(0); i++)
-            { // string[] HeardTexts = new string[6] { "名称", "类型", "长度", "可空", "备注", "重命名" };
+            for (int i = 3; i <= rangeValue.GetUpperBound(0); i++)
+            {
                 ColumnMeta column = new ColumnMeta();
-                column.ColumnName = rangeValue[i, 1] as string;
-                column.DataTypeName = rangeValue[i, 2] as string;
-                column.ColumnSize = rangeValue[i, 3]==null?int.MinValue:(int)rangeValue[i,3];
-                column.AllowDBNull = "是".Equals(rangeValue[i,4])? true:false;
-                column.Description = rangeValue[i, 5] as string;
+                column.ColumnName = rangeValue[i, (int)HeadTexts.名称] as string;
+                column.DataTypeName = rangeValue[i, (int)HeadTexts.类型] as string;
+                column.ColumnSize = rangeValue[i, (int)HeadTexts.长度] ==null?double.MinValue:(double)rangeValue[i, (int)HeadTexts.长度];
+                column.AllowDBNull = "是".Equals(rangeValue[i, (int)HeadTexts.可空])? true:false;
+                column.Description = rangeValue[i, (int)HeadTexts.备注] as string;
                 meta.Columns.Add(column);
             }
             if (!lstTableName.Contains(meta.Name))
             {
-                this.dbHelper.AddTable(meta);
+                this.dbHelper.TableAdd(meta);
                 this.drpDBlist_SelectionChanged(null, null);
                 this.drpTablelist.SelectedItem = this.drpTablelist.Items.First(x => x.Label==meta.Name);
                 System.Windows.Forms.MessageBox.Show("添加成功");
             }
-            else if (rangeValue.GetUpperBound(1) == HeardTexts.Length-1)
+            else if (rangeValue.GetUpperBound(1) == headNames.Length-1)
             {
-                this.dbHelper.EditTable(meta);
+                this.dbHelper.TableDesigner(meta);
                 System.Windows.Forms.MessageBox.Show("修改成功");
             }
-            else if (rangeValue.GetUpperBound(1) == HeardTexts.Length)
+            else if (rangeValue.GetUpperBound(1) == headNames.Length)
             {
                 Dictionary<string, string> dict = new Dictionary<string, string>();
-                dict.Add(rangeValue[1,1] as string,rangeValue[1,6] as string);
-                for (int i = 3; i < rangeValue.GetUpperBound(0); i++)
-                { // string[] HeardTexts = new string[6] { "名称", "类型", "长度", "可空", "备注", "重命名" };
-                    dict.Add(rangeValue[i,1] as string,rangeValue[i,6] as string);
+                meta.ReName = rangeValue[1, (int)HeadTexts.重命名] as string;
+                for (int i = 3; i <= rangeValue.GetUpperBound(0); i++)
+                { 
+                    dict.Add(rangeValue[i,(int)HeadTexts.名称] as string,rangeValue[i,(int)HeadTexts.重命名] as string);
                 }
-                this.dbHelper.ReName(meta, dict);
+                this.dbHelper.TableDesignerReName(meta, dict);
                 this.drpDBlist_SelectionChanged(null, null);
                 this.drpTablelist.SelectedItem = this.drpTablelist.Items.First(x => x.Label==dict.First().Value);
                 System.Windows.Forms.MessageBox.Show("重命名成功");
             }
         }
 
-
-        void btnTableSchemal_Click(object sender, RibbonControlEventArgs e)
+        /// <summary>
+        /// 查看设计
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        void DisplayTableMeta(object sender, RibbonControlEventArgs e)
         {
             if (!CheckDrpSelectedValue(drpDBlist, drpTablelist))
                 return;
@@ -187,54 +192,57 @@ namespace Excel.Extension
             var range = Globals.ThisAddIn.Application.ActiveCell;
             if (!ALL.Equals(tableName))
             {
-                this.GetTableMeta(tableName, range);
+                this.DisplayTableMeta(tableName, range);
                 return;
             }
-            foreach (var item in this.drpTablelist.Items)
+            Views.ProcessDashboard pd = new Views.ProcessDashboard();
+            pd.TableMetaHandler = () =>
             {
-                if (ALL.Equals(item.Label))
-                    continue;
-                range = this.GetTableMeta( item.Label, range);
-            }
+                foreach (var item in this.drpTablelist.Items)
+                {
+                    if (ALL.Equals(item.Label))
+                        continue;
+                    range = this.DisplayTableMeta(item.Label, range);
+                }
+            };
+            pd.ShowDialog();
         }
 
-        Microsoft.Office.Interop.Excel.Range GetTableMeta(string tableName, Microsoft.Office.Interop.Excel.Range cell)
+        Microsoft.Office.Interop.Excel.Range DisplayTableMeta(string tableName, Microsoft.Office.Interop.Excel.Range cell)
         {
             var tableMeta=  this.dbHelper.GetTableMeta(tableName);
-            int colIndex=0, rowIndex=0;
+            int rowIndex=0;
             cell.UnMerge();
-            cell.Offset[rowIndex, colIndex].Value2 = tableMeta.Name;
-            cell.Offset[rowIndex++, HeardTexts.Length - 2].Value2 = tableMeta.Description;
-            foreach (var heardtext in HeardTexts)
-            { // string[] HeardTexts = new string[6] { "名称", "类型", "长度", "可空", "备注", "重命名" };
-                cell.Offset[rowIndex, colIndex++].Value2 = heardtext;
+            cell.Offset[rowIndex, 0].Value2 = tableMeta.Name;
+            var headValues= System.Enum.GetValues(typeof(HeadTexts)).Cast<int>().ToArray();
+            cell.Offset[rowIndex++, headValues.Length - 2].Value2 = tableMeta.Description;
+            foreach (var index in headValues)
+            { 
+                cell.Offset[rowIndex, index-1].Value2 = ((HeadTexts)index).ToString();
             }
             foreach (var column in tableMeta.Columns)
             {
                 rowIndex++;
-                colIndex = 0;
-                cell.Offset[rowIndex, colIndex++].Value2 = column.ColumnName;
-                cell.Offset[rowIndex, colIndex++].Value2 = column.DataTypeName;
-                cell.Offset[rowIndex, colIndex++].Value2 = column.DataTypeName.Contains("char") ? column.ColumnSize.ToString(): string.Empty;
-                cell.Offset[rowIndex, colIndex++].Value2 = column.AllowDBNull ? "是" : string.Empty;
-                cell.Offset[rowIndex, colIndex++].Value2 = column.Description;
+                cell.Offset[rowIndex, (int)HeadTexts.名称-1].Value2 = column.ColumnName;
+                cell.Offset[rowIndex, (int)HeadTexts.类型 - 1].Value2 = column.DataTypeName;
+                cell.Offset[rowIndex, (int)HeadTexts.长度 - 1].Value2 = column.DataTypeName.Contains("char") ? column.ColumnSize.ToString(): string.Empty;
+                cell.Offset[rowIndex, (int)HeadTexts.可空 - 1].Value2 = column.AllowDBNull ? "是" : string.Empty;
+                cell.Offset[rowIndex, (int)HeadTexts.备注 - 1].Value2 = column.Description;
             }
             //处理样式
             var firstCell = cell.Offset[1, 0];
-            var lastCell = cell.Offset[rowIndex, colIndex - 1];
-            var nextCell = cell.Offset[rowIndex + 2, 0];
-            var range = Globals.ThisAddIn.Application.get_Range(cell, cell.Offset[0, HeardTexts.Length-3]);
-            range.Merge();
+            var lastCell = cell.Offset[rowIndex, headValues.Length - 1];
+            var range = Globals.ThisAddIn.Application.get_Range(cell, cell.Offset[0, headValues.Length-3]);
+            //range.Merge();
             range.HorizontalAlignment = Microsoft.Office.Interop.Excel.Constants.xlLeft;
             range.Select();
-
-           range=  Globals.ThisAddIn.Application.get_Range(firstCell,lastCell);
+            range=  Globals.ThisAddIn.Application.get_Range(firstCell,lastCell);
             range.Columns.AutoFit();
-            range = Globals.ThisAddIn.Application.get_Range(cell,lastCell);
+            //range = Globals.ThisAddIn.Application.get_Range(cell,lastCell);
             System.Enum.GetValues(typeof(Microsoft.Office.Interop.Excel.XlBordersIndex)).Cast<Microsoft.Office.Interop.Excel.XlBordersIndex>()
                 .Where(x => x != Microsoft.Office.Interop.Excel.XlBordersIndex.xlDiagonalDown && x != Microsoft.Office.Interop.Excel.XlBordersIndex.xlDiagonalUp)
                 .ToList().ForEach(x => range.Borders[x].LineStyle = Microsoft.Office.Interop.Excel.XlLineStyle.xlContinuous);
-            return nextCell;
+            return cell.Offset[rowIndex + 2, 0];
         }
 
         private bool CheckDrpSelectedValue(params RibbonDropDown[] drps)
