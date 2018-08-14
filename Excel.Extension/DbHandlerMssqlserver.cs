@@ -88,7 +88,13 @@ namespace Excel.Extension
                 DataTypeName = x["DataTypeName"].ToString(),
             }).ToList();
             var dictDescription = ColumetaDescription.Select().ToDictionary(x=>x["ColumnName"].ToString(),x=>x["Description"] as string);
-            lstcolunmeta.ForEach(x=>x.Description=dictDescription.ContainsKey(x.ColumnName)?dictDescription[x.ColumnName]:string.Empty);
+            lstcolunmeta.ForEach(x=> {
+                x.Description = dictDescription.ContainsKey(x.ColumnName) ? dictDescription[x.ColumnName] : string.Empty;
+                if (x.DataTypeName.Contains("char") && x.ColumnSize >= int.MaxValue)
+                    x.DataTypeName = "text";
+                else if (x.DataTypeName.Contains("char") && x.ColumnSize < int.MaxValue)
+                    x.DataTypeName = string.Format("{0}({1})",x.DataTypeName,x.ColumnSize);
+            });
             return new TableMeta() {  Columns=lstcolunmeta,
                 Description =dictDescription.ContainsKey(tableName)?dictDescription[tableName]:string.Empty,
                 Name =tableName};
@@ -101,8 +107,7 @@ namespace Excel.Extension
         /// <returns></returns>
         bool IDbHandler.TableAdd(TableMeta tablemeta)
         {
-            List<string> lstsql= tablemeta.Columns.Select(col=> string.Format("[{0}] [{1}]{2} {3} {4}", col.ColumnName, col.DataTypeName,
-                   col.DataTypeName.Contains("char") ? "(" + (col.ColumnSize>=int.MaxValue?"max":col.ColumnSize.ToString()) + ")" : string.Empty,
+            List<string> lstsql= tablemeta.Columns.Select(col=> string.Format("[{0}] [{1}] {2} {3}", col.ColumnName, col.DataTypeName,
                    col.ColumnName.ToLower().Equals("id") ? "PRIMARY KEY CLUSTERED" + (col.DataTypeName.Contains("int") ? " IDENTITY(1,1)" : string.Empty) : string.Empty,
                    col.AllowDBNull ? "NULL" : "NOT NULL")).ToList();
             using (var cnn = new System.Data.SqlClient.SqlConnection(cnnstr))
@@ -191,10 +196,9 @@ namespace Excel.Extension
             TableMeta metaOld = ((IDbHandler)this).GetTableMeta(metaNew.Name);
             //新增的列
             var lstColAdd = metaNew.Columns.Except(metaOld.Columns, new ColumnMetaComparer()).ToList();
-            var lstsqlAdd = lstColAdd.Select(x => string.Format("ALTER TABLE {0} ADD {1} {2}{3} {4} {5}", metaNew.Name,
+            var lstsqlAdd = lstColAdd.Select(x => string.Format("ALTER TABLE {0} ADD {1} {2} {3} {4}", metaNew.Name,
                 x.ColumnName,
                 x.DataTypeName,
-                 x.DataTypeName.Contains("char") ? "(" + x.ColumnSize + ")" : string.Empty,
                  "id".Equals(x.ColumnName, StringComparison.CurrentCultureIgnoreCase) ? "PRIMARY KEY CLUSTERED" + (x.DataTypeName.Contains("int") ? " IDENTITY(1,1) " : string.Empty) : string.Empty,
                 x.AllowDBNull ? "NULL" : "NOT NULL")).ToList();
             //移除的列
@@ -202,10 +206,10 @@ namespace Excel.Extension
             var lstsqlDel = lstColDel.Select(x => string.Format("ALTER TABLE {0} DROP COLUMN {1}", metaNew.Name, x.ColumnName)).ToList();
             //修改的列
             var lstColEdit = metaNew.Columns.Join(metaOld.Columns, x => x.ColumnName, x => x.ColumnName, (x, y) => x).ToList();
-            var lstsqlEdit = lstColEdit.Select(x => string.Format("ALTER TABLE {0} ALTER COLUMN {1} {2}{3} {4} {5}", metaNew.Name,
+            var lstsqlEdit = lstColEdit.Select(x => string.Format("ALTER TABLE {0} ALTER COLUMN {1} {2} {3} {4}", metaNew.Name,
                 x.ColumnName,
                 x.DataTypeName,
-                 x.DataTypeName.Contains("char") ? "(" + x.ColumnSize + ")" : string.Empty,
+                 //x.DataTypeName.Contains("char") ? "(" + x.ColumnSize + ")" : string.Empty,
                  "id".Equals(x.ColumnName, StringComparison.CurrentCultureIgnoreCase) ? "PRIMARY KEY CLUSTERED" + (x.DataTypeName.Contains("int") ? " IDENTITY(1,1) " : string.Empty) : string.Empty,
                 x.AllowDBNull ? "NULL" : "NOT NULL")).ToList();
             string spAdd = "sys.sp_addextendedproperty";

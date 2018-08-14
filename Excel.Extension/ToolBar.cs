@@ -10,10 +10,9 @@ namespace Excel.Extension
     {
         名称=1,
         类型=2,
-        长度=3,
-        可空=4,
-        备注=5,
-        重命名=6
+        可空=3,
+        备注=4,
+        重命名=5
     }
     public partial class ToolBar
     {
@@ -132,7 +131,7 @@ namespace Excel.Extension
             object[,] rangeValue = range.Value2;
             TableMeta meta = new TableMeta();
             meta.Name= rangeValue[1, (int)HeadTexts.名称] as string;
-            meta.Description = rangeValue[1, 5] as string;
+            meta.Description = rangeValue[1, (int)HeadTexts.备注] as string;
             if (string.IsNullOrEmpty(meta.Name))
                 throw new ArgumentException("必须填写表名称");
             var headNames= System.Enum.GetNames(typeof(HeadTexts)).Cast<string>().ToArray();
@@ -146,7 +145,7 @@ namespace Excel.Extension
                 ColumnMeta column = new ColumnMeta();
                 column.ColumnName = rangeValue[i, (int)HeadTexts.名称] as string;
                 column.DataTypeName = rangeValue[i, (int)HeadTexts.类型] as string;
-                column.ColumnSize = rangeValue[i, (int)HeadTexts.长度] ==null?double.MinValue:(double)rangeValue[i, (int)HeadTexts.长度];
+                //column.ColumnSize = rangeValue[i, (int)HeadTexts.长度] ==null?double.MinValue:(double)rangeValue[i, (int)HeadTexts.长度];
                 column.AllowDBNull = "是".Equals(rangeValue[i, (int)HeadTexts.可空])? true:false;
                 column.Description = rangeValue[i, (int)HeadTexts.备注] as string;
                 meta.Columns.Add(column);
@@ -173,7 +172,8 @@ namespace Excel.Extension
                 }
                 this.dbHelper.TableDesignerReName(meta, dict);
                 this.drpDBlist_SelectionChanged(null, null);
-                this.drpTablelist.SelectedItem = this.drpTablelist.Items.First(x => x.Label==dict.First().Value);
+                meta.ReName = meta.ReName ?? meta.Name;
+                this.drpTablelist.SelectedItem = this.drpTablelist.Items.First(x => x.Label== meta.ReName);
                 System.Windows.Forms.MessageBox.Show("重命名成功");
             }
         }
@@ -225,7 +225,7 @@ namespace Excel.Extension
                 rowIndex++;
                 cell.Offset[rowIndex, (int)HeadTexts.名称-1].Value2 = column.ColumnName;
                 cell.Offset[rowIndex, (int)HeadTexts.类型 - 1].Value2 = column.DataTypeName;
-                cell.Offset[rowIndex, (int)HeadTexts.长度 - 1].Value2 = column.DataTypeName.Contains("char") ? column.ColumnSize.ToString(): string.Empty;
+                //cell.Offset[rowIndex, (int)HeadTexts.长度 - 1].Value2 = column.DataTypeName.Contains("char") ? column.ColumnSize.ToString(): string.Empty;
                 cell.Offset[rowIndex, (int)HeadTexts.可空 - 1].Value2 = column.AllowDBNull ? "是" : string.Empty;
                 cell.Offset[rowIndex, (int)HeadTexts.备注 - 1].Value2 = column.Description;
             }
@@ -235,13 +235,14 @@ namespace Excel.Extension
             var range = Globals.ThisAddIn.Application.get_Range(cell, cell.Offset[0, headValues.Length-3]);
             //range.Merge();
             range.HorizontalAlignment = Microsoft.Office.Interop.Excel.Constants.xlLeft;
-            range.Select();
+            //range.Select();
             range=  Globals.ThisAddIn.Application.get_Range(firstCell,lastCell);
             range.Columns.AutoFit();
             //range = Globals.ThisAddIn.Application.get_Range(cell,lastCell);
             System.Enum.GetValues(typeof(Microsoft.Office.Interop.Excel.XlBordersIndex)).Cast<Microsoft.Office.Interop.Excel.XlBordersIndex>()
                 .Where(x => x != Microsoft.Office.Interop.Excel.XlBordersIndex.xlDiagonalDown && x != Microsoft.Office.Interop.Excel.XlBordersIndex.xlDiagonalUp)
                 .ToList().ForEach(x => range.Borders[x].LineStyle = Microsoft.Office.Interop.Excel.XlLineStyle.xlContinuous);
+            firstCell.Select();
             return cell.Offset[rowIndex + 2, 0];
         }
 

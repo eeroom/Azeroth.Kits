@@ -88,6 +88,9 @@ namespace Excel.Extension
         public bool AllowDBNull { get; set; }
     }
 
+    /// <summary>
+    /// 表格元数据
+    /// </summary>
     public class TableMeta
     {
         public TableMeta()
@@ -113,6 +116,9 @@ namespace Excel.Extension
         public string ReName { get; set; }
     }
 
+    /// <summary>
+    /// 列的比较器，按列名称比较
+    /// </summary>
     public class ColumnMetaComparer : IEqualityComparer<ColumnMeta>
     {
         public bool Equals(ColumnMeta x, ColumnMeta y)

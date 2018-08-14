@@ -54,45 +54,47 @@ namespace Excel.Extension
 
         TableMeta IDbHandler.GetTableMeta(string tableName)
         {
-            System.Data.DataTable Colummeta;
-            using (var cnn = new MySql.Data.MySqlClient.MySqlConnection(cnnstr))
+            System.Data.DataTable Colummeta=new DataTable();
+            var tmp = cnnstr.Split(new char[] { ';', '=' }, StringSplitOptions.RemoveEmptyEntries).SkipWhile(x => x.ToLower().IndexOf("initial catalog") < 0).ToList();
+
+            string cmdstr = string.Format("select * from information_schema.TABLES where TABLE_SCHEMA='{0}' and table_name='{1}'", tmp[1], tableName);
+
+            using (var adpater = new MySql.Data.MySqlClient.MySqlDataAdapter(cmdstr, cnnstr))
             {
-                using (var cmd = cnn.CreateCommand())
-                {
-                    cnn.Open();
-                    cmd.CommandText = string.Format("select * from {0}", tableName);
-                    using (var reader = cmd.ExecuteReader(System.Data.CommandBehavior.SchemaOnly))
-                    {
-                        Colummeta = reader.GetSchemaTable();
-                    }
-                }
+                adpater.Fill(Colummeta);
             }
-            string cmdstr = string.Format(@"select cl.name as ColumnName,ep.value as Description
-                                            from sys.columns cl
-                                            inner join sys.extended_properties ep on cl.column_id=ep.minor_id
-                                            where cl.object_id=OBJECT_ID('{0}') and ep.major_id=OBJECT_ID('{0}')
-                                            union all
-                                            select '{0}',value 
-                                            from sys.extended_properties 
-                                            where sys.extended_properties.major_id=OBJECT_ID('{0}') and minor_id=0", tableName);
+            
+            cmdstr = string.Format(@"show full fields from {0}", tableName);
             System.Data.DataTable ColumetaDescription = new DataTable();
             using (var adpater = new MySql.Data.MySqlClient.MySqlDataAdapter(cmdstr, cnnstr))
             {
                 adpater.Fill(ColumetaDescription);
             }
-            var lstcolunmeta = Colummeta.Select().Select(x => new ColumnMeta()
+            //var lstcolunmeta = Colummeta.Select().Select(x => new ColumnMeta()
+            //{
+            //    AllowDBNull = (bool)x["AllowDBNull"],
+            //    ColumnName = x["ColumnName"].ToString()
+            //    //ColumnSize = (int)x["ColumnSize"]
+            //}).ToList();
+            var dictDescription = ColumetaDescription.Select().Select(x => new ColumnMeta()
             {
-                AllowDBNull = (bool)x["AllowDBNull"],
-                ColumnName = x["ColumnName"].ToString(),
-                ColumnSize = (int)x["ColumnSize"],
-                DataTypeName = x["DataTypeName"].ToString(),
+                DataTypeName = x["Type"].ToString(),
+                ColumnName = x["Field"].ToString(),
+                Description = x["Comment"] as string,
+                AllowDBNull = x["NULL"].ToString().Equals("YES", StringComparison.CurrentCultureIgnoreCase) ? true:false
             }).ToList();
-            var dictDescription = ColumetaDescription.Select().ToDictionary(x => x["ColumnName"].ToString(), x => x["Description"] as string);
-            lstcolunmeta.ForEach(x => x.Description = dictDescription.ContainsKey(x.ColumnName) ? dictDescription[x.ColumnName] : string.Empty);
+
+            dictDescription.ForEach(x=> {
+                if (x.DataTypeName.Contains("char"))
+                    return;
+                x.DataTypeName = x.DataTypeName.Split('(')[0];
+            });
+            //.ToDictionary(x => x["FieId"].ToString(), x => x["Comment"] as string);
+            //lstcolunmeta.ForEach(x => x.Description = dictDescription.ContainsKey(x.ColumnName) ? dictDescription[x.ColumnName] : string.Empty);
             return new TableMeta()
             {
-                Columns = lstcolunmeta,
-                Description = dictDescription.ContainsKey(tableName) ? dictDescription[tableName] : string.Empty,
+                Columns = dictDescription,
+                Description = Colummeta.Rows[0]["TABLE_COMMENT"] as string,
                 Name = tableName
             };
         }
@@ -104,45 +106,46 @@ namespace Excel.Extension
         /// <returns></returns>
         bool IDbHandler.TableAdd(TableMeta tablemeta)
         {
-            List<string> lstsql = tablemeta.Columns.Select(col => string.Format("[{0}] [{1}]{2} {3} {4}", col.ColumnName, col.DataTypeName,
-                    col.DataTypeName.Contains("char") ? "(" + (col.ColumnSize >= int.MaxValue ? "max" : col.ColumnSize.ToString()) + ")" : string.Empty,
-                    col.ColumnName.ToLower().Equals("id") ? "PRIMARY KEY CLUSTERED" + (col.DataTypeName.Contains("int") ? " IDENTITY(1,1)" : string.Empty) : string.Empty,
-                    col.AllowDBNull ? "NULL" : "NOT NULL")).ToList();
-            using (var cnn = new System.Data.SqlClient.SqlConnection(cnnstr))
+            List<string> lstsql = tablemeta.Columns.Select(col => string.Format("`{0}` {1} {2} {3} COMMENT '{4}'", col.ColumnName, col.DataTypeName,
+                    //col.DataTypeName.Contains("char") ? "(" + (col.ColumnSize >= int.MaxValue ? "max" : col.ColumnSize.ToString()) + ")" : string.Empty,
+                    col.ColumnName.ToLower().Equals("id") ? "PRIMARY KEY" + (col.DataTypeName.Contains("int") ? " AUTO_INCREMENT" : string.Empty) : string.Empty,
+                    col.AllowDBNull ? "NULL" : "NOT NULL",
+                    col.Description??string.Empty)).ToList();
+            using (var cnn = new MySql.Data.MySqlClient.MySqlConnection(cnnstr))
             {
                 using (var cmd = cnn.CreateCommand())
                 {
                     cnn.Open();
-                    cmd.CommandText = string.Format("CREATE TABLE [{0}]({1})", tablemeta.Name, string.Join(",", lstsql));
+                    cmd.CommandText = string.Format("CREATE TABLE `{0}`({1})\r\nCOMMENT='{2}';", tablemeta.Name, string.Join(",", lstsql),tablemeta.Description);
                     cmd.ExecuteNonQuery();
                 }
             }
-            using (var cnn = new System.Data.SqlClient.SqlConnection(cnnstr))
-            {
-                using (var cmd = cnn.CreateCommand())
-                {
-                    cnn.Open();
-                    cmd.CommandType = System.Data.CommandType.StoredProcedure;
-                    cmd.CommandText = "sys.sp_addextendedproperty";
-                    cmd.Parameters.AddWithValue("name", "MS_Description");
-                    cmd.Parameters.AddWithValue("value", tablemeta.Description ?? string.Empty);
-                    cmd.Parameters.AddWithValue("level0type", "SCHEMA");
-                    cmd.Parameters.AddWithValue("level0name", "dbo");
-                    cmd.Parameters.AddWithValue("level1type", "TABLE");
-                    cmd.Parameters.AddWithValue("level1name", tablemeta.Name);
-                    cmd.Parameters.AddWithValue("level2type", DBNull.Value);
-                    cmd.Parameters.AddWithValue("level2name", DBNull.Value);
-                    cmd.ExecuteNonQuery();//表的说明
-                    foreach (var col in tablemeta.Columns)
-                    {
-                        cmd.Parameters["value"].Value = col.Description ?? string.Empty;
-                        cmd.Parameters["level1name"].Value = tablemeta.Name;
-                        cmd.Parameters["level2name"].Value = col.ColumnName;
-                        cmd.Parameters["level2type"].Value = "COLUMN";
-                        cmd.ExecuteNonQuery();
-                    }
-                }
-            }
+            //using (var cnn = new System.Data.SqlClient.SqlConnection(cnnstr))
+            //{
+            //    using (var cmd = cnn.CreateCommand())
+            //    {
+            //        cnn.Open();
+            //        cmd.CommandType = System.Data.CommandType.StoredProcedure;
+            //        cmd.CommandText = "sys.sp_addextendedproperty";
+            //        cmd.Parameters.AddWithValue("name", "MS_Description");
+            //        cmd.Parameters.AddWithValue("value", tablemeta.Description ?? string.Empty);
+            //        cmd.Parameters.AddWithValue("level0type", "SCHEMA");
+            //        cmd.Parameters.AddWithValue("level0name", "dbo");
+            //        cmd.Parameters.AddWithValue("level1type", "TABLE");
+            //        cmd.Parameters.AddWithValue("level1name", tablemeta.Name);
+            //        cmd.Parameters.AddWithValue("level2type", DBNull.Value);
+            //        cmd.Parameters.AddWithValue("level2name", DBNull.Value);
+            //        cmd.ExecuteNonQuery();//表的说明
+            //        foreach (var col in tablemeta.Columns)
+            //        {
+            //            cmd.Parameters["value"].Value = col.Description ?? string.Empty;
+            //            cmd.Parameters["level1name"].Value = tablemeta.Name;
+            //            cmd.Parameters["level2name"].Value = col.ColumnName;
+            //            cmd.Parameters["level2type"].Value = "COLUMN";
+            //            cmd.ExecuteNonQuery();
+            //        }
+            //    }
+            //}
             return true;
         }
 
@@ -154,29 +157,36 @@ namespace Excel.Extension
         /// <returns></returns>
         bool IDbHandler.TableDesignerReName(TableMeta meta, Dictionary<string, string> dictColName)
         {
-            using (var cnn = new System.Data.SqlClient.SqlConnection(cnnstr))
+            var metadata= ((IDbHandler)this).GetTableMeta(meta.Name);
+            using (var cnn = new MySql.Data.MySqlClient.MySqlConnection(cnnstr))
             {
                 using (var cmd = cnn.CreateCommand())
                 {
                     cnn.Open();
-                    cmd.CommandType = System.Data.CommandType.StoredProcedure;
-                    cmd.CommandText = "sys.sp_rename";
+                    //cmd.CommandType = System.Data.CommandType.StoredProcedure;
+                    //cmd.CommandText = "sys.sp_rename";
                     foreach (var kv in dictColName)
                     {
                         if (string.IsNullOrEmpty(kv.Value) || kv.Key.Equals(kv.Value, StringComparison.CurrentCultureIgnoreCase))
                             continue;
-                        cmd.Parameters.Clear();
-                        cmd.Parameters.AddWithValue("objname", meta.Name + "." + kv.Key);
-                        cmd.Parameters.AddWithValue("newname", kv.Value);
-                        cmd.Parameters.AddWithValue("objtype", "column");
+                        //                                                      alter table <表名> change <字段名> <字段新名称> <字段的类型>
+                        cmd.CommandText = string.Format("alter table {0} change {1} {2} {3}",metadata.Name,
+                            kv.Key,
+                            kv.Value,
+                            metadata.Columns.FirstOrDefault(x=>x.ColumnName.Equals(kv.Key, StringComparison.CurrentCultureIgnoreCase)).DataTypeName);
+                        //cmd.Parameters.Clear();
+                        //cmd.Parameters.AddWithValue("objname", meta.Name + "." + kv.Key);
+                        //cmd.Parameters.AddWithValue("newname", kv.Value);
+                        //cmd.Parameters.AddWithValue("objtype", "column");
                         cmd.ExecuteNonQuery();
                     }
                     if (!string.IsNullOrEmpty(meta.ReName))
                     {
-                        cmd.Parameters.Clear();
-                        cmd.Parameters.AddWithValue("objname", meta.Name);
-                        cmd.Parameters.AddWithValue("newname", meta.ReName);
-                        cmd.Parameters.AddWithValue("objtype", DBNull.Value);
+                        cmd.CommandText = string.Format("RENAME TABLE {0} TO {1}", meta.Name, meta.ReName);
+                        //cmd.Parameters.Clear();
+                        //cmd.Parameters.AddWithValue("objname", meta.Name);
+                        //cmd.Parameters.AddWithValue("newname", meta.ReName);
+                        //cmd.Parameters.AddWithValue("objtype", DBNull.Value);
                         cmd.ExecuteNonQuery();
                     }
                 }
@@ -194,31 +204,34 @@ namespace Excel.Extension
             TableMeta metaOld = ((IDbHandler)this).GetTableMeta(metaNew.Name);
             //新增的列
             var lstColAdd = metaNew.Columns.Except(metaOld.Columns, new ColumnMetaComparer()).ToList();
-            var lstsqlAdd = lstColAdd.Select(x => string.Format("ALTER TABLE {0} ADD {1} {2}{3} {4} {5}", metaNew.Name,
+            var lstsqlAdd = lstColAdd.Select(x => string.Format("ALTER TABLE {0} ADD {1} {2} {3} COMMENT '{4}'", metaNew.Name,
                 x.ColumnName,
                 x.DataTypeName,
-                 x.DataTypeName.Contains("char") ? "(" + x.ColumnSize + ")" : string.Empty,
-                 "id".Equals(x.ColumnName, StringComparison.CurrentCultureIgnoreCase) ? "PRIMARY KEY CLUSTERED" + (x.DataTypeName.Contains("int") ? " IDENTITY(1,1) " : string.Empty) : string.Empty,
-                x.AllowDBNull ? "NULL" : "NOT NULL")).ToList();
+                 //x.DataTypeName.Contains("char") ? "(" + x.ColumnSize + ")" : string.Empty,
+                 //"id".Equals(x.ColumnName, StringComparison.CurrentCultureIgnoreCase) ? "PRIMARY KEY" + (x.DataTypeName.Contains("int") ? " AUTO_INCREMENT " : string.Empty) : string.Empty,
+                x.AllowDBNull ? "NULL" : "NOT NULL",
+                x.Description??string.Empty)).ToList();
             //移除的列
             var lstColDel = metaOld.Columns.Except(metaNew.Columns, new ColumnMetaComparer()).ToList();
             var lstsqlDel = lstColDel.Select(x => string.Format("ALTER TABLE {0} DROP COLUMN {1}", metaNew.Name, x.ColumnName)).ToList();
             //修改的列
             var lstColEdit = metaNew.Columns.Join(metaOld.Columns, x => x.ColumnName, x => x.ColumnName, (x, y) => x).ToList();
-            var lstsqlEdit = lstColEdit.Select(x => string.Format("ALTER TABLE {0} ALTER COLUMN {1} {2}{3} {4} {5}", metaNew.Name,
+            var lstsqlEdit = lstColEdit.Select(x => string.Format("ALTER TABLE {0} modify COLUMN {1} {2} {3} COMMENT '{4}'", metaNew.Name,
                 x.ColumnName,
                 x.DataTypeName,
-                 x.DataTypeName.Contains("char") ? "(" + x.ColumnSize + ")" : string.Empty,
-                 "id".Equals(x.ColumnName, StringComparison.CurrentCultureIgnoreCase) ? "PRIMARY KEY CLUSTERED" + (x.DataTypeName.Contains("int") ? " IDENTITY(1,1) " : string.Empty) : string.Empty,
-                x.AllowDBNull ? "NULL" : "NOT NULL")).ToList();
-            string spAdd = "sys.sp_addextendedproperty";
-            string spEdit = "sys.sp_updateextendedproperty";
-            string spDel = "sys.sp_dropextendedproperty";
-            using (System.Data.SqlClient.SqlConnection cnn = new System.Data.SqlClient.SqlConnection(this.cnnstr))
+                 //x.DataTypeName.Contains("char") ? "(" + x.ColumnSize + ")" : string.Empty,
+                // "id".Equals(x.ColumnName, StringComparison.CurrentCultureIgnoreCase) ? "PRIMARY KEY" + (x.DataTypeName.Contains("int") ? " AUTO_INCREMENT " : string.Empty) : string.Empty,
+                x.AllowDBNull ? "NULL" : "NOT NULL",
+                x.Description??string.Empty)).ToList();
+            //string spAdd = "sys.sp_addextendedproperty";
+            //string spEdit = "sys.sp_updateextendedproperty";
+            //string spDel = "sys.sp_dropextendedproperty";
+            using (var cnn = new MySql.Data.MySqlClient.MySqlConnection(this.cnnstr))
             {
                 cnn.Open();
                 using (var cmd = cnn.CreateCommand())
                 {
+                    DescriptionHandlerWrapper(cmd, string.Format("alter table {0} comment '{1}'", metaNew.Name, metaNew.Description ?? string.Empty));
                     foreach (var sqlstr in lstsqlAdd)
                     {//新增列
                         cmd.CommandText = sqlstr;
@@ -229,48 +242,17 @@ namespace Excel.Extension
                         cmd.CommandText = sqlstr;
                         cmd.ExecuteNonQuery();
                     }
-                    cmd.CommandType = CommandType.StoredProcedure;
-                    cmd.CommandText = spEdit;
-                    cmd.Parameters.AddWithValue("name", "MS_Description");
-                    cmd.Parameters.AddWithValue("value", metaNew.Description ?? string.Empty);
-                    cmd.Parameters.AddWithValue("level0type", "SCHEMA");
-                    cmd.Parameters.AddWithValue("level0name", "dbo");
-                    cmd.Parameters.AddWithValue("level1type", "TABLE");
-                    cmd.Parameters.AddWithValue("level1name", metaNew.Name);
-                    cmd.Parameters.AddWithValue("level2type", DBNull.Value);
-                    cmd.Parameters.AddWithValue("level2name", DBNull.Value);
-                    if (!DescriptionHandlerWrapper(cmd, spEdit))//可能表是别人之前建的，所以没有值
-                        DescriptionHandlerWrapper(cmd, spAdd);//可能表是别人之前建的，所以没有值
-                    cmd.Parameters["level2type"].Value = "COLUMN";
-                    foreach (var col in lstColEdit)
-                    {//修改的列的描述
-                        cmd.Parameters["level2name"].Value = col.ColumnName;
-                        cmd.Parameters["value"].Value = col.Description ?? string.Empty;
-                        if (!DescriptionHandlerWrapper(cmd, spEdit))//可能原来没值
-                            DescriptionHandlerWrapper(cmd, spAdd);//所以直接新增
-                    }
-                    cmd.CommandText = spAdd;
-                    foreach (var col in lstColAdd)
-                    {//新增的列的描述
-                        cmd.Parameters["level2name"].Value = col.ColumnName;
-                        cmd.Parameters["value"].Value = col.Description ?? string.Empty;
-                        cmd.ExecuteNonQuery();
-                    }
-                    cmd.CommandText = spDel;
-                    cmd.Parameters.Remove(cmd.Parameters["value"]);
-                    foreach (var col in lstColDel)
-                    {//删除列的描述  ，要在列删除之前，
-                        cmd.Parameters["level2name"].Value = col.ColumnName;
-                        //cmd.Parameters["value"].Value = DBNull.Value;
-                        DescriptionHandlerWrapper(cmd, spDel);//可能表是别人之前建的，没有注释，
-                    }
-                    cmd.CommandType = CommandType.Text;
-                    cmd.Parameters.Clear();
                     foreach (var sqlstr in lstsqlDel)
-                    {//先删除描述，再删除列
+                    {//删除列
                         cmd.CommandText = sqlstr;
                         cmd.ExecuteNonQuery();
                     }
+                    //foreach (var col in lstColEdit)
+                    //{
+                    //    cmd.CommandText = string.Format("alter table {0} modify column {1} {2} comment '{3}'", metaOld.Name, col.ColumnName, col.DataTypeName, col.Description);
+                    //    cmd.ExecuteNonQuery();
+                    //}
+                    
                 }
             }
             return true;
@@ -281,7 +263,7 @@ namespace Excel.Extension
             throw new NotImplementedException();
         }
 
-        private bool DescriptionHandlerWrapper(SqlCommand cmd, string cmdstr)
+        private bool DescriptionHandlerWrapper(MySql.Data.MySqlClient.MySqlCommand cmd, string cmdstr)
         {
             try
             {
