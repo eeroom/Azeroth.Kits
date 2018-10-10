@@ -60,7 +60,7 @@ namespace Excel.Extension
                 using (var cmd = cnn.CreateCommand())
                 {
                     cnn.Open();
-                    cmd.CommandText = string.Format("select * from {0}", tableName);
+                    cmd.CommandText = string.Format("select * from [{0}]", tableName);
                     using (var reader = cmd.ExecuteReader(System.Data.CommandBehavior.SchemaOnly))
                     {
                         Colummeta = reader.GetSchemaTable();
@@ -107,7 +107,7 @@ namespace Excel.Extension
         /// <returns></returns>
         bool IDbHandler.TableAdd(TableMeta tablemeta)
         {
-            List<string> lstsql= tablemeta.Columns.Select(col=> string.Format("[{0}] [{1}] {2} {3}", col.ColumnName, col.DataTypeName,
+            List<string> lstsql= tablemeta.Columns.Select(col=> string.Format("[{0}] {1} {2} {3}", col.ColumnName, col.DataTypeName,
                    col.ColumnName.ToLower().Equals("id") ? "PRIMARY KEY CLUSTERED" + (col.DataTypeName.Contains("int") ? " IDENTITY(1,1)" : string.Empty) : string.Empty,
                    col.AllowDBNull ? "NULL" : "NOT NULL")).ToList();
             using (var cnn = new System.Data.SqlClient.SqlConnection(cnnstr))
