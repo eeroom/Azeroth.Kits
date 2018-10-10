@@ -199,7 +199,7 @@ namespace Excel.Extension
             var lstsqlAdd = lstColAdd.Select(x => string.Format("ALTER TABLE {0} ADD {1} {2} {3} {4}", metaNew.Name,
                 x.ColumnName,
                 x.DataTypeName,
-                 "id".Equals(x.ColumnName, StringComparison.CurrentCultureIgnoreCase) ? "PRIMARY KEY CLUSTERED" + (x.DataTypeName.Contains("int") ? " IDENTITY(1,1) " : string.Empty) : string.Empty,
+                "id".Equals(x.ColumnName, StringComparison.CurrentCultureIgnoreCase) ? "PRIMARY KEY CLUSTERED" + (x.DataTypeName.Contains("int") ? " IDENTITY(1,1) " : string.Empty) : string.Empty,
                 x.AllowDBNull ? "NULL" : "NOT NULL")).ToList();
             //移除的列
             var lstColDel = metaOld.Columns.Except(metaNew.Columns, new ColumnMetaComparer()).ToList();
@@ -210,7 +210,8 @@ namespace Excel.Extension
                 x.ColumnName,
                 x.DataTypeName,
                  //x.DataTypeName.Contains("char") ? "(" + x.ColumnSize + ")" : string.Empty,
-                 "id".Equals(x.ColumnName, StringComparison.CurrentCultureIgnoreCase) ? "PRIMARY KEY CLUSTERED" + (x.DataTypeName.Contains("int") ? " IDENTITY(1,1) " : string.Empty) : string.Empty,
+                 //"id".Equals(x.ColumnName, StringComparison.CurrentCultureIgnoreCase) ? "PRIMARY KEY CLUSTERED" + (x.DataTypeName.Contains("int") ? " IDENTITY(1,1) " : string.Empty) : string.Empty,
+                 string.Empty,
                 x.AllowDBNull ? "NULL" : "NOT NULL")).ToList();
             string spAdd = "sys.sp_addextendedproperty";
             string spEdit = "sys.sp_updateextendedproperty";

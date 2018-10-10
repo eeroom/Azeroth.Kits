@@ -123,12 +123,25 @@ namespace Excel.Extension
         {
             if (!CheckDrpSelectedValue(drpDBlist, drpTablelist))
                 return;
-            var range = Globals.ThisAddIn.Application.Selection;
+            Microsoft.Office.Interop.Excel.Range range = Globals.ThisAddIn.Application.Selection;
             string cnnstr=((Tuple<string, string>)drpDBlist.SelectedItem.Tag).Item2;
             List<string> lstTableName = drpTablelist.Items.Select(x => ((object)(x.Tag)).ToString()).ToList();
             if (range.Rows.Count <= 2)
                 throw new ArgumentException("请选中需要处理的表的区域");
             object[,] rangeValue = range.Value2;
+            //这里把数组拆成多个数组
+            //List<object> lstarry = new List<object>();
+            //var arraytmp= System.Array.CreateInstance(typeof(object), new int[] { rangeValue.GetUpperBound(0), rangeValue.GetUpperBound(1) }, new int[] { 1, 1 });
+            //for (int i = 0; i <= rangeValue.GetUpperBound(0); i++)
+            //{
+
+            //}
+             
+
+
+
+
+
             TableMeta meta = new TableMeta();
             meta.Name= rangeValue[1, (int)HeadTexts.名称] as string;
             meta.Description = rangeValue[1, (int)HeadTexts.备注] as string;
@@ -161,6 +174,7 @@ namespace Excel.Extension
             {
                 this.dbHelper.TableDesigner(meta);
                 System.Windows.Forms.MessageBox.Show("修改成功");
+                
             }
             else if (rangeValue.GetUpperBound(1) == headNames.Length)
             {

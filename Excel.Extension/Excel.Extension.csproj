@@ -222,6 +222,12 @@
     <Compile Include="ToolBar.Designer.cs">
       <DependentUpon>ToolBar.cs</DependentUpon>
     </Compile>
+    <Compile Include="Views\MessageWindow.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Views\MessageWindow.Designer.cs">
+      <DependentUpon>MessageWindow.cs</DependentUpon>
+    </Compile>
     <Compile Include="Views\ProcessDashboard.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -246,6 +252,9 @@
     </Compile>
     <EmbeddedResource Include="ToolBar.resx">
       <DependentUpon>ToolBar.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Views\MessageWindow.resx">
+      <DependentUpon>MessageWindow.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Views\ProcessDashboard.resx">
       <DependentUpon>ProcessDashboard.cs</DependentUpon>
