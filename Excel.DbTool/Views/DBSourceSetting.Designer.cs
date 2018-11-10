@@ -1,6 +1,6 @@
-﻿namespace Excel.Extension
+﻿namespace Excel.DbTool.Views
 {
-    partial class FrmDBSourceSetting
+    partial class DBSourceSetting
     {
         /// <summary>
         /// Required designer variable.
@@ -62,7 +62,7 @@
             // btnAdd
             // 
             this.btnAdd.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.btnAdd.Image = global::Excel.Extension.Properties.Resources.AddTableHH;
+            this.btnAdd.Image = global::Excel.DbTool.Properties.Resources.AddTableHH;
             this.btnAdd.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.btnAdd.Name = "btnAdd";
             this.btnAdd.Size = new System.Drawing.Size(23, 22);
@@ -71,7 +71,7 @@
             // btnEdit
             // 
             this.btnEdit.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.btnEdit.Image = global::Excel.Extension.Properties.Resources.Color_lineHH;
+            this.btnEdit.Image = global::Excel.DbTool.Properties.Resources.Color_lineHH;
             this.btnEdit.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.btnEdit.Name = "btnEdit";
             this.btnEdit.Size = new System.Drawing.Size(23, 22);
@@ -80,7 +80,7 @@
             // btnDelete
             // 
             this.btnDelete.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.btnDelete.Image = global::Excel.Extension.Properties.Resources.ClosePreviewHH;
+            this.btnDelete.Image = global::Excel.DbTool.Properties.Resources.ClosePreviewHH;
             this.btnDelete.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.btnDelete.Name = "btnDelete";
             this.btnDelete.Size = new System.Drawing.Size(23, 22);

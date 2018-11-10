@@ -1,4 +1,4 @@
-﻿namespace Excel.Extension.Views
+﻿namespace Excel.DbTool.Views
 {
     partial class DBSourceAdd
     {

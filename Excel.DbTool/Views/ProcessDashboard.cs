@@ -7,7 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Windows.Forms;
 
-namespace Excel.Extension.Views
+namespace Excel.DbTool.Views
 {
     public partial class ProcessDashboard : Form
     {

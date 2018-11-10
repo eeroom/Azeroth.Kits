@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using Microsoft.Office.Tools.Ribbon;
 
-namespace Excel.Extension
+namespace Excel.DbTool
 {
     public enum HeadTexts
     {
@@ -14,22 +14,47 @@ namespace Excel.Extension
         备注=4,
         重命名=5
     }
-    public partial class ToolBar
+    public partial class Menubar
     {
         const string ALL = "全部";
 
-        IDbHandler dbHelper;
+        IDbManager dbmanager;
 
-        private void InitToolBar(object sender, RibbonUIEventArgs e)
+        int maxTableCount =30;
+
+        private void Menubar_Load(object sender, RibbonUIEventArgs e)
         {
-            this.InitDrpDBSource(null,null);
+            this.InitDrpDBSource(null, null);
             this.btnDBSourceSetting.Click += btnDBSourceSetting_Click;
             this.drpDBlist.SelectionChanged += drpDBlist_SelectionChanged;
             this.drpTablelist.SelectionChanged += drpTablelist_SelectionChanged;
             this.btnTableSchemal.Click += DisplayTableMeta;
             this.btnTableSave.Click += SaveTableMeta;
+            Globals.ThisAddIn.Application.SheetBeforeDoubleClick += Application_SheetBeforeDoubleClick;
         }
 
+        private void Application_SheetBeforeDoubleClick(object Sh, Microsoft.Office.Interop.Excel.Range Target, ref bool Cancel)
+        {
+            var button= this.tableCollection.Items.Cast<RibbonButton>().Where(x => x.ShowImage).FirstOrDefault();
+            if (button == null)
+                return;
+
+            if (!CheckDrpSelectedValue(drpDBlist, drpTablelist))
+                return;
+            string cnnstr = ((Tuple<string, string>)drpDBlist.SelectedItem.Tag).Item2;
+            string tableName = button.Label;
+            this.DisplayTableMeta(tableName, Target);
+            Cancel = true;
+            button.ShowImage = false;
+        }
+
+        private void FocusButton(object sender, RibbonControlEventArgs e)
+        {
+            RibbonButton button = sender as RibbonButton;
+            var lst= this.tableCollection.Items.Cast<RibbonButton>().Except(new List<RibbonButton>() { button}).ToList();
+            lst.ForEach(x=>x.ShowImage=false);
+            button.ShowImage = !button.ShowImage;
+        }
         /// <summary>
         /// 初始化数据库下拉列表
         /// </summary>
@@ -80,14 +105,14 @@ namespace Excel.Extension
             DbIndex dbIndex;
             if (tmp == null || !System.Enum.TryParse<DbIndex>(tmp.Item1, out dbIndex))
                 return;
-            var dbHandlerMeta = typeof(IDbHandler).FullName;
+            var dbHandlerMeta = typeof(IDbManager).FullName;
             var lstDBHelper = System.Reflection.Assembly.GetExecutingAssembly().GetTypes().Where(x => x.GetInterface(dbHandlerMeta)!=null)
-                .Select(x => (IDbHandler)System.Activator.CreateInstance(x)).ToList();
-            this.dbHelper = lstDBHelper.FirstOrDefault(x => x.DbIndex == dbIndex);
-            if (this.dbHelper == null)
+                .Select(x => (IDbManager)System.Activator.CreateInstance(x)).ToList();
+            this.dbmanager = lstDBHelper.FirstOrDefault(x => x.DbIndex == dbIndex);
+            if (this.dbmanager == null)
                 throw new ArgumentException("不支持指定的数据库");
-            this.dbHelper.SetDbConnectionString(tmp.Item2);
-            List<string> lstTableName = this.dbHelper.GetAllTableName();
+            this.dbmanager.SetDbConnectionString(tmp.Item2);
+            List<string> lstTableName = this.dbmanager.GetAllTableName();
             var drpItem = this.Factory.CreateRibbonDropDownItem();
             drpItem.Label = ALL;
             drpItem.Tag = ALL;
@@ -100,6 +125,16 @@ namespace Excel.Extension
                 this.drpTablelist.Items.Add(drpItem);
             }
             this.drpTablelist.SelectedItemIndex = 0;
+
+            var lstbutton= this.tableCollection.Items.Cast<RibbonButton>().ToList();
+            lstbutton.ForEach(x=>x.Visible=false);
+            var lstTableNameTmp= lstTableName.Take(maxTableCount).ToList();
+            for (int i = 0; i < lstTableNameTmp.Count; i++)
+            {
+                lstbutton[i].Label = lstTableNameTmp[i];
+                lstbutton[i].Visible = true;
+            }
+
         }
 
         /// <summary>
@@ -165,14 +200,14 @@ namespace Excel.Extension
             }
             if (!lstTableName.Contains(meta.Name))
             {
-                this.dbHelper.TableAdd(meta);
+                this.dbmanager.TableAdd(meta);
                 this.drpDBlist_SelectionChanged(null, null);
                 this.drpTablelist.SelectedItem = this.drpTablelist.Items.First(x => x.Label==meta.Name);
                 System.Windows.Forms.MessageBox.Show("添加成功");
             }
             else if (rangeValue.GetUpperBound(1) == headNames.Length-1)
             {
-                this.dbHelper.TableDesigner(meta);
+                this.dbmanager.TableDesigner(meta);
                 System.Windows.Forms.MessageBox.Show("修改成功");
                 
             }
@@ -184,7 +219,7 @@ namespace Excel.Extension
                 { 
                     dict.Add(rangeValue[i,(int)HeadTexts.名称] as string,rangeValue[i,(int)HeadTexts.重命名] as string);
                 }
-                this.dbHelper.TableDesignerReName(meta, dict);
+                this.dbmanager.TableDesignerReName(meta, dict);
                 this.drpDBlist_SelectionChanged(null, null);
                 meta.ReName = meta.ReName ?? meta.Name;
                 this.drpTablelist.SelectedItem = this.drpTablelist.Items.First(x => x.Label== meta.ReName);
@@ -224,7 +259,7 @@ namespace Excel.Extension
 
         Microsoft.Office.Interop.Excel.Range DisplayTableMeta(string tableName, Microsoft.Office.Interop.Excel.Range cell)
         {
-            var tableMeta=  this.dbHelper.GetTableMeta(tableName);
+            var tableMeta=  this.dbmanager.GetTableMeta(tableName);
             int rowIndex=0;
             cell.UnMerge();
             cell.Offset[rowIndex, 0].Value2 = tableMeta.Name;
@@ -271,5 +306,6 @@ namespace Excel.Extension
             return true;
         }
 
+        
     }
 }

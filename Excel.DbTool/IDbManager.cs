@@ -3,14 +3,14 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace Excel.Extension
+namespace Excel.DbTool
 {
-    public interface IDbHandler
+    public interface IDbManager
     {
         /// <summary>
         /// 获取数据库类别
         /// </summary>
-        DbIndex DbIndex { get;}
+        DbIndex DbIndex { get; }
 
         /// <summary>
         /// 设定数据库连接字符串
@@ -50,7 +50,7 @@ namespace Excel.Extension
         /// </summary>
         /// <param name="dictName"></param>
         /// <returns></returns>
-        bool TableDesignerReName(TableMeta tablemeta, Dictionary<string,string> dictName);
+        bool TableDesignerReName(TableMeta tablemeta, Dictionary<string, string> dictName);
 
         /// <summary>
         /// 修改表设计，新增，修改，删除 列，没有重命名
@@ -58,7 +58,6 @@ namespace Excel.Extension
         /// <param name="tablemeta"></param>
         /// <returns></returns>
         bool TableDesigner(TableMeta tablemeta);
-
     }
 
     /// <summary>
@@ -134,5 +133,12 @@ namespace Excel.Extension
                 return 0;
             return obj.ColumnName.GetHashCode();
         }
+    }
+
+    public enum DbIndex
+    {
+        mssql = 1,
+        oracle = 2,
+        mysql = 3
     }
 }

@@ -7,11 +7,11 @@ using System.Linq;
 using System.Text;
 using System.Windows.Forms;
 
-namespace Excel.Extension
+namespace Excel.DbTool.Views
 {
-    public partial class FrmDBSourceAdd : Form
+    public partial class DBSourceAdd : Form
     {
-        public FrmDBSourceAdd()
+        public DBSourceAdd()
         {
             InitializeComponent();
         }

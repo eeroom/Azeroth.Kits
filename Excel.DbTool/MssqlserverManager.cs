@@ -5,29 +5,28 @@ using System.Data.SqlClient;
 using System.Linq;
 using System.Text;
 
-namespace Excel.Extension
+namespace Excel.DbTool
 {
-    public class DbHandlerMssqlserver:IDbHandler
+    class MssqlserverManager:IDbManager
     {
-
         string cnnstr = string.Empty;
 
-        DbIndex IDbHandler.DbIndex
+        DbIndex IDbManager.DbIndex
         {
             get
             {
-               return DbIndex.mssql;
+                return DbIndex.mssql;
             }
         }
 
-        void IDbHandler.SetDbConnectionString(string cnnstr)
+        void IDbManager.SetDbConnectionString(string cnnstr)
         {
             if (string.IsNullOrEmpty(cnnstr))
                 throw new ArgumentNullException("cnnstr");
             this.cnnstr = cnnstr;
         }
 
-        List<string> IDbHandler.GetAllTableName()
+        List<string> IDbManager.GetAllTableName()
         {
             if (string.IsNullOrEmpty(this.cnnstr))
                 throw new ArgumentException("必须指定数据库连接字符串");
@@ -52,7 +51,7 @@ namespace Excel.Extension
             return lst.OrderBy(x => x).ToList();
         }
 
-        TableMeta IDbHandler.GetTableMeta(string tableName)
+        TableMeta IDbManager.GetTableMeta(string tableName)
         {
             System.Data.DataTable Colummeta;
             using (System.Data.SqlClient.SqlConnection cnn = new System.Data.SqlClient.SqlConnection(cnnstr))
@@ -75,29 +74,30 @@ namespace Excel.Extension
                                             select '{0}',value 
                                             from sys.extended_properties 
                                             where sys.extended_properties.major_id=OBJECT_ID('{0}') and minor_id=0", tableName);
-            System.Data.DataTable ColumetaDescription=new DataTable();
+            System.Data.DataTable ColumetaDescription = new DataTable();
             using (System.Data.SqlClient.SqlDataAdapter adpater = new System.Data.SqlClient.SqlDataAdapter(cmdstr, cnnstr))
             {
                 adpater.Fill(ColumetaDescription);
             }
-            var lstcolunmeta = Colummeta.Select().Select(x => new ColumnMeta()
-            {
+            var lstcolunmeta = Colummeta.Select().Select(x => new ColumnMeta() {
                 AllowDBNull = (bool)x["AllowDBNull"],
                 ColumnName = x["ColumnName"].ToString(),
                 ColumnSize = (int)x["ColumnSize"],
                 DataTypeName = x["DataTypeName"].ToString(),
             }).ToList();
-            var dictDescription = ColumetaDescription.Select().ToDictionary(x=>x["ColumnName"].ToString(),x=>x["Description"] as string);
-            lstcolunmeta.ForEach(x=> {
+            var dictDescription = ColumetaDescription.Select().ToDictionary(x => x["ColumnName"].ToString(), x => x["Description"] as string);
+            lstcolunmeta.ForEach(x => {
                 x.Description = dictDescription.ContainsKey(x.ColumnName) ? dictDescription[x.ColumnName] : string.Empty;
                 if (x.DataTypeName.Contains("char") && x.ColumnSize >= int.MaxValue)
                     x.DataTypeName = "text";
                 else if (x.DataTypeName.Contains("char") && x.ColumnSize < int.MaxValue)
-                    x.DataTypeName = string.Format("{0}({1})",x.DataTypeName,x.ColumnSize);
+                    x.DataTypeName = string.Format("{0}({1})", x.DataTypeName, x.ColumnSize);
             });
-            return new TableMeta() {  Columns=lstcolunmeta,
-                Description =dictDescription.ContainsKey(tableName)?dictDescription[tableName]:string.Empty,
-                Name =tableName};
+            return new TableMeta() {
+                Columns = lstcolunmeta,
+                Description = dictDescription.ContainsKey(tableName) ? dictDescription[tableName] : string.Empty,
+                Name = tableName
+            };
         }
 
         /// <summary>
@@ -105,11 +105,11 @@ namespace Excel.Extension
         /// </summary>
         /// <param name="tablemeta"></param>
         /// <returns></returns>
-        bool IDbHandler.TableAdd(TableMeta tablemeta)
+        bool IDbManager.TableAdd(TableMeta tablemeta)
         {
-            List<string> lstsql= tablemeta.Columns.Select(col=> string.Format("[{0}] {1} {2} {3}", col.ColumnName, col.DataTypeName,
-                   col.ColumnName.ToLower().Equals("id") ? "PRIMARY KEY CLUSTERED" + (col.DataTypeName.Contains("int") ? " IDENTITY(1,1)" : string.Empty) : string.Empty,
-                   col.AllowDBNull ? "NULL" : "NOT NULL")).ToList();
+            List<string> lstsql = tablemeta.Columns.Select(col => string.Format("[{0}] {1} {2} {3}", col.ColumnName, col.DataTypeName,
+                    col.ColumnName.ToLower().Equals("id") ? "PRIMARY KEY CLUSTERED" + (col.DataTypeName.Contains("int") ? " IDENTITY(1,1)" : string.Empty) : string.Empty,
+                    col.AllowDBNull ? "NULL" : "NOT NULL")).ToList();
             using (var cnn = new System.Data.SqlClient.SqlConnection(cnnstr))
             {
                 using (var cmd = cnn.CreateCommand())
@@ -127,20 +127,20 @@ namespace Excel.Extension
                     cmd.CommandType = System.Data.CommandType.StoredProcedure;
                     cmd.CommandText = "sys.sp_addextendedproperty";
                     cmd.Parameters.AddWithValue("name", "MS_Description");
-                    cmd.Parameters.AddWithValue("value", tablemeta.Description??string.Empty);
+                    cmd.Parameters.AddWithValue("value", tablemeta.Description ?? string.Empty);
                     cmd.Parameters.AddWithValue("level0type", "SCHEMA");
                     cmd.Parameters.AddWithValue("level0name", "dbo");
                     cmd.Parameters.AddWithValue("level1type", "TABLE");
                     cmd.Parameters.AddWithValue("level1name", tablemeta.Name);
                     cmd.Parameters.AddWithValue("level2type", DBNull.Value);
-                    cmd.Parameters.AddWithValue("level2name",DBNull.Value);
+                    cmd.Parameters.AddWithValue("level2name", DBNull.Value);
                     cmd.ExecuteNonQuery();//表的说明
                     foreach (var col in tablemeta.Columns)
                     {
-                        cmd.Parameters["value"].Value = col.Description??string.Empty;
+                        cmd.Parameters["value"].Value = col.Description ?? string.Empty;
                         cmd.Parameters["level1name"].Value = tablemeta.Name;
                         cmd.Parameters["level2name"].Value = col.ColumnName;
-                        cmd.Parameters["level2type"].Value ="COLUMN";
+                        cmd.Parameters["level2type"].Value = "COLUMN";
                         cmd.ExecuteNonQuery();
                     }
                 }
@@ -154,7 +154,7 @@ namespace Excel.Extension
         /// <param name="meta"></param>
         /// <param name="dictColName"></param>
         /// <returns></returns>
-        bool IDbHandler.TableDesignerReName(TableMeta meta,Dictionary<string, string> dictColName)
+        bool IDbManager.TableDesignerReName(TableMeta meta, Dictionary<string, string> dictColName)
         {
             using (var cnn = new System.Data.SqlClient.SqlConnection(cnnstr))
             {
@@ -191,9 +191,9 @@ namespace Excel.Extension
         /// </summary>
         /// <param name="metaNew"></param>
         /// <returns></returns>
-        bool IDbHandler.TableDesigner(TableMeta metaNew)
+        bool IDbManager.TableDesigner(TableMeta metaNew)
         {
-            TableMeta metaOld = ((IDbHandler)this).GetTableMeta(metaNew.Name);
+            TableMeta metaOld = ((IDbManager)this).GetTableMeta(metaNew.Name);
             //新增的列
             var lstColAdd = metaNew.Columns.Except(metaOld.Columns, new ColumnMetaComparer()).ToList();
             var lstsqlAdd = lstColAdd.Select(x => string.Format("ALTER TABLE {0} ADD {1} {2} {3} {4}", metaNew.Name,
@@ -215,11 +215,11 @@ namespace Excel.Extension
                 x.AllowDBNull ? "NULL" : "NOT NULL")).ToList();
             string spAdd = "sys.sp_addextendedproperty";
             string spEdit = "sys.sp_updateextendedproperty";
-            string spDel= "sys.sp_dropextendedproperty";
-            using (System.Data.SqlClient.SqlConnection cnn=new System.Data.SqlClient.SqlConnection(this.cnnstr))
+            string spDel = "sys.sp_dropextendedproperty";
+            using (System.Data.SqlClient.SqlConnection cnn = new System.Data.SqlClient.SqlConnection(this.cnnstr))
             {
                 cnn.Open();
-                using (var cmd=cnn.CreateCommand())
+                using (var cmd = cnn.CreateCommand())
                 {
                     foreach (var sqlstr in lstsqlAdd)
                     {//新增列
@@ -234,7 +234,7 @@ namespace Excel.Extension
                     cmd.CommandType = CommandType.StoredProcedure;
                     cmd.CommandText = spEdit;
                     cmd.Parameters.AddWithValue("name", "MS_Description");
-                    cmd.Parameters.AddWithValue("value", metaNew.Description??string.Empty);
+                    cmd.Parameters.AddWithValue("value", metaNew.Description ?? string.Empty);
                     cmd.Parameters.AddWithValue("level0type", "SCHEMA");
                     cmd.Parameters.AddWithValue("level0name", "dbo");
                     cmd.Parameters.AddWithValue("level1type", "TABLE");
@@ -255,7 +255,7 @@ namespace Excel.Extension
                     foreach (var col in lstColAdd)
                     {//新增的列的描述
                         cmd.Parameters["level2name"].Value = col.ColumnName;
-                        cmd.Parameters["value"].Value = col.Description??string.Empty;
+                        cmd.Parameters["value"].Value = col.Description ?? string.Empty;
                         cmd.ExecuteNonQuery();
                     }
                     cmd.CommandText = spDel;
@@ -264,7 +264,7 @@ namespace Excel.Extension
                     {//删除列的描述  ，要在列删除之前，
                         cmd.Parameters["level2name"].Value = col.ColumnName;
                         //cmd.Parameters["value"].Value = DBNull.Value;
-                        DescriptionHandlerWrapper(cmd,spDel);//可能表是别人之前建的，没有注释，
+                        DescriptionHandlerWrapper(cmd, spDel);//可能表是别人之前建的，没有注释，
                     }
                     cmd.CommandType = CommandType.Text;
                     cmd.Parameters.Clear();
@@ -278,7 +278,7 @@ namespace Excel.Extension
             return true;
         }
 
-        List<TableMeta> IDbHandler.GetTableMeta()
+        List<TableMeta> IDbManager.GetTableMeta()
         {
             throw new NotImplementedException();
         }
@@ -297,6 +297,5 @@ namespace Excel.Extension
             return true;
         }
 
-        
     }
 }

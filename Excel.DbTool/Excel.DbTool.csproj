@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project ToolsVersion="14.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <!--
     This section defines project-level properties.
@@ -22,18 +22,18 @@
     <ProjectTypeGuids>{BAA0C2D2-18E2-41B9-852F-F413020CAA33};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{A84BAED1-5A3E-4441-BE34-2C2457BD87CD}</ProjectGuid>
+    <ProjectGuid>{CB5D80D6-88C4-49E4-AAD5-70C010851430}</ProjectGuid>
     <OutputType>Library</OutputType>
     <NoStandardLibraries>false</NoStandardLibraries>
-    <RootNamespace>Excel.Extension</RootNamespace>
-    <AssemblyName>Excel.Extension</AssemblyName>
+    <RootNamespace>Excel.DbTool</RootNamespace>
+    <AssemblyName>Excel.DbTool</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <DefineConstants>VSTO40</DefineConstants>
     <FileUpgradeFlags>
     </FileUpgradeFlags>
     <UpgradeBackupLocation>
     </UpgradeBackupLocation>
-    <OldToolsVersion>4.0</OldToolsVersion>
+    <OldToolsVersion>14.0</OldToolsVersion>
     <VSTO_TrustAssembliesLocation>true</VSTO_TrustAssembliesLocation>
     <BootstrapperEnabled>true</BootstrapperEnabled>
     <PublishUrl>发布\</PublishUrl>
@@ -45,10 +45,10 @@
     <UpdateInterval>7</UpdateInterval>
     <UpdateIntervalUnits>days</UpdateIntervalUnits>
     <IsWebBootstrapper>False</IsWebBootstrapper>
-    <ProductName>Excel.Extension</ProductName>
+    <ProductName>Excel.DbTool</ProductName>
     <PublisherName />
     <SupportUrl />
-    <FriendlyName>Excel.Extension</FriendlyName>
+    <FriendlyName>Excel.DbTool</FriendlyName>
     <OfficeApplicationDescription />
     <LoadBehavior>3</LoadBehavior>
   </PropertyGroup>
@@ -154,7 +154,6 @@
     <Reference Include="Microsoft.Office.Tools.Common, Version=10.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
       <EmbedInteropTypes>True</EmbedInteropTypes>
     </Reference>
-    <Reference Include="Microsoft.VisualBasic" />
     <Reference Include="Microsoft.VisualStudio.Tools.Applications.Runtime, Version=10.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL" />
     <Reference Include="MySql.Data, Version=6.9.12.0, Culture=neutral, PublicKeyToken=c5687fc88969c44d, processorArchitecture=MSIL">
       <HintPath>..\packages\MySql.Data.6.9.12\lib\net40\MySql.Data.dll</HintPath>
@@ -197,9 +196,18 @@
     can be found.
   -->
   <ItemGroup>
-    <Compile Include="DbHandlerMysql.cs" />
-    <Compile Include="DbHandlerMssqlserver.cs" />
-    <Compile Include="DbIndex.cs" />
+    <Compile Include="IDbManager.cs" />
+    <Compile Include="MssqlserverManager.cs" />
+    <Compile Include="MySqlManager.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Menubar.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Menubar.Designer.cs">
+      <DependentUpon>Menubar.cs</DependentUpon>
+    </Compile>
     <Compile Include="Views\DBSourceAdd.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -212,34 +220,12 @@
     <Compile Include="Views\DBSourceSetting.Designer.cs">
       <DependentUpon>DBSourceSetting.cs</DependentUpon>
     </Compile>
-    <Compile Include="IDbHandler.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="ToolBar.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="ToolBar.Designer.cs">
-      <DependentUpon>ToolBar.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Views\MessageWindow.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Views\MessageWindow.Designer.cs">
-      <DependentUpon>MessageWindow.cs</DependentUpon>
-    </Compile>
     <Compile Include="Views\ProcessDashboard.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="Views\ProcessDashboard.Designer.cs">
       <DependentUpon>ProcessDashboard.cs</DependentUpon>
     </Compile>
-    <EmbeddedResource Include="Views\DBSourceAdd.resx">
-      <DependentUpon>DBSourceAdd.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Views\DBSourceSetting.resx">
-      <DependentUpon>DBSourceSetting.cs</DependentUpon>
-    </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
@@ -250,22 +236,23 @@
       <DependentUpon>Resources.resx</DependentUpon>
       <DesignTime>True</DesignTime>
     </Compile>
-    <EmbeddedResource Include="ToolBar.resx">
-      <DependentUpon>ToolBar.cs</DependentUpon>
+    <EmbeddedResource Include="Menubar.resx">
+      <DependentUpon>Menubar.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Views\MessageWindow.resx">
-      <DependentUpon>MessageWindow.cs</DependentUpon>
+    <EmbeddedResource Include="Views\DBSourceAdd.resx">
+      <DependentUpon>DBSourceAdd.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Views\DBSourceSetting.resx">
+      <DependentUpon>DBSourceSetting.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Views\ProcessDashboard.resx">
       <DependentUpon>ProcessDashboard.cs</DependentUpon>
     </EmbeddedResource>
-    <None Include="App.config">
+    <None Include="app.config">
       <SubType>Designer</SubType>
     </None>
-    <None Include="Excel.DBHelper_TemporaryKey.pfx" />
-    <None Include="packages.config">
-      <SubType>Designer</SubType>
-    </None>
+    <None Include="Excel.DbTool_TemporaryKey.pfx" />
+    <None Include="packages.config" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
@@ -287,7 +274,7 @@
     <AppDesigner Include="Properties\" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Resources\Gear.ico" />
+    <None Include="Resources\PropertiesHH.bmp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\AddTableHH.bmp" />
@@ -296,13 +283,13 @@
     <None Include="Resources\ClosePreviewHH.bmp" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Resources\PropertiesHH.bmp" />
+    <None Include="Resources\Color_lineHH.bmp" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Gear.ico" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\SaveHH.bmp" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\Color_lineHH.bmp" />
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
@@ -312,10 +299,10 @@
     <SignManifests>true</SignManifests>
   </PropertyGroup>
   <PropertyGroup>
-    <ManifestKeyFile>Excel.DBHelper_TemporaryKey.pfx</ManifestKeyFile>
+    <ManifestKeyFile>Excel.DbTool_TemporaryKey.pfx</ManifestKeyFile>
   </PropertyGroup>
   <PropertyGroup>
-    <ManifestCertificateThumbprint>DBDF4388E82B0A55DDDEE4134A76560680742942</ManifestCertificateThumbprint>
+    <ManifestCertificateThumbprint>E17F3B5ADF28C98A94D85056BF00E6F751BF57CF</ManifestCertificateThumbprint>
   </PropertyGroup>
   <!-- Include the build rules for a C# project. -->
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
@@ -326,7 +313,7 @@
     <VisualStudio>
       <FlavorProperties GUID="{BAA0C2D2-18E2-41B9-852F-F413020CAA33}">
         <ProjectProperties HostName="Excel" HostPackage="{29A7B9D7-A7F1-4328-8EF0-6B2D1A56B2C1}" OfficeVersion="15.0" VstxVersion="4.0" ApplicationType="Excel" Language="cs" TemplatesPath="VSTOTemplates" DebugInfoExeName="#Software\Microsoft\Office\15.0\Excel\InstallRoot\Path#excel.exe" DebugInfoCommandLine="/x " AddItemTemplatesGuid="{51063C3A-E220-4D12-8922-BDA915ACD783}" />
-        <Host Name="Excel" GeneratedCodeNamespace="Excel.Extension" IconIndex="0">
+        <Host Name="Excel" GeneratedCodeNamespace="Excel.DbTool" IconIndex="0">
           <HostItem Name="ThisAddIn" Code="ThisAddIn.cs" CanonicalName="AddIn" CanActivate="false" IconIndex="1" Blueprint="ThisAddIn.Designer.xml" GeneratedCode="ThisAddIn.Designer.cs" />
         </Host>
       </FlavorProperties>
