@@ -20,8 +20,13 @@ namespace Excel.DbTool
 
         IDbManager dbmanager;
 
-        int maxTableCount =30;
+        int pageIndex = 1;
+        int pageSize = 27;
+        int pageCount = 0;
 
+        int maxPageCount = 6;
+
+        List<string> lstTableName;
         private void Menubar_Load(object sender, RibbonUIEventArgs e)
         {
             this.InitDrpDBSource(null, null);
@@ -31,29 +36,49 @@ namespace Excel.DbTool
             this.btnTableSchemal.Click += DisplayTableMeta;
             this.btnTableSave.Click += SaveTableMeta;
             Globals.ThisAddIn.Application.SheetBeforeDoubleClick += Application_SheetBeforeDoubleClick;
+            this.btnLast.Click += this.BtnLast_Click;
+            this.btnNext.Click += this.BtnNext_Click;
+        }
+        private void BtnNext_Click(object sender, RibbonControlEventArgs e)
+        {
+            if (pageIndex >= this.pageCount)
+                return;
+            pageIndex += 1;
+            PageHandler();
         }
 
-        private void Application_SheetBeforeDoubleClick(object Sh, Microsoft.Office.Interop.Excel.Range Target, ref bool Cancel)
+        private void BtnLast_Click(object sender, RibbonControlEventArgs e)
         {
-            var button= this.tableCollection.Items.Cast<RibbonButton>().Where(x => x.ShowImage).FirstOrDefault();
-            if (button == null)
+            if (pageIndex <= 1)
+                return;
+            pageIndex -= 1;
+            PageHandler();
+        }
+        private void Application_SheetBeforeDoubleClick(object Sh, Microsoft.Office.Interop.Excel.Range target, ref bool Cancel)
+        {
+            var lstbutton= this.tableCollection.Items.Cast<RibbonCheckBox>().Where(x => x.Checked).ToList();
+            if (lstbutton.Count<1)
                 return;
 
             if (!CheckDrpSelectedValue(drpDBlist, drpTablelist))
                 return;
-            string cnnstr = ((Tuple<string, string>)drpDBlist.SelectedItem.Tag).Item2;
-            string tableName = button.Label;
-            this.DisplayTableMeta(tableName, Target);
             Cancel = true;
-            button.ShowImage = false;
+            string cnnstr = ((Tuple<string, string>)drpDBlist.SelectedItem.Tag).Item2;
+            lstbutton.ForEach(x=> {
+                x.Checked = false;
+                target= this.DisplayTableMeta(x.Label, target);
+            });
+            //string tableName = lstbutton.Label;
+            //this.DisplayTableMeta(tableName, Target);
+            //lstbutton.Checked = false;
         }
 
         private void FocusButton(object sender, RibbonControlEventArgs e)
         {
-            RibbonButton button = sender as RibbonButton;
-            var lst= this.tableCollection.Items.Cast<RibbonButton>().Except(new List<RibbonButton>() { button}).ToList();
-            lst.ForEach(x=>x.ShowImage=false);
-            button.ShowImage = !button.ShowImage;
+            //RibbonButton button = sender as RibbonButton;
+            //var lst= this.tableCollection.Items.Cast<RibbonButton>().Except(new List<RibbonButton>() { button}).ToList();
+            //lst.ForEach(x=>x.ShowImage=false);
+            //button.ShowImage = !button.ShowImage;
         }
         /// <summary>
         /// 初始化数据库下拉列表
@@ -77,7 +102,24 @@ namespace Excel.DbTool
                 this.drpDBlist.Items.Add(tmp);
             }
         }
+        private void PageHandler()
+        {
+            var lstbutton = this.tableCollection.Items.Cast<RibbonCheckBox>().ToList();
+            lstbutton.ForEach(x => x.Visible = false);
+            for (int i = pageIndex * pageSize - pageSize; i < pageIndex * pageSize; i++)
+            {
+                lstbutton[i].Label = lstTableName[i];
+                lstbutton[i].Visible = true;
 
+            }
+            //var lstTableNameTmp = lstTableName.Skip(this.pageIndex * pageSize - pageSize).Take(pageSize).ToList();
+            //for (int i = 0; i < lstTableNameTmp.Count; i++)
+            //{
+            //    lstbutton[i].Label = lstTableNameTmp[i];
+            //    lstbutton[i].Visible = true;
+            //}
+            this.tableCollection.Label = string.Format("第{0}/{1}页，共{2}个表", pageIndex, pageCount,lstTableName.Count);
+        }
         /// <summary>
         /// 切换表格下拉列表的响应方法
         /// </summary>
@@ -112,7 +154,7 @@ namespace Excel.DbTool
             if (this.dbmanager == null)
                 throw new ArgumentException("不支持指定的数据库");
             this.dbmanager.SetDbConnectionString(tmp.Item2);
-            List<string> lstTableName = this.dbmanager.GetAllTableName();
+            lstTableName = this.dbmanager.GetAllTableName();
             var drpItem = this.Factory.CreateRibbonDropDownItem();
             drpItem.Label = ALL;
             drpItem.Tag = ALL;
@@ -126,14 +168,11 @@ namespace Excel.DbTool
             }
             this.drpTablelist.SelectedItemIndex = 0;
 
-            var lstbutton= this.tableCollection.Items.Cast<RibbonButton>().ToList();
-            lstbutton.ForEach(x=>x.Visible=false);
-            var lstTableNameTmp= lstTableName.Take(maxTableCount).ToList();
-            for (int i = 0; i < lstTableNameTmp.Count; i++)
-            {
-                lstbutton[i].Label = lstTableNameTmp[i];
-                lstbutton[i].Visible = true;
-            }
+            this.pageCount = (int)Math.Ceiling((1.0) * lstTableName.Count / this.pageSize);
+            if (this.pageCount > this.maxPageCount)
+                this.pageCount = this.maxPageCount;
+            this.pageIndex = 1;
+            PageHandler();
 
         }
 
