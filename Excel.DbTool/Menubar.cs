@@ -21,7 +21,7 @@ namespace Excel.DbTool
         IDbManager dbmanager;
 
         int pageIndex = 1;
-        int pageSize = 27;
+        int pageSize = 24;
         int pageCount = 0;
 
         int maxPageCount = 6;
@@ -38,7 +38,23 @@ namespace Excel.DbTool
             Globals.ThisAddIn.Application.SheetBeforeDoubleClick += Application_SheetBeforeDoubleClick;
             this.btnLast.Click += this.BtnLast_Click;
             this.btnNext.Click += this.BtnNext_Click;
+
+            var lstitem= System.Linq.Enumerable.Range(5, 6).Select(x => Tuple.Create(x, Globals.Factory.GetRibbonFactory().CreateRibbonDropDownItem())).ToList();
+            lstitem.ForEach(x => x.Item2.Label = x.Item1.ToString());
+            lstitem.ForEach(x => this.drpPageSize.Items.Add(x.Item2));
+            this.drpPageSize.SelectedItemIndex = 1;
+            drpPageSize.SelectionChanged += DrpPageSize_SelectionChanged;
+            this.pageSize= int.Parse(this.drpPageSize.SelectedItem.Label) * 3;
         }
+
+        private void DrpPageSize_SelectionChanged(object sender, RibbonControlEventArgs e)
+        {
+            this.pageSize = int.Parse(this.drpPageSize.SelectedItem.Label) * 3;
+            this.pageIndex = 1;
+            drpDBlist_SelectionChanged(sender, e);
+        }
+
+
         private void BtnNext_Click(object sender, RibbonControlEventArgs e)
         {
             if (pageIndex >= this.pageCount)
@@ -106,7 +122,8 @@ namespace Excel.DbTool
         {
             var lstbutton = this.tableCollection.Items.Cast<RibbonCheckBox>().ToList();
             lstbutton.ForEach(x => x.Visible = false);
-            for (int i = pageIndex * pageSize - pageSize; i < pageIndex * pageSize; i++)
+            int maxindex = Math.Min(lstTableName.Count, pageIndex * pageSize);
+            for (int i = pageIndex * pageSize - pageSize; i < maxindex; i++)
             {
                 lstbutton[i].Label = lstTableName[i];
                 lstbutton[i].Visible = true;
@@ -345,6 +362,6 @@ namespace Excel.DbTool
             return true;
         }
 
-        
+     
     }
 }

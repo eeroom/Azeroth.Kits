@@ -57,15 +57,16 @@ namespace Excel.DbTool
             this.drpTablelist = this.Factory.CreateRibbonDropDown();
             this.handlerCollection = this.Factory.CreateRibbonGroup();
             this.btnTableSchemal = this.Factory.CreateRibbonButton();
+            this.drpPageSize = this.Factory.CreateRibbonDropDown();
             this.btnTableSave = this.Factory.CreateRibbonButton();
-            this.tableCollection = this.Factory.CreateRibbonGroup();
-            this.buttonGroup1 = this.Factory.CreateRibbonButtonGroup();
+            this.buttonGroup2 = this.Factory.CreateRibbonButtonGroup();
             this.btnLast = this.Factory.CreateRibbonButton();
             this.btnNext = this.Factory.CreateRibbonButton();
+            this.tableCollection = this.Factory.CreateRibbonGroup();
             this.container.SuspendLayout();
             this.datasourceCollection.SuspendLayout();
             this.handlerCollection.SuspendLayout();
-            this.buttonGroup1.SuspendLayout();
+            this.buttonGroup2.SuspendLayout();
             this.SuspendLayout();
             // 
             // container
@@ -81,7 +82,6 @@ namespace Excel.DbTool
             this.datasourceCollection.Items.Add(this.btnDBSourceSetting);
             this.datasourceCollection.Items.Add(this.drpDBlist);
             this.datasourceCollection.Items.Add(this.drpTablelist);
-            this.datasourceCollection.Items.Add(this.buttonGroup1);
             this.datasourceCollection.Label = "数据源";
             this.datasourceCollection.Name = "datasourceCollection";
             // 
@@ -107,6 +107,8 @@ namespace Excel.DbTool
             // 
             this.handlerCollection.Items.Add(this.btnTableSchemal);
             this.handlerCollection.Items.Add(this.btnTableSave);
+            this.handlerCollection.Items.Add(this.drpPageSize);
+            this.handlerCollection.Items.Add(this.buttonGroup2);
             this.handlerCollection.Label = "操作";
             this.handlerCollection.Name = "handlerCollection";
             // 
@@ -118,6 +120,11 @@ namespace Excel.DbTool
             this.btnTableSchemal.Name = "btnTableSchemal";
             this.btnTableSchemal.ShowImage = true;
             // 
+            // drpPageSize
+            // 
+            this.drpPageSize.Label = "ColCount";
+            this.drpPageSize.Name = "drpPageSize";
+            // 
             // btnTableSave
             // 
             this.btnTableSave.ControlSize = Microsoft.Office.Core.RibbonControlSize.RibbonControlSizeLarge;
@@ -126,16 +133,11 @@ namespace Excel.DbTool
             this.btnTableSave.Name = "btnTableSave";
             this.btnTableSave.ShowImage = true;
             // 
-            // tableCollection
+            // buttonGroup2
             // 
-            this.tableCollection.Label = "数据表";
-            this.tableCollection.Name = "tableCollection";
-            // 
-            // buttonGroup1
-            // 
-            this.buttonGroup1.Items.Add(this.btnLast);
-            this.buttonGroup1.Items.Add(this.btnNext);
-            this.buttonGroup1.Name = "buttonGroup1";
+            this.buttonGroup2.Items.Add(this.btnLast);
+            this.buttonGroup2.Items.Add(this.btnNext);
+            this.buttonGroup2.Name = "buttonGroup2";
             // 
             // btnLast
             // 
@@ -146,6 +148,11 @@ namespace Excel.DbTool
             // 
             this.btnNext.Label = "下一页";
             this.btnNext.Name = "btnNext";
+            // 
+            // tableCollection
+            // 
+            this.tableCollection.Label = "数据表";
+            this.tableCollection.Name = "tableCollection";
             // 
             // Menubar
             // 
@@ -159,8 +166,8 @@ namespace Excel.DbTool
             this.datasourceCollection.PerformLayout();
             this.handlerCollection.ResumeLayout(false);
             this.handlerCollection.PerformLayout();
-            this.buttonGroup1.ResumeLayout(false);
-            this.buttonGroup1.PerformLayout();
+            this.buttonGroup2.ResumeLayout(false);
+            this.buttonGroup2.PerformLayout();
             this.ResumeLayout(false);
 
         }
@@ -176,9 +183,10 @@ namespace Excel.DbTool
         internal Microsoft.Office.Tools.Ribbon.RibbonButton btnTableSave;
         internal Microsoft.Office.Tools.Ribbon.RibbonGroup handlerCollection;
         internal RibbonGroup tableCollection;
-        internal RibbonButtonGroup buttonGroup1;
         internal RibbonButton btnLast;
         internal RibbonButton btnNext;
+        internal RibbonButtonGroup buttonGroup2;
+        internal RibbonDropDown drpPageSize;
     }
 
     partial class ThisRibbonCollection
