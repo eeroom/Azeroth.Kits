@@ -21,7 +21,7 @@ namespace Excel.DbTool
         IDbManager dbmanager;
 
         int pageIndex = 1;
-        int pageSize = 24;
+        int pageSize = 27;
         int pageCount = 0;
 
         int maxPageCount = 6;
@@ -39,7 +39,7 @@ namespace Excel.DbTool
             this.btnLast.Click += this.BtnLast_Click;
             this.btnNext.Click += this.BtnNext_Click;
 
-            var lstitem= System.Linq.Enumerable.Range(5, 6).Select(x => Tuple.Create(x, Globals.Factory.GetRibbonFactory().CreateRibbonDropDownItem())).ToList();
+            var lstitem= System.Linq.Enumerable.Range(5, 5).Select(x => Tuple.Create(x, Globals.Factory.GetRibbonFactory().CreateRibbonDropDownItem())).ToList();
             lstitem.ForEach(x => x.Item2.Label = x.Item1.ToString());
             lstitem.ForEach(x => this.drpPageSize.Items.Add(x.Item2));
             this.drpPageSize.SelectedItemIndex = 1;

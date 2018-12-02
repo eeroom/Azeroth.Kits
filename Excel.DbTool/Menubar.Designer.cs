@@ -57,8 +57,8 @@ namespace Excel.DbTool
             this.drpTablelist = this.Factory.CreateRibbonDropDown();
             this.handlerCollection = this.Factory.CreateRibbonGroup();
             this.btnTableSchemal = this.Factory.CreateRibbonButton();
-            this.drpPageSize = this.Factory.CreateRibbonDropDown();
             this.btnTableSave = this.Factory.CreateRibbonButton();
+            this.drpPageSize = this.Factory.CreateRibbonDropDown();
             this.buttonGroup2 = this.Factory.CreateRibbonButtonGroup();
             this.btnLast = this.Factory.CreateRibbonButton();
             this.btnNext = this.Factory.CreateRibbonButton();
@@ -120,11 +120,6 @@ namespace Excel.DbTool
             this.btnTableSchemal.Name = "btnTableSchemal";
             this.btnTableSchemal.ShowImage = true;
             // 
-            // drpPageSize
-            // 
-            this.drpPageSize.Label = "ColCount";
-            this.drpPageSize.Name = "drpPageSize";
-            // 
             // btnTableSave
             // 
             this.btnTableSave.ControlSize = Microsoft.Office.Core.RibbonControlSize.RibbonControlSizeLarge;
@@ -132,6 +127,11 @@ namespace Excel.DbTool
             this.btnTableSave.Label = "保存\r\n";
             this.btnTableSave.Name = "btnTableSave";
             this.btnTableSave.ShowImage = true;
+            // 
+            // drpPageSize
+            // 
+            this.drpPageSize.Label = "";
+            this.drpPageSize.Name = "drpPageSize";
             // 
             // buttonGroup2
             // 
