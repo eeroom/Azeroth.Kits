@@ -74,7 +74,7 @@ namespace Excel.DbTool
             this.container.Groups.Add(this.datasourceCollection);
             this.container.Groups.Add(this.handlerCollection);
             this.container.Groups.Add(this.tableCollection);
-            this.container.Label = "StormwindDesigner";
+            this.container.Label = "DbLitor";
             this.container.Name = "container";
             // 
             // datasourceCollection
