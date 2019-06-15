@@ -107,9 +107,20 @@ namespace Excel.DbTool
         /// <returns></returns>
         bool IDbManager.TableAdd(TableMeta tablemeta)
         {
-            List<string> lstsql = tablemeta.Columns.Select(col => string.Format("[{0}] {1} {2} {3}", col.ColumnName, col.DataTypeName,
-                    col.ColumnName.ToLower().Equals("id") ? "PRIMARY KEY CLUSTERED" + (col.DataTypeName.Contains("int") ? " IDENTITY(1,1)" : string.Empty) : string.Empty,
-                    col.AllowDBNull ? "NULL" : "NOT NULL")).ToList();
+            List<string> lstsql = new List<string>();
+            foreach (var col in tablemeta.Columns)
+            {
+                string masterKey = string.Empty;
+                if (col.ColumnName.ToLower().Equals("id"))
+                    masterKey = "PRIMARY KEY CLUSTERED" + (col.DataTypeName.Contains("int") ? " IDENTITY(1,1)" : string.Empty);
+                else if (!string.IsNullOrEmpty(col.Description) && col.Description.StartsWith("主键"))
+                    masterKey = "PRIMARY KEY CLUSTERED";
+                string allowDbNull = col.AllowDBNull ? "NULL" : "NOT NULL";
+                lstsql.Add($"[{col.ColumnName}] {col.DataTypeName} {masterKey} {allowDbNull}");
+            }
+            //List<string> lstsql = tablemeta.Columns.Select(col => string.Format("[{0}] {1} {2} {3}", col.ColumnName, col.DataTypeName,
+            //        col.ColumnName.ToLower().Equals("id") ? "PRIMARY KEY CLUSTERED" + (col.DataTypeName.Contains("int") ? " IDENTITY(1,1)" : string.Empty) : string.Empty,
+            //        col.AllowDBNull ? "NULL" : "NOT NULL")).ToList();
             using (var cnn = new System.Data.SqlClient.SqlConnection(cnnstr))
             {
                 using (var cmd = cnn.CreateCommand())
