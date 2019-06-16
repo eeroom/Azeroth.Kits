@@ -42,6 +42,7 @@ namespace Excel.DbTool
 
         private void DrpPageSize_SelectionChanged(object sender, RibbonControlEventArgs e)
         {
+            //a
             this.pageSize = int.Parse(this.drpPageSize.SelectedItem.Label) * 3;
             this.pageIndex = 1;
             drpDBlist_SelectionChanged(sender, e);
