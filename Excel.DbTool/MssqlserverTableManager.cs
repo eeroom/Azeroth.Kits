@@ -7,26 +7,26 @@ using System.Text;
 
 namespace Excel.DbTool
 {
-    class MssqlserverManager:IDbManager
+    class MssqlserverTableManager:ITableManager
     {
         string cnnstr = string.Empty;
 
-        DbIndex IDbManager.DbIndex
+        DbCategory ITableManager.DbCategory
         {
             get
             {
-                return DbIndex.mssql;
+                return DbCategory.mssql;
             }
         }
 
-        void IDbManager.SetDbConnectionString(string cnnstr)
+        void ITableManager.SetConnectionString(string cnnstr)
         {
             if (string.IsNullOrEmpty(cnnstr))
                 throw new ArgumentNullException("cnnstr");
             this.cnnstr = cnnstr;
         }
 
-        List<string> IDbManager.GetAllTableName()
+        List<string> ITableManager.GetAllName()
         {
             if (string.IsNullOrEmpty(this.cnnstr))
                 throw new ArgumentException("必须指定数据库连接字符串");
@@ -51,7 +51,7 @@ namespace Excel.DbTool
             return lst.OrderBy(x => x).ToList();
         }
 
-        TableMeta IDbManager.GetTableMeta(string tableName)
+        TableMeta ITableManager.GetMeta(string tableName)
         {
             System.Data.DataTable Colummeta;
             using (System.Data.SqlClient.SqlConnection cnn = new System.Data.SqlClient.SqlConnection(cnnstr))
@@ -81,17 +81,17 @@ namespace Excel.DbTool
             }
             var lstcolunmeta = Colummeta.Select().Select(x => new ColumnMeta() {
                 AllowDBNull = (bool)x["AllowDBNull"],
-                ColumnName = x["ColumnName"].ToString(),
-                ColumnSize = (int)x["ColumnSize"],
-                DataTypeName = x["DataTypeName"].ToString(),
+                Name = x["ColumnName"].ToString(),
+                Size = (int)x["ColumnSize"],
+                DataType = x["DataTypeName"].ToString(),
             }).ToList();
             var dictDescription = ColumetaDescription.Select().ToDictionary(x => x["ColumnName"].ToString(), x => x["Description"] as string);
             lstcolunmeta.ForEach(x => {
-                x.Description = dictDescription.ContainsKey(x.ColumnName) ? dictDescription[x.ColumnName] : string.Empty;
-                if (x.DataTypeName.Contains("char") && x.ColumnSize >= int.MaxValue)
-                    x.DataTypeName = "text";
-                else if (x.DataTypeName.Contains("char") && x.ColumnSize < int.MaxValue)
-                    x.DataTypeName = string.Format("{0}({1})", x.DataTypeName, x.ColumnSize);
+                x.Description = dictDescription.ContainsKey(x.Name) ? dictDescription[x.Name] : string.Empty;
+                if (x.DataType.Contains("char") && x.Size >= int.MaxValue)
+                    x.DataType = "text";
+                else if (x.DataType.Contains("char") && x.Size < int.MaxValue)
+                    x.DataType = string.Format("{0}({1})", x.DataType, x.Size);
             });
             return new TableMeta() {
                 Columns = lstcolunmeta,
@@ -105,22 +105,19 @@ namespace Excel.DbTool
         /// </summary>
         /// <param name="tablemeta"></param>
         /// <returns></returns>
-        bool IDbManager.TableAdd(TableMeta tablemeta)
+        bool ITableManager.Create(TableMeta tablemeta)
         {
             List<string> lstsql = new List<string>();
             foreach (var col in tablemeta.Columns)
             {
                 string masterKey = string.Empty;
-                if (col.ColumnName.ToLower().Equals("id"))
-                    masterKey = "PRIMARY KEY CLUSTERED" + (col.DataTypeName.Contains("int") ? " IDENTITY(1,1)" : string.Empty);
+                if (col.Name.ToLower().Equals("id"))
+                    masterKey = "PRIMARY KEY CLUSTERED" + (col.DataType.Contains("int") ? " IDENTITY(1,1)" : string.Empty);
                 else if (!string.IsNullOrEmpty(col.Description) && col.Description.StartsWith("主键"))
                     masterKey = "PRIMARY KEY CLUSTERED";
                 string allowDbNull = col.AllowDBNull ? "NULL" : "NOT NULL";
-                lstsql.Add($"[{col.ColumnName}] {col.DataTypeName} {masterKey} {allowDbNull}");
+                lstsql.Add($"[{col.Name}] {col.DataType} {masterKey} {allowDbNull}");
             }
-            //List<string> lstsql = tablemeta.Columns.Select(col => string.Format("[{0}] {1} {2} {3}", col.ColumnName, col.DataTypeName,
-            //        col.ColumnName.ToLower().Equals("id") ? "PRIMARY KEY CLUSTERED" + (col.DataTypeName.Contains("int") ? " IDENTITY(1,1)" : string.Empty) : string.Empty,
-            //        col.AllowDBNull ? "NULL" : "NOT NULL")).ToList();
             using (var cnn = new System.Data.SqlClient.SqlConnection(cnnstr))
             {
                 using (var cmd = cnn.CreateCommand())
@@ -150,7 +147,7 @@ namespace Excel.DbTool
                     {
                         cmd.Parameters["value"].Value = col.Description ?? string.Empty;
                         cmd.Parameters["level1name"].Value = tablemeta.Name;
-                        cmd.Parameters["level2name"].Value = col.ColumnName;
+                        cmd.Parameters["level2name"].Value = col.Name;
                         cmd.Parameters["level2type"].Value = "COLUMN";
                         cmd.ExecuteNonQuery();
                     }
@@ -165,7 +162,7 @@ namespace Excel.DbTool
         /// <param name="meta"></param>
         /// <param name="dictColName"></param>
         /// <returns></returns>
-        bool IDbManager.TableDesignerReName(TableMeta meta, Dictionary<string, string> dictColName)
+        bool ITableManager.AlterByColumnRename(TableMeta meta, Dictionary<string, string> dictColName)
         {
             using (var cnn = new System.Data.SqlClient.SqlConnection(cnnstr))
             {
@@ -184,11 +181,11 @@ namespace Excel.DbTool
                         cmd.Parameters.AddWithValue("objtype", "column");
                         cmd.ExecuteNonQuery();
                     }
-                    if (!string.IsNullOrEmpty(meta.ReName))
+                    if (!string.IsNullOrEmpty(meta.NewName))
                     {
                         cmd.Parameters.Clear();
                         cmd.Parameters.AddWithValue("objname", meta.Name);
-                        cmd.Parameters.AddWithValue("newname", meta.ReName);
+                        cmd.Parameters.AddWithValue("newname", meta.NewName);
                         cmd.Parameters.AddWithValue("objtype", DBNull.Value);
                         cmd.ExecuteNonQuery();
                     }
@@ -202,24 +199,24 @@ namespace Excel.DbTool
         /// </summary>
         /// <param name="metaNew"></param>
         /// <returns></returns>
-        bool IDbManager.TableDesigner(TableMeta metaNew)
+        bool ITableManager.Alter(TableMeta metaNew)
         {
-            TableMeta metaOld = ((IDbManager)this).GetTableMeta(metaNew.Name);
+            TableMeta metaOld = ((ITableManager)this).GetMeta(metaNew.Name);
             //新增的列
             var lstColAdd = metaNew.Columns.Except(metaOld.Columns, new ColumnMetaComparer()).ToList();
             var lstsqlAdd = lstColAdd.Select(x => string.Format("ALTER TABLE {0} ADD {1} {2} {3} {4}", metaNew.Name,
-                x.ColumnName,
-                x.DataTypeName,
-                "id".Equals(x.ColumnName, StringComparison.CurrentCultureIgnoreCase) ? "PRIMARY KEY CLUSTERED" + (x.DataTypeName.Contains("int") ? " IDENTITY(1,1) " : string.Empty) : string.Empty,
+                x.Name,
+                x.DataType,
+                "id".Equals(x.Name, StringComparison.CurrentCultureIgnoreCase) ? "PRIMARY KEY CLUSTERED" + (x.DataType.Contains("int") ? " IDENTITY(1,1) " : string.Empty) : string.Empty,
                 x.AllowDBNull ? "NULL" : "NOT NULL")).ToList();
             //移除的列
             var lstColDel = metaOld.Columns.Except(metaNew.Columns, new ColumnMetaComparer()).ToList();
-            var lstsqlDel = lstColDel.Select(x => string.Format("ALTER TABLE {0} DROP COLUMN {1}", metaNew.Name, x.ColumnName)).ToList();
+            var lstsqlDel = lstColDel.Select(x => string.Format("ALTER TABLE {0} DROP COLUMN {1}", metaNew.Name, x.Name)).ToList();
             //修改的列
-            var lstColEdit = metaNew.Columns.Join(metaOld.Columns, x => x.ColumnName, x => x.ColumnName, (x, y) => x).ToList();
+            var lstColEdit = metaNew.Columns.Join(metaOld.Columns, x => x.Name, x => x.Name, (x, y) => x).ToList();
             var lstsqlEdit = lstColEdit.Select(x => string.Format("ALTER TABLE {0} ALTER COLUMN {1} {2} {3} {4}", metaNew.Name,
-                x.ColumnName,
-                x.DataTypeName,
+                x.Name,
+                x.DataType,
                  //x.DataTypeName.Contains("char") ? "(" + x.ColumnSize + ")" : string.Empty,
                  //"id".Equals(x.ColumnName, StringComparison.CurrentCultureIgnoreCase) ? "PRIMARY KEY CLUSTERED" + (x.DataTypeName.Contains("int") ? " IDENTITY(1,1) " : string.Empty) : string.Empty,
                  string.Empty,
@@ -257,7 +254,7 @@ namespace Excel.DbTool
                     cmd.Parameters["level2type"].Value = "COLUMN";
                     foreach (var col in lstColEdit)
                     {//修改的列的描述
-                        cmd.Parameters["level2name"].Value = col.ColumnName;
+                        cmd.Parameters["level2name"].Value = col.Name;
                         cmd.Parameters["value"].Value = col.Description ?? string.Empty;
                         if (!DescriptionHandlerWrapper(cmd, spEdit))//可能原来没值
                             DescriptionHandlerWrapper(cmd, spAdd);//所以直接新增
@@ -265,7 +262,7 @@ namespace Excel.DbTool
                     cmd.CommandText = spAdd;
                     foreach (var col in lstColAdd)
                     {//新增的列的描述
-                        cmd.Parameters["level2name"].Value = col.ColumnName;
+                        cmd.Parameters["level2name"].Value = col.Name;
                         cmd.Parameters["value"].Value = col.Description ?? string.Empty;
                         cmd.ExecuteNonQuery();
                     }
@@ -273,7 +270,7 @@ namespace Excel.DbTool
                     cmd.Parameters.Remove(cmd.Parameters["value"]);
                     foreach (var col in lstColDel)
                     {//删除列的描述  ，要在列删除之前，
-                        cmd.Parameters["level2name"].Value = col.ColumnName;
+                        cmd.Parameters["level2name"].Value = col.Name;
                         //cmd.Parameters["value"].Value = DBNull.Value;
                         DescriptionHandlerWrapper(cmd, spDel);//可能表是别人之前建的，没有注释，
                     }
@@ -289,7 +286,7 @@ namespace Excel.DbTool
             return true;
         }
 
-        List<TableMeta> IDbManager.GetTableMeta()
+        List<TableMeta> ITableManager.GetAllMeta()
         {
             throw new NotImplementedException();
         }

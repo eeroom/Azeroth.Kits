@@ -16,7 +16,7 @@ namespace Excel.DbTool.Views
             InitializeComponent();
         }
 
-        public KV DBInfo { get; set; }
+        public ConnectionStringWrapper ConnectionStringWrapper { get; set; }
 
         public event Action OnButtonOKClicked;
 
@@ -24,16 +24,16 @@ namespace Excel.DbTool.Views
 
         protected override void OnLoad(EventArgs e)
         {
-            var lst = System.Enum.GetNames(typeof(DbIndex)).Select(x => new KV() { Name = x, Value = x }).ToList();
+            var lst = System.Enum.GetNames(typeof(DbCategory)).Select(x => new ConnectionStringWrapper() { Name = x, Value = x }).ToList();
             this.cmbDbProvider.DisplayMember = "Name";
             this.cmbDbProvider.ValueMember = "Value";
             this.cmbDbProvider.DataSource = lst;
-            this.isAdd = DBInfo == null;
+            this.isAdd = ConnectionStringWrapper == null;
             this.btnOK.Click += btnOK_Click;
-            this.DBInfo = this.DBInfo ?? new KV();
-            this.txtName.Text = DBInfo.Name;
-            this.txtValue.Text = DBInfo.Value;
-            this.cmbDbProvider.SelectedValue = this.DBInfo.Provider ?? string.Empty;
+            this.ConnectionStringWrapper = this.ConnectionStringWrapper ?? new ConnectionStringWrapper();
+            this.txtName.Text = ConnectionStringWrapper.Name;
+            this.txtValue.Text = ConnectionStringWrapper.Value;
+            this.cmbDbProvider.SelectedValue = this.ConnectionStringWrapper.Provider ?? string.Empty;
         }
 
         private void InitEdit()
@@ -43,16 +43,16 @@ namespace Excel.DbTool.Views
 
         void btnOK_Click(object sender, EventArgs e)
         {
-            this.DBInfo.Name = this.txtName.Text;
-            this.DBInfo.Value = this.txtValue.Text;
-            this.DBInfo.Provider = ((KV)this.cmbDbProvider.SelectedItem).Value;
+            this.ConnectionStringWrapper.Name = this.txtName.Text;
+            this.ConnectionStringWrapper.Value = this.txtValue.Text;
+            this.ConnectionStringWrapper.Provider = ((ConnectionStringWrapper)this.cmbDbProvider.SelectedItem).Value;
             var config = System.Configuration.ConfigurationManager.OpenExeConfiguration(System.Configuration.ConfigurationUserLevel.None);
             if (this.isAdd)
-                config.ConnectionStrings.ConnectionStrings.Add(new System.Configuration.ConnectionStringSettings(this.DBInfo.Name, this.DBInfo.Value, this.DBInfo.Provider));
+                config.ConnectionStrings.ConnectionStrings.Add(new System.Configuration.ConnectionStringSettings(this.ConnectionStringWrapper.Name, this.ConnectionStringWrapper.Value, this.ConnectionStringWrapper.Provider));
             else
             {
-                config.ConnectionStrings.ConnectionStrings[this.DBInfo.Name].ConnectionString = this.DBInfo.Value;
-                config.ConnectionStrings.ConnectionStrings[this.DBInfo.Name].ProviderName = this.DBInfo.Provider;
+                config.ConnectionStrings.ConnectionStrings[this.ConnectionStringWrapper.Name].ConnectionString = this.ConnectionStringWrapper.Value;
+                config.ConnectionStrings.ConnectionStrings[this.ConnectionStringWrapper.Name].ProviderName = this.ConnectionStringWrapper.Provider;
             }
             config.Save();
             if (this.OnButtonOKClicked != null)

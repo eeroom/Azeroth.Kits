@@ -36,9 +36,9 @@
     <OldToolsVersion>14.0</OldToolsVersion>
     <VSTO_TrustAssembliesLocation>true</VSTO_TrustAssembliesLocation>
     <IsWebBootstrapper>False</IsWebBootstrapper>
-    <BootstrapperEnabled>true</BootstrapperEnabled>
+    <BootstrapperEnabled>false</BootstrapperEnabled>
     <BootstrapperComponentsLocation>Relative</BootstrapperComponentsLocation>
-    <PublishUrl>D:\DbToolSetup\</PublishUrl>
+    <PublishUrl>..\publish\</PublishUrl>
     <InstallUrl />
     <TargetCulture>zh-chs</TargetCulture>
     <ApplicationVersion>1.0.0.7</ApplicationVersion>
@@ -47,17 +47,27 @@
     <UpdateInterval>0</UpdateInterval>
     <UpdateIntervalUnits>days</UpdateIntervalUnits>
     <ProductName>Excel.DbTool</ProductName>
-    <PublisherName />
+    <PublisherName>eeroom</PublisherName>
     <SupportUrl />
     <FriendlyName>Excel.DbTool</FriendlyName>
     <OfficeApplicationDescription>数据库助手</OfficeApplicationDescription>
     <LoadBehavior>3</LoadBehavior>
   </PropertyGroup>
   <ItemGroup>
+    <BootstrapperPackage Include=".NETFramework,Version=v4.0">
+      <Visible>False</Visible>
+      <ProductName>Microsoft .NET Framework 4 %28x86 和 x64%29</ProductName>
+      <Install>true</Install>
+    </BootstrapperPackage>
     <BootstrapperPackage Include="Microsoft.Net.Framework.3.5.SP1">
       <Visible>False</Visible>
       <ProductName>.NET Framework 3.5 SP1</ProductName>
       <Install>false</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Windows.Installer.4.5">
+      <Visible>False</Visible>
+      <ProductName>Windows Installer 4.5</ProductName>
+      <Install>true</Install>
     </BootstrapperPackage>
   </ItemGroup>
   <PropertyGroup>
@@ -172,18 +182,23 @@
     can be found.
   -->
   <ItemGroup>
-    <Compile Include="IDbManager.cs" />
-    <Compile Include="MssqlserverManager.cs" />
-    <Compile Include="MySqlManager.cs" />
+    <Compile Include="ColumnMeta.cs" />
+    <Compile Include="DbCategory.cs" />
+    <Compile Include="ITableManager.cs" />
+    <Compile Include="MssqlserverTableManager.cs" />
+    <Compile Include="MySqlTableManager.cs" />
     <Compile Include="Properties\AssemblyInfo.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Menubar.cs">
+    <Compile Include="RangeTitleForTableManager.cs" />
+    <Compile Include="TableMeta.cs" />
+    <Compile Include="ToolBar.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="Menubar.Designer.cs">
-      <DependentUpon>Menubar.cs</DependentUpon>
+    <Compile Include="ToolBar.Designer.cs">
+      <DependentUpon>ToolBar.cs</DependentUpon>
     </Compile>
+    <Compile Include="Views\ConnectionStringWrapper.cs" />
     <Compile Include="Views\DBSourceAdd.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -212,8 +227,8 @@
       <DependentUpon>Resources.resx</DependentUpon>
       <DesignTime>True</DesignTime>
     </Compile>
-    <EmbeddedResource Include="Menubar.resx">
-      <DependentUpon>Menubar.cs</DependentUpon>
+    <EmbeddedResource Include="ToolBar.resx">
+      <DependentUpon>ToolBar.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Views\DBSourceAdd.resx">
       <DependentUpon>DBSourceAdd.cs</DependentUpon>

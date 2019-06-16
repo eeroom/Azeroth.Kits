@@ -37,7 +37,7 @@ namespace Excel.DbTool.Views
             if (this.dgDBlist.SelectedRows.Count < 1)
                 return;
             var config = System.Configuration.ConfigurationManager.OpenExeConfiguration(System.Configuration.ConfigurationUserLevel.None);
-            var dbInfo= (KV)this.dgDBlist.SelectedRows[0].DataBoundItem;
+            var dbInfo= (ConnectionStringWrapper)this.dgDBlist.SelectedRows[0].DataBoundItem;
             config.ConnectionStrings.ConnectionStrings.Remove(dbInfo.Name);
             config.Save();
             this.InitDBInfoList();
@@ -50,7 +50,7 @@ namespace Excel.DbTool.Views
             var window = new DBSourceAdd();
             window.OnButtonOKClicked += InitDBInfoList;
             window.Text = "修改";
-            window.DBInfo= (KV)this.dgDBlist.SelectedRows[0].DataBoundItem;
+            window.ConnectionStringWrapper= (ConnectionStringWrapper)this.dgDBlist.SelectedRows[0].DataBoundItem;
             window.ShowDialog();
         }
 
@@ -66,16 +66,12 @@ namespace Excel.DbTool.Views
         {
             var lst = System.Configuration.ConfigurationManager.OpenExeConfiguration(System.Configuration.ConfigurationUserLevel.None)
                 .ConnectionStrings.ConnectionStrings.Cast<System.Configuration.ConnectionStringSettings>()
-                .Select(x => new KV { Name = x.Name, Value = x.ConnectionString ,Provider=x.ProviderName}).ToList();
+                .Select(x => new ConnectionStringWrapper { Name = x.Name, Value = x.ConnectionString ,Provider=x.ProviderName}).ToList();
             this.dgDBlist.DataSource = lst;
         }
 
 
     }
 
-    public class KV {
-        public string Name { get; set; }
-        public string Value { get; set; }
-        public string Provider { get; set; }
-    }
+
 }

@@ -6,26 +6,26 @@ using System.Text;
 
 namespace Excel.DbTool
 {
-    class MySqlManager:IDbManager
+    class MySqlTableManager:ITableManager
     {
         string cnnstr = string.Empty;
 
-        DbIndex IDbManager.DbIndex
+        DbCategory ITableManager.DbCategory
         {
             get
             {
-                return DbIndex.mysql;
+                return DbCategory.mysql;
             }
         }
 
-        void IDbManager.SetDbConnectionString(string cnnstr)
+        void ITableManager.SetConnectionString(string cnnstr)
         {
             if (string.IsNullOrEmpty(cnnstr))
                 throw new ArgumentNullException("cnnstr");
             this.cnnstr = cnnstr;
         }
 
-        List<string> IDbManager.GetAllTableName()
+        List<string> ITableManager.GetAllName()
         {
             if (string.IsNullOrEmpty(this.cnnstr))
                 throw new ArgumentException("必须指定数据库连接字符串");
@@ -51,7 +51,7 @@ namespace Excel.DbTool
             return lst.OrderBy(x => x).ToList();
         }
 
-        TableMeta IDbManager.GetTableMeta(string tableName)
+        TableMeta ITableManager.GetMeta(string tableName)
         {
             System.Data.DataTable Colummeta = new DataTable();
             var tmp = cnnstr.Split(new char[] { ';', '=' }, StringSplitOptions.RemoveEmptyEntries).SkipWhile(x => x.ToLower().IndexOf("initial catalog") < 0).ToList();
@@ -69,26 +69,18 @@ namespace Excel.DbTool
             {
                 adpater.Fill(ColumetaDescription);
             }
-            //var lstcolunmeta = Colummeta.Select().Select(x => new ColumnMeta()
-            //{
-            //    AllowDBNull = (bool)x["AllowDBNull"],
-            //    ColumnName = x["ColumnName"].ToString()
-            //    //ColumnSize = (int)x["ColumnSize"]
-            //}).ToList();
             var dictDescription = ColumetaDescription.Select().Select(x => new ColumnMeta() {
-                DataTypeName = x["Type"].ToString(),
-                ColumnName = x["Field"].ToString(),
+                DataType = x["Type"].ToString(),
+                Name = x["Field"].ToString(),
                 Description = x["Comment"] as string,
                 AllowDBNull = x["NULL"].ToString().Equals("YES", StringComparison.CurrentCultureIgnoreCase) ? true : false
             }).ToList();
 
             dictDescription.ForEach(x => {
-                if (x.DataTypeName.Contains("char"))
+                if (x.DataType.Contains("char"))
                     return;
-                x.DataTypeName = x.DataTypeName.Split('(')[0];
+                x.DataType = x.DataType.Split('(')[0];
             });
-            //.ToDictionary(x => x["FieId"].ToString(), x => x["Comment"] as string);
-            //lstcolunmeta.ForEach(x => x.Description = dictDescription.ContainsKey(x.ColumnName) ? dictDescription[x.ColumnName] : string.Empty);
             return new TableMeta() {
                 Columns = dictDescription,
                 Description = Colummeta.Rows[0]["TABLE_COMMENT"] as string,
@@ -101,11 +93,10 @@ namespace Excel.DbTool
         /// </summary>
         /// <param name="tablemeta"></param>
         /// <returns></returns>
-        bool IDbManager.TableAdd(TableMeta tablemeta)
+        bool ITableManager.Create(TableMeta tablemeta)
         {
-            List<string> lstsql = tablemeta.Columns.Select(col => string.Format("`{0}` {1} {2} {3} COMMENT '{4}'", col.ColumnName, col.DataTypeName,
-                    //col.DataTypeName.Contains("char") ? "(" + (col.ColumnSize >= int.MaxValue ? "max" : col.ColumnSize.ToString()) + ")" : string.Empty,
-                    col.ColumnName.ToLower().Equals("id") ? "PRIMARY KEY" + (col.DataTypeName.Contains("int") ? " AUTO_INCREMENT" : string.Empty) : string.Empty,
+            List<string> lstsql = tablemeta.Columns.Select(col => string.Format("`{0}` {1} {2} {3} COMMENT '{4}'", col.Name, col.DataType,
+                    col.Name.ToLower().Equals("id") ? "PRIMARY KEY" + (col.DataType.Contains("int") ? " AUTO_INCREMENT" : string.Empty) : string.Empty,
                     col.AllowDBNull ? "NULL" : "NOT NULL",
                     col.Description ?? string.Empty)).ToList();
             using (var cnn = new MySql.Data.MySqlClient.MySqlConnection(cnnstr))
@@ -117,32 +108,6 @@ namespace Excel.DbTool
                     cmd.ExecuteNonQuery();
                 }
             }
-            //using (var cnn = new System.Data.SqlClient.SqlConnection(cnnstr))
-            //{
-            //    using (var cmd = cnn.CreateCommand())
-            //    {
-            //        cnn.Open();
-            //        cmd.CommandType = System.Data.CommandType.StoredProcedure;
-            //        cmd.CommandText = "sys.sp_addextendedproperty";
-            //        cmd.Parameters.AddWithValue("name", "MS_Description");
-            //        cmd.Parameters.AddWithValue("value", tablemeta.Description ?? string.Empty);
-            //        cmd.Parameters.AddWithValue("level0type", "SCHEMA");
-            //        cmd.Parameters.AddWithValue("level0name", "dbo");
-            //        cmd.Parameters.AddWithValue("level1type", "TABLE");
-            //        cmd.Parameters.AddWithValue("level1name", tablemeta.Name);
-            //        cmd.Parameters.AddWithValue("level2type", DBNull.Value);
-            //        cmd.Parameters.AddWithValue("level2name", DBNull.Value);
-            //        cmd.ExecuteNonQuery();//表的说明
-            //        foreach (var col in tablemeta.Columns)
-            //        {
-            //            cmd.Parameters["value"].Value = col.Description ?? string.Empty;
-            //            cmd.Parameters["level1name"].Value = tablemeta.Name;
-            //            cmd.Parameters["level2name"].Value = col.ColumnName;
-            //            cmd.Parameters["level2type"].Value = "COLUMN";
-            //            cmd.ExecuteNonQuery();
-            //        }
-            //    }
-            //}
             return true;
         }
 
@@ -152,9 +117,9 @@ namespace Excel.DbTool
         /// <param name="meta"></param>
         /// <param name="dictColName"></param>
         /// <returns></returns>
-        bool IDbManager.TableDesignerReName(TableMeta meta, Dictionary<string, string> dictColName)
+        bool ITableManager.AlterByColumnRename(TableMeta meta, Dictionary<string, string> dictColName)
         {
-            var metadata = ((IDbManager)this).GetTableMeta(meta.Name);
+            var metadata = ((ITableManager)this).GetMeta(meta.Name);
             using (var cnn = new MySql.Data.MySqlClient.MySqlConnection(cnnstr))
             {
                 using (var cmd = cnn.CreateCommand())
@@ -166,24 +131,16 @@ namespace Excel.DbTool
                     {
                         if (string.IsNullOrEmpty(kv.Value) || kv.Key.Equals(kv.Value, StringComparison.CurrentCultureIgnoreCase))
                             continue;
-                        //                                                      alter table <表名> change <字段名> <字段新名称> <字段的类型>
+                        //alter table <表名> change <字段名> <字段新名称> <字段的类型>
                         cmd.CommandText = string.Format("alter table {0} change {1} {2} {3}", metadata.Name,
                             kv.Key,
                             kv.Value,
-                            metadata.Columns.FirstOrDefault(x => x.ColumnName.Equals(kv.Key, StringComparison.CurrentCultureIgnoreCase)).DataTypeName);
-                        //cmd.Parameters.Clear();
-                        //cmd.Parameters.AddWithValue("objname", meta.Name + "." + kv.Key);
-                        //cmd.Parameters.AddWithValue("newname", kv.Value);
-                        //cmd.Parameters.AddWithValue("objtype", "column");
+                            metadata.Columns.FirstOrDefault(x => x.Name.Equals(kv.Key, StringComparison.CurrentCultureIgnoreCase)).DataType);
                         cmd.ExecuteNonQuery();
                     }
-                    if (!string.IsNullOrEmpty(meta.ReName))
+                    if (!string.IsNullOrEmpty(meta.NewName))
                     {
-                        cmd.CommandText = string.Format("RENAME TABLE {0} TO {1}", meta.Name, meta.ReName);
-                        //cmd.Parameters.Clear();
-                        //cmd.Parameters.AddWithValue("objname", meta.Name);
-                        //cmd.Parameters.AddWithValue("newname", meta.ReName);
-                        //cmd.Parameters.AddWithValue("objtype", DBNull.Value);
+                        cmd.CommandText = string.Format("RENAME TABLE {0} TO {1}", meta.Name, meta.NewName);
                         cmd.ExecuteNonQuery();
                     }
                 }
@@ -196,26 +153,26 @@ namespace Excel.DbTool
         /// </summary>
         /// <param name="metaNew"></param>
         /// <returns></returns>
-        bool IDbManager.TableDesigner(TableMeta metaNew)
+        bool ITableManager.Alter(TableMeta metaNew)
         {
-            TableMeta metaOld = ((IDbManager)this).GetTableMeta(metaNew.Name);
+            TableMeta metaOld = ((ITableManager)this).GetMeta(metaNew.Name);
             //新增的列
             var lstColAdd = metaNew.Columns.Except(metaOld.Columns, new ColumnMetaComparer()).ToList();
             var lstsqlAdd = lstColAdd.Select(x => string.Format("ALTER TABLE {0} ADD {1} {2} {3} COMMENT '{4}'", metaNew.Name,
-                x.ColumnName,
-                x.DataTypeName,
+                x.Name,
+                x.DataType,
                 //x.DataTypeName.Contains("char") ? "(" + x.ColumnSize + ")" : string.Empty,
                 //"id".Equals(x.ColumnName, StringComparison.CurrentCultureIgnoreCase) ? "PRIMARY KEY" + (x.DataTypeName.Contains("int") ? " AUTO_INCREMENT " : string.Empty) : string.Empty,
                 x.AllowDBNull ? "NULL" : "NOT NULL",
                 x.Description ?? string.Empty)).ToList();
             //移除的列
             var lstColDel = metaOld.Columns.Except(metaNew.Columns, new ColumnMetaComparer()).ToList();
-            var lstsqlDel = lstColDel.Select(x => string.Format("ALTER TABLE {0} DROP COLUMN {1}", metaNew.Name, x.ColumnName)).ToList();
+            var lstsqlDel = lstColDel.Select(x => string.Format("ALTER TABLE {0} DROP COLUMN {1}", metaNew.Name, x.Name)).ToList();
             //修改的列
-            var lstColEdit = metaNew.Columns.Join(metaOld.Columns, x => x.ColumnName, x => x.ColumnName, (x, y) => x).ToList();
+            var lstColEdit = metaNew.Columns.Join(metaOld.Columns, x => x.Name, x => x.Name, (x, y) => x).ToList();
             var lstsqlEdit = lstColEdit.Select(x => string.Format("ALTER TABLE {0} modify COLUMN {1} {2} {3} COMMENT '{4}'", metaNew.Name,
-                x.ColumnName,
-                x.DataTypeName,
+                x.Name,
+                x.DataType,
                 //x.DataTypeName.Contains("char") ? "(" + x.ColumnSize + ")" : string.Empty,
                 // "id".Equals(x.ColumnName, StringComparison.CurrentCultureIgnoreCase) ? "PRIMARY KEY" + (x.DataTypeName.Contains("int") ? " AUTO_INCREMENT " : string.Empty) : string.Empty,
                 x.AllowDBNull ? "NULL" : "NOT NULL",
@@ -255,7 +212,7 @@ namespace Excel.DbTool
             return true;
         }
 
-        List<TableMeta> IDbManager.GetTableMeta()
+        List<TableMeta> ITableManager.GetAllMeta()
         {
             throw new NotImplementedException();
         }

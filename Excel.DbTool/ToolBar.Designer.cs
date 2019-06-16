@@ -4,14 +4,14 @@ using Microsoft.Office.Tools.Ribbon;
 
 namespace Excel.DbTool
 {
-    partial class Menubar : Microsoft.Office.Tools.Ribbon.RibbonBase
+    partial class ToolBar : Microsoft.Office.Tools.Ribbon.RibbonBase
     {
         /// <summary>
         /// 必需的设计器变量。
         /// </summary>
         private System.ComponentModel.IContainer components = null;
 
-        public Menubar()
+        public ToolBar()
             : base(Globals.Factory.GetRibbonFactory())
         {
             InitializeComponent();
@@ -49,7 +49,7 @@ namespace Excel.DbTool
         /// </summary>
         private void InitializeComponent()
         {
-            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Menubar));
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(ToolBar));
             this.container = this.Factory.CreateRibbonTab();
             this.datasourceCollection = this.Factory.CreateRibbonGroup();
             this.btnDBSourceSetting = this.Factory.CreateRibbonButton();
@@ -74,7 +74,7 @@ namespace Excel.DbTool
             this.container.Groups.Add(this.datasourceCollection);
             this.container.Groups.Add(this.handlerCollection);
             this.container.Groups.Add(this.tableCollection);
-            this.container.Label = "DbTools";
+            this.container.Label = "DbTool";
             this.container.Name = "container";
             // 
             // datasourceCollection
@@ -154,9 +154,9 @@ namespace Excel.DbTool
             this.tableCollection.Label = "数据表";
             this.tableCollection.Name = "tableCollection";
             // 
-            // Menubar
+            // ToolBar
             // 
-            this.Name = "Menubar";
+            this.Name = "ToolBar";
             this.RibbonType = "Microsoft.Excel.Workbook";
             this.Tabs.Add(this.container);
             this.Load += new Microsoft.Office.Tools.Ribbon.RibbonUIEventHandler(this.Menubar_Load);
@@ -191,9 +191,9 @@ namespace Excel.DbTool
 
     partial class ThisRibbonCollection
     {
-        internal Menubar ToolBar
+        internal ToolBar ToolBar
         {
-            get { return this.GetRibbon<Menubar>(); }
+            get { return this.GetRibbon<ToolBar>(); }
         }
     }
 }
