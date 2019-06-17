@@ -15,7 +15,7 @@ namespace Excel.DbTool
         {
             get
             {
-                return DbCategory.mssql;
+                return DbCategory.mssqlserver;
             }
         }
 
