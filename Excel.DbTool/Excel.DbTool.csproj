@@ -183,6 +183,7 @@
   -->
   <ItemGroup>
     <Compile Include="ColumnMeta.cs" />
+    <Compile Include="Constraints.cs" />
     <Compile Include="DbCategory.cs" />
     <Compile Include="ITableManager.cs" />
     <Compile Include="MssqlserverTableManager.cs" />

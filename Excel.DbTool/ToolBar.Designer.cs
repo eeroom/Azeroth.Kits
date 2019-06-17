@@ -116,7 +116,7 @@ namespace Excel.DbTool
             // 
             this.btnTableSchemal.ControlSize = Microsoft.Office.Core.RibbonControlSize.RibbonControlSizeLarge;
             this.btnTableSchemal.Image = global::Excel.DbTool.Properties.Resources.PropertiesHH;
-            this.btnTableSchemal.Label = "查看\r\n";
+            this.btnTableSchemal.Label = "设计\r\n模式";
             this.btnTableSchemal.Name = "btnTableSchemal";
             this.btnTableSchemal.ShowImage = true;
             // 
@@ -124,7 +124,7 @@ namespace Excel.DbTool
             // 
             this.btnTableSave.ControlSize = Microsoft.Office.Core.RibbonControlSize.RibbonControlSizeLarge;
             this.btnTableSave.Image = global::Excel.DbTool.Properties.Resources.SaveHH;
-            this.btnTableSave.Label = "保存\r\n";
+            this.btnTableSave.Label = "保存\r\n设计";
             this.btnTableSave.Name = "btnTableSave";
             this.btnTableSave.ShowImage = true;
             // 

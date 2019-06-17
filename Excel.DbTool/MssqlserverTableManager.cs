@@ -60,12 +60,13 @@ namespace Excel.DbTool
                 {
                     cnn.Open();
                     cmd.CommandText = string.Format("select * from [{0}]", tableName);
-                    using (var reader = cmd.ExecuteReader(System.Data.CommandBehavior.SchemaOnly))
+                    using (var reader = cmd.ExecuteReader(System.Data.CommandBehavior.SchemaOnly| CommandBehavior.KeyInfo))
                     {
                         Colummeta = reader.GetSchemaTable();
                     }
                 }
             }
+            
             string cmdstr = string.Format(@"select cl.name as ColumnName,ep.value as Description
                                             from sys.columns cl
                                             inner join sys.extended_properties ep on cl.column_id=ep.minor_id

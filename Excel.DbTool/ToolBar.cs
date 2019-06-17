@@ -38,6 +38,14 @@ namespace Excel.DbTool
             this.drpPageSize.SelectedItemIndex = 1;
             drpPageSize.SelectionChanged += DrpPageSize_SelectionChanged;
             this.pageSize= int.Parse(this.drpPageSize.SelectedItem.Label) * 3;
+
+            ((Microsoft.Office.Interop.Excel.AppEvents_Event)Globals.ThisAddIn.Application).SheetBeforeRightClick += ToolBar_SheetBeforeRightClick;
+        }
+
+        private void ToolBar_SheetBeforeRightClick(object Sh, Microsoft.Office.Interop.Excel.Range Target, ref bool Cancel)
+        {
+            
+            System.Windows.Forms.MessageBox.Show("右键");
         }
 
         private void DrpPageSize_SelectionChanged(object sender, RibbonControlEventArgs e)
@@ -244,7 +252,7 @@ namespace Excel.DbTool
                 column.Name = rangeValue[i, (int)RangeTitleForTableManager.名称] as string;
                 column.DataType = rangeValue[i, (int)RangeTitleForTableManager.类型] as string;
                 //column.ColumnSize = rangeValue[i, (int)HeadTexts.长度] ==null?double.MinValue:(double)rangeValue[i, (int)HeadTexts.长度];
-                column.AllowDBNull = "是".Equals(rangeValue[i, (int)RangeTitleForTableManager.可空])? true:false;
+                column.AllowDBNull = "是".Equals(rangeValue[i, (int)RangeTitleForTableManager.约束])? true:false;
                 column.Description = rangeValue[i, (int)RangeTitleForTableManager.备注] as string;
                 meta.Columns.Add(column);
             }
@@ -325,7 +333,7 @@ namespace Excel.DbTool
                 cell.Offset[rowIndex, (int)RangeTitleForTableManager.名称-1].Value2 = column.Name;
                 cell.Offset[rowIndex, (int)RangeTitleForTableManager.类型 - 1].Value2 = column.DataType;
                 //cell.Offset[rowIndex, (int)HeadTexts.长度 - 1].Value2 = column.DataTypeName.Contains("char") ? column.ColumnSize.ToString(): string.Empty;
-                cell.Offset[rowIndex, (int)RangeTitleForTableManager.可空 - 1].Value2 = column.AllowDBNull ? "是" : string.Empty;
+                cell.Offset[rowIndex, (int)RangeTitleForTableManager.约束 - 1].Value2 = column.AllowDBNull ? "是" : string.Empty;
                 cell.Offset[rowIndex, (int)RangeTitleForTableManager.备注 - 1].Value2 = column.Description;
             }
             //处理样式
