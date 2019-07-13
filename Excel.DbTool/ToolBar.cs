@@ -339,7 +339,6 @@ namespace Excel.DbTool
                 rowIndex++;
                 cell.Offset[rowIndex, (int)RangeTitle.名称 - 1].Value2 = column.Name;
                 cell.Offset[rowIndex, (int)RangeTitle.类型 - 1].Value2 = this.DisplayTableMetaDataType(column);
-                //cell.Offset[rowIndex, (int)HeadTexts.长度 - 1].Value2 = column.DataTypeName.Contains("char") ? column.ColumnSize.ToString(): string.Empty;
                 cell.Offset[rowIndex, (int)RangeTitle.约束 - 1].Value2 = this.DisplayTableMetaConstraints(column);
                 cell.Offset[rowIndex, (int)RangeTitle.备注 - 1].Value2 = column.Comment?.Remark;
             });
