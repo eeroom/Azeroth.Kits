@@ -111,7 +111,7 @@ namespace Excel.DbTool
                 cmd.Parameters.Add(new SqlParameter("level2type", DBNull.Value));
                 cmd.Parameters.Add(new SqlParameter("level2name", DBNull.Value));
                 cmd.Parameters.Add(new SqlParameter("value", tableMeta.Remark ?? string.Empty));
-                cmd.ExecuteNonQuery();//表的说明
+                cmd.ExecuteNonQuery();//增加表的说明
                 ((SqlParameter)cmd.Parameters["level2type"]).Value = "COLUMN";
                 tableMeta.Columns.ForEach(col =>
                 {
