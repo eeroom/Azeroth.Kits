@@ -11,12 +11,11 @@ namespace Excel.DbTool
     {
         const string ALL = "全部";
 
-        ITableManager tableManager;
+        IDbManager dbManager;
 
         int pageIndex = 1;
         int pageSize = 27;
         int pageCount = 0;
-
         int maxPageCount = 6;
 
         List<string> lstTableName;
@@ -39,12 +38,11 @@ namespace Excel.DbTool
             drpPageSize.SelectionChanged += DrpPageSize_SelectionChanged;
             this.pageSize= int.Parse(this.drpPageSize.SelectedItem.Label) * 3;
 
-            ((Microsoft.Office.Interop.Excel.AppEvents_Event)Globals.ThisAddIn.Application).SheetBeforeRightClick += ToolBar_SheetBeforeRightClick;
+            //((Microsoft.Office.Interop.Excel.AppEvents_Event)Globals.ThisAddIn.Application).SheetBeforeRightClick += ToolBar_SheetBeforeRightClick;
         }
 
         private void ToolBar_SheetBeforeRightClick(object Sh, Microsoft.Office.Interop.Excel.Range Target, ref bool Cancel)
         {
-            
             System.Windows.Forms.MessageBox.Show("右键");
         }
 
@@ -163,17 +161,18 @@ namespace Excel.DbTool
             this.drpTablelist.Items.Clear();
             this.drpTablelist.Label = string.Empty;
             var tmp = this.drpDBlist.SelectedItem.Tag as Tuple<string, string>;
-            DbCategory dbIndex;
-            if (tmp == null || !System.Enum.TryParse<DbCategory>(tmp.Item1, out dbIndex))
+            DbType dbType;
+            if (tmp == null || !System.Enum.TryParse<DbType>(tmp.Item1, out dbType))
                 return;
-            var dbHandlerMeta = typeof(ITableManager).FullName;
-            var lstDBHelper = System.Reflection.Assembly.GetExecutingAssembly().GetTypes().Where(x => x.GetInterface(dbHandlerMeta)!=null)
-                .Select(x => (ITableManager)System.Activator.CreateInstance(x)).ToList();
-            this.tableManager = lstDBHelper.FirstOrDefault(x => x.DbCategory == dbIndex);
-            if (this.tableManager == null)
+            var flagType = typeof(DbManager);
+            var lstDbManger = System.Reflection.Assembly.GetExecutingAssembly().GetTypes()
+                .Where(x=> flagType.IsAssignableFrom(x) && flagType.Name!=x.Name)
+                .Select(x => (DbManager)System.Activator.CreateInstance(x)).ToList();
+            this.dbManager = lstDbManger.FirstOrDefault(x => x.GetDbType() == dbType);
+            if (this.dbManager == null)
                 throw new ArgumentException("不支持指定的数据库");
-            this.tableManager.SetConnectionString(tmp.Item2);
-            lstTableName = this.tableManager.GetAllName();
+            this.dbManager.SetConnectionString(tmp.Item2);
+            lstTableName = this.dbManager.GetAllTableName();
             var drpItem = this.Factory.CreateRibbonDropDownItem();
             drpItem.Label = ALL;
             drpItem.Tag = ALL;
@@ -218,71 +217,82 @@ namespace Excel.DbTool
                 return;
             Microsoft.Office.Interop.Excel.Range range = Globals.ThisAddIn.Application.Selection;
             string cnnstr=((Tuple<string, string>)drpDBlist.SelectedItem.Tag).Item2;
-            List<string> lstTableName = drpTablelist.Items.Select(x => ((object)(x.Tag)).ToString()).ToList();
+            
             if (range.Rows.Count <= 2)
                 throw new ArgumentException("请选中需要处理的表的区域");
+
             object[,] rangeValue = range.Value2;
-            //这里把数组拆成多个数组
-            //List<object> lstarry = new List<object>();
-            //var arraytmp= System.Array.CreateInstance(typeof(object), new int[] { rangeValue.GetUpperBound(0), rangeValue.GetUpperBound(1) }, new int[] { 1, 1 });
-            //for (int i = 0; i <= rangeValue.GetUpperBound(0); i++)
-            //{
 
-            //}
-             
+            var lstHeaderTemplate = System.Enum.GetNames(typeof(RangeTitle)).Cast<string>().ToList();
+            if (rangeValue.GetUpperBound(1) != lstHeaderTemplate.Count && rangeValue.GetUpperBound(1) != lstHeaderTemplate.Count - 1)//因为 range.Value2里面的数组从1，1开始，+1的情况表示修改名称
+                throw new ArgumentException("选择区域的数据与模版格式不一致！");
+            var lstHeaderCell = System.Linq.Enumerable.Range(1, rangeValue.GetUpperBound(1)).Select(x => rangeValue.GetValue(2, x) as string).ToList();
+            if (lstHeaderCell.Except(lstHeaderTemplate).Count() > 0)
+                throw new ArgumentException("选择区域的数据与模版格式不一致！");
 
+            TableMeta tableMeta = SaveTableMeta(rangeValue);
+            
+            List<string> lstTableName = drpTablelist.Items.Select(x => ((object)(x.Tag)).ToString()).ToList();
+            bool isNewTable = !lstTableName.Contains(tableMeta.Name);
+            bool isColumnRename = rangeValue.GetUpperBound(1) == lstHeaderTemplate.Count;
+            if (isNewTable)
+            {
+                this.dbManager.CreateTable(tableMeta);
+                this.drpDBlist_SelectionChanged(null, null);
+                this.drpTablelist.SelectedItem = this.drpTablelist.Items.First(x => x.Label==tableMeta.Name);
+                System.Windows.Forms.MessageBox.Show("添加成功");
+                return;
+            }
+            if (isColumnRename)
+            {
+                Dictionary<string, string> dict = new Dictionary<string, string>();
+                tableMeta.NewName = rangeValue[1, (int)RangeTitle.重命名] as string;
+                for (int i = 3; i <= rangeValue.GetUpperBound(0); i++)
+                {
+                    dict.Add(rangeValue[i, (int)RangeTitle.名称] as string, rangeValue[i, (int)RangeTitle.重命名] as string);
+                }
+                this.dbManager.AlterTableWithRename(tableMeta, dict);
+                this.drpDBlist_SelectionChanged(null, null);
+                tableMeta.NewName = tableMeta.NewName ?? tableMeta.Name;
+                this.drpTablelist.SelectedItem = this.drpTablelist.Items.First(x => x.Label == tableMeta.NewName);
+                System.Windows.Forms.MessageBox.Show("重命名成功");
+            }
+            this.dbManager.AlterTable(tableMeta);
+            System.Windows.Forms.MessageBox.Show("修改成功");
+        }
 
-
-
-
-            TableMeta meta = new TableMeta();
-            meta.Name= rangeValue[1, (int)RangeTitleForTableManager.名称] as string;
-            meta.Description = rangeValue[1, (int)RangeTitleForTableManager.备注] as string;
-            if (string.IsNullOrEmpty(meta.Name))
+        private TableMeta SaveTableMeta(object[,] rangeValue)
+        {
+            TableMeta tableMeta = new TableMeta();
+            tableMeta.Name = rangeValue[1, (int)RangeTitle.名称] as string;
+            if (string.IsNullOrEmpty(tableMeta.Name))
                 throw new ArgumentException("必须填写表名称");
-            var headNames= System.Enum.GetNames(typeof(RangeTitleForTableManager)).Cast<string>().ToArray();
-            if (rangeValue.GetUpperBound(1) != headNames.Length && rangeValue.GetUpperBound(1) != headNames.Length - 1)//因为 range.Value2里面的数组从1，1开始，+1的情况表示修改名称
-                throw new ArgumentException("选择区域的数据与模版格式不一致！");
-            var heardTextTmp = System.Linq.Enumerable.Range(1, rangeValue.GetUpperBound(1)).Select(x => rangeValue.GetValue(2, x) as string).ToArray();
-            if (heardTextTmp.Except(headNames).Count()>0)
-                throw new ArgumentException("选择区域的数据与模版格式不一致！");
+            tableMeta.Remark = rangeValue[1, (int)RangeTitle.备注] as string;
+
+            Dictionary<string, ConstraintType> dictConstraint=System.Enum.GetValues(typeof(ConstraintType))
+                .Cast<ConstraintType>()
+                .Where(x=>x!= ConstraintType.未识别)
+                .ToDictionary(x => x.ToString(), x => x);
             for (int i = 3; i <= rangeValue.GetUpperBound(0); i++)
             {
                 ColumnMeta column = new ColumnMeta();
-                column.Name = rangeValue[i, (int)RangeTitleForTableManager.名称] as string;
-                column.DataType = rangeValue[i, (int)RangeTitleForTableManager.类型] as string;
-                //column.ColumnSize = rangeValue[i, (int)HeadTexts.长度] ==null?double.MinValue:(double)rangeValue[i, (int)HeadTexts.长度];
-                column.AllowDBNull = "是".Equals(rangeValue[i, (int)RangeTitleForTableManager.约束])? true:false;
-                column.Description = rangeValue[i, (int)RangeTitleForTableManager.备注] as string;
-                meta.Columns.Add(column);
-            }
-            if (!lstTableName.Contains(meta.Name))
-            {
-                this.tableManager.Create(meta);
-                this.drpDBlist_SelectionChanged(null, null);
-                this.drpTablelist.SelectedItem = this.drpTablelist.Items.First(x => x.Label==meta.Name);
-                System.Windows.Forms.MessageBox.Show("添加成功");
-            }
-            else if (rangeValue.GetUpperBound(1) == headNames.Length-1)
-            {
-                this.tableManager.Alter(meta);
-                System.Windows.Forms.MessageBox.Show("修改成功");
-                
-            }
-            else if (rangeValue.GetUpperBound(1) == headNames.Length)
-            {
-                Dictionary<string, string> dict = new Dictionary<string, string>();
-                meta.NewName = rangeValue[1, (int)RangeTitleForTableManager.重命名] as string;
-                for (int i = 3; i <= rangeValue.GetUpperBound(0); i++)
-                { 
-                    dict.Add(rangeValue[i,(int)RangeTitleForTableManager.名称] as string,rangeValue[i,(int)RangeTitleForTableManager.重命名] as string);
+                column.Name = rangeValue[i, (int)RangeTitle.名称] as string;
+                column.DataType = rangeValue[i, (int)RangeTitle.类型] as string;
+                string tmp = rangeValue[i, (int)RangeTitle.约束]?.ToString();
+                column.UnNullable = dictConstraint.ContainsKey(tmp ?? string.Empty);
+                if (column.UnNullable)
+                {
+                    column.Constraints.Add(new ColumnConstraint()
+                    {
+                        ColumnName = column.Name,
+                        TableName = tableMeta.Name,
+                        Type = dictConstraint[tmp??string.Empty]
+                    });
                 }
-                this.tableManager.AlterByColumnRename(meta, dict);
-                this.drpDBlist_SelectionChanged(null, null);
-                meta.NewName = meta.NewName ?? meta.Name;
-                this.drpTablelist.SelectedItem = this.drpTablelist.Items.First(x => x.Label== meta.NewName);
-                System.Windows.Forms.MessageBox.Show("重命名成功");
+                column.Comment = new Comment() { Remark = rangeValue[i, (int)RangeTitle.备注] as string };
+                tableMeta.Columns.Add(column);
             }
+            return tableMeta;
         }
 
         /// <summary>
@@ -317,40 +327,56 @@ namespace Excel.DbTool
 
         Microsoft.Office.Interop.Excel.Range DisplayTableMeta(string tableName, Microsoft.Office.Interop.Excel.Range cell)
         {
-            var tableMeta=  this.tableManager.GetMeta(tableName);
+            var tableMeta=  this.dbManager.GetTableMetaByName(tableName);
             int rowIndex=0;
             cell.UnMerge();
             cell.Offset[rowIndex, 0].Value2 = tableMeta.Name;
-            var headValues= System.Enum.GetValues(typeof(RangeTitleForTableManager)).Cast<int>().ToArray();
-            cell.Offset[rowIndex++, headValues.Length - 2].Value2 = tableMeta.Description;
-            foreach (var index in headValues)
-            { 
-                cell.Offset[rowIndex, index-1].Value2 = ((RangeTitleForTableManager)index).ToString();
-            }
-            foreach (var column in tableMeta.Columns)
+            var lstHeader= System.Enum.GetValues(typeof(RangeTitle)).Cast<int>().ToList();
+            cell.Offset[rowIndex++, lstHeader.Count - 2].Value2 = tableMeta.Remark;
+            lstHeader.ForEach(index => cell.Offset[rowIndex, index - 1].Value2 = ((RangeTitle)index).ToString());
+            tableMeta.Columns.ForEach(column =>
             {
                 rowIndex++;
-                cell.Offset[rowIndex, (int)RangeTitleForTableManager.名称-1].Value2 = column.Name;
-                cell.Offset[rowIndex, (int)RangeTitleForTableManager.类型 - 1].Value2 = column.DataType;
+                cell.Offset[rowIndex, (int)RangeTitle.名称 - 1].Value2 = column.Name;
+                cell.Offset[rowIndex, (int)RangeTitle.类型 - 1].Value2 = this.DisplayTableMetaDataType(column);
                 //cell.Offset[rowIndex, (int)HeadTexts.长度 - 1].Value2 = column.DataTypeName.Contains("char") ? column.ColumnSize.ToString(): string.Empty;
-                cell.Offset[rowIndex, (int)RangeTitleForTableManager.约束 - 1].Value2 = column.AllowDBNull ? "是" : string.Empty;
-                cell.Offset[rowIndex, (int)RangeTitleForTableManager.备注 - 1].Value2 = column.Description;
-            }
+                cell.Offset[rowIndex, (int)RangeTitle.约束 - 1].Value2 = this.DisplayTableMetaConstraints(column);
+                cell.Offset[rowIndex, (int)RangeTitle.备注 - 1].Value2 = column.Comment?.Remark;
+            });
             //处理样式
             var firstCell = cell.Offset[1, 0];
-            var lastCell = cell.Offset[rowIndex, headValues.Length - 1];
-            var range = Globals.ThisAddIn.Application.get_Range(cell, cell.Offset[0, headValues.Length-3]);
+            var lastCell = cell.Offset[rowIndex, lstHeader.Count - 1];
+            var range = Globals.ThisAddIn.Application.get_Range(cell, cell.Offset[0, lstHeader.Count-3]);
             //range.Merge();
             range.HorizontalAlignment = Microsoft.Office.Interop.Excel.Constants.xlLeft;
             //range.Select();
             range=  Globals.ThisAddIn.Application.get_Range(firstCell,lastCell);
             range.Columns.AutoFit();
             //range = Globals.ThisAddIn.Application.get_Range(cell,lastCell);
-            System.Enum.GetValues(typeof(Microsoft.Office.Interop.Excel.XlBordersIndex)).Cast<Microsoft.Office.Interop.Excel.XlBordersIndex>()
+            System.Enum.GetValues(typeof(Microsoft.Office.Interop.Excel.XlBordersIndex))
+                .Cast<Microsoft.Office.Interop.Excel.XlBordersIndex>()
                 .Where(x => x != Microsoft.Office.Interop.Excel.XlBordersIndex.xlDiagonalDown && x != Microsoft.Office.Interop.Excel.XlBordersIndex.xlDiagonalUp)
-                .ToList().ForEach(x => range.Borders[x].LineStyle = Microsoft.Office.Interop.Excel.XlLineStyle.xlContinuous);
+                .ToList()
+                .ForEach(x => range.Borders[x].LineStyle = Microsoft.Office.Interop.Excel.XlLineStyle.xlContinuous);
             firstCell.Select();
             return cell.Offset[rowIndex + 2, 0];
+        }
+
+        private string DisplayTableMetaDataType(ColumnMeta column)
+        {
+            if (column.CharacterMaxLength.HasValue)
+                return $"{column.DataType}({column.CharacterMaxLength.Value})";
+            return column.DataType;
+        }
+
+        private string DisplayTableMetaConstraints(ColumnMeta column)
+        {
+            var ct = column.Constraints.FirstOrDefault();
+            if (ct != null)
+                return ct.Type.ToString();
+            if (column.UnNullable)
+                return ConstraintType.非空.ToString();
+            return string.Empty;
         }
 
         private bool CheckDrpSelectedValue(params RibbonDropDown[] drps)

@@ -24,7 +24,7 @@ namespace Excel.DbTool.Views
 
         protected override void OnLoad(EventArgs e)
         {
-            var lst = System.Enum.GetNames(typeof(DbCategory)).Select(x => new ConnectionStringWrapper() { Name = x, Value = x }).ToList();
+            var lst = System.Enum.GetNames(typeof(DbType)).Select(x => new ConnectionStringWrapper() { Name = x, Value = x }).ToList();
             this.cmbDbProvider.DisplayMember = "Name";
             this.cmbDbProvider.ValueMember = "Value";
             this.cmbDbProvider.DataSource = lst;

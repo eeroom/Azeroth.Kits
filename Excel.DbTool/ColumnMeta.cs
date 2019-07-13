@@ -10,6 +10,11 @@ namespace Excel.DbTool
     /// </summary>
     public class ColumnMeta
     {
+        public ColumnMeta()
+        {
+            this.Constraints = new List<ColumnConstraint>();
+        }
+        public string TableName { get; set; }
         /// <summary>
         /// 名称
         /// </summary>
@@ -17,7 +22,7 @@ namespace Excel.DbTool
         /// <summary>
         /// 长度
         /// </summary>
-        public double Size { get; set; }
+        public Nullable<int> CharacterMaxLength { get; set; }
         /// <summary>
         /// 数据类型
         /// </summary>
@@ -25,31 +30,37 @@ namespace Excel.DbTool
         /// <summary>
         /// 描述
         /// </summary>
-        public string Description { get; set; }
+        public Comment Comment { get; set; }
         /// <summary>
-        /// 是否可以为null
+        /// 非空
         /// </summary>
-        public bool AllowDBNull { get; set; }
-    }
+        public bool UnNullable { get; set; }
 
-    /// <summary>
-    /// 列的比较器，按列名称比较
-    /// </summary>
-    public class ColumnMetaComparer : IEqualityComparer<ColumnMeta>
-    {
-        public bool Equals(ColumnMeta x, ColumnMeta y)
+        /// <summary>
+        /// 约束
+        /// </summary>
+        public List<ColumnConstraint> Constraints { get; set; }
+
+        public override bool Equals(object obj)
         {
-            if (string.IsNullOrEmpty(x.Name) || string.IsNullOrEmpty(y.Name))
+            ColumnMeta target = obj as ColumnMeta;
+            if (target == null)
                 return false;
-            return x.Name.Equals(y.Name, StringComparison.CurrentCultureIgnoreCase);
+            if (string.IsNullOrEmpty(this.Name) || string.IsNullOrEmpty(target.Name))
+                return false;
+            return this.Name.ToLower() == target.Name.ToLower();
         }
 
-        public int GetHashCode(ColumnMeta obj)
+        public override int GetHashCode()
         {
-            if (obj == null)
-                return 0;
-            return obj.Name.GetHashCode();
+            return this.Name.GetHashCode();
+        }
+
+        public object GetNullableString()
+        {
+            if (this.UnNullable)
+                return "NOT NULL";
+            return "NULL";
         }
     }
-
 }

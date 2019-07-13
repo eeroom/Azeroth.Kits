@@ -5,10 +5,9 @@ using System.Text;
 
 namespace Excel.DbTool
 {
-    public enum DbCategory
+    public enum CommentTarget
     {
-        mssqlserver = 1,
-        oracle = 2,
-        mysql = 3
+        列 = 1,
+        表 = 2
     }
 }

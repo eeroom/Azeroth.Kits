@@ -5,12 +5,12 @@ using System.Text;
 
 namespace Excel.DbTool
 {
-    public interface ITableManager
+    public interface IDbManager
     {
         /// <summary>
         /// 获取数据库类别
         /// </summary>
-        DbCategory DbCategory { get; }
+        DbType GetDbType();
 
         /// <summary>
         /// 设定数据库连接字符串
@@ -23,44 +23,40 @@ namespace Excel.DbTool
         /// </summary>
         /// <param name="cnnstr"></param>
         /// <returns></returns>
-        List<string> GetAllName();
+        List<string> GetAllTableName();
 
         /// <summary>
         /// 获取表的元数据
         /// </summary>
         /// <param name="tableName"></param>
         /// <returns></returns>
-        TableMeta GetMeta(string tableName);
+        TableMeta GetTableMetaByName(string tableName);
 
         /// <summary>
         /// 获取所有表格的元数据
         /// </summary>
         /// <returns></returns>
-        List<TableMeta> GetAllMeta();
+        List<TableMeta> GetTableMeta();
 
         /// <summary>
         /// 添加表格
         /// </summary>
         /// <param name="tablemeta"></param>
         /// <returns></returns>
-        bool Create(TableMeta tablemeta);
+        bool CreateTable(TableMeta tablemeta);
 
         /// <summary>
         /// 重命名，表名称，列名称
         /// </summary>
         /// <param name="dictName"></param>
         /// <returns></returns>
-        bool AlterByColumnRename(TableMeta tablemeta, Dictionary<string, string> dictName);
+        bool AlterTableWithRename(TableMeta tablemeta, Dictionary<string, string> dictName);
 
         /// <summary>
         /// 修改表设计，新增，修改，删除 列，没有重命名
         /// </summary>
         /// <param name="tablemeta"></param>
         /// <returns></returns>
-        bool Alter(TableMeta tablemeta);
+        bool AlterTable(TableMeta tablemeta);
     }
-
-
-
-
 }

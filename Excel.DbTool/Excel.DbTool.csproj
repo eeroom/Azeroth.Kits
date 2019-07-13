@@ -182,16 +182,20 @@
     can be found.
   -->
   <ItemGroup>
+    <Compile Include="Comment.cs" />
     <Compile Include="ColumnMeta.cs" />
-    <Compile Include="Constraints.cs" />
-    <Compile Include="DbCategory.cs" />
-    <Compile Include="ITableManager.cs" />
-    <Compile Include="MssqlserverTableManager.cs" />
-    <Compile Include="MySqlTableManager.cs" />
+    <Compile Include="ColumnConstraint.cs" />
+    <Compile Include="CommentTarget.cs" />
+    <Compile Include="DbManager.cs" />
+    <Compile Include="DbType.cs" />
+    <Compile Include="IDbManager.cs" />
+    <Compile Include="MssqlserverManager.cs" />
+    <Compile Include="MySqlManager.cs" />
     <Compile Include="Properties\AssemblyInfo.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="RangeTitleForTableManager.cs" />
+    <Compile Include="RangeTitle.cs" />
+    <Compile Include="SqlHelper.cs" />
     <Compile Include="TableMeta.cs" />
     <Compile Include="ToolBar.cs">
       <SubType>Component</SubType>

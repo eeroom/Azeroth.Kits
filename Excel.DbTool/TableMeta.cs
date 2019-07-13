@@ -25,7 +25,7 @@ namespace Excel.DbTool
         /// <summary>
         /// 描述
         /// </summary>
-        public string Description { get; set; }
+        public string Remark { get; set; }
 
         /// <summary>
         /// 新名称
