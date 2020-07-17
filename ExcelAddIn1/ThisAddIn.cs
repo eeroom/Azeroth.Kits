@@ -7,25 +7,12 @@ using Excel = Microsoft.Office.Interop.Excel;
 using Office = Microsoft.Office.Core;
 using Microsoft.Office.Tools.Excel;
 
-namespace Excel.DbTool
+namespace ExcelAddIn1
 {
     public partial class ThisAddIn : Microsoft.Office.Tools.AddInBase
     {
-        protected override Office.IRibbonExtensibility CreateRibbonExtensibilityObject()
-        {
-            return new DkRibbon();
-        }
         private void ThisAddIn_Startup(object sender, System.EventArgs e)
         {
-            System.AppDomain.CurrentDomain.FirstChanceException += CurrentDomain_FirstChanceException;
-        }
-
-        private void CurrentDomain_FirstChanceException(object sender, System.Runtime.ExceptionServices.FirstChanceExceptionEventArgs e)
-        {
-            if (e.Exception == null || e.Exception.InnerException == null)
-                return;
-            System.Windows.Forms.MessageBox.Show(e.Exception.InnerException.Message);
-
         }
 
         private void ThisAddIn_Shutdown(object sender, System.EventArgs e)

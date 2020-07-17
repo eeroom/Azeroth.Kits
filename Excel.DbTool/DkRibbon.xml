@@ -1,0 +1,24 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<customUI onLoad="Start" xmlns="http://schemas.microsoft.com/office/2006/01/customui">
+    <ribbon>
+        <tabs>
+            <tab id="tb01" label="我的数据库">
+                <group id="grp01" label="数据源">
+                    <button id="btnSetDbConnection" label="设置&#xD;&#xA;" size="large" />
+                    <dropDown id="drpDbList" showImage="false" />
+                    <dropDown id="drpTableList" showImage="false" />
+                </group>
+                <group id="grp02" label="操作">
+                    <button id="btnShowTableMeta" label="表的&#xD;&#xA;结构" size="large" />
+                  <button id="btnChangeTableMeta" label="保存&#xD;&#xA;结构" size="large" />
+                    <dropDown id="drpPageSize" showImage="false" />
+                    <buttonGroup id="btnGrp01">
+                        <button id="btnLastPage" label="上一页" showImage="false" />
+                        <button id="btnNextPage" label="下一页" showImage="false" />
+                    </buttonGroup>
+                </group>
+                <group id="grp03" label="数据表" />
+            </tab>
+        </tabs>
+    </ribbon>
+</customUI>
