@@ -5,6 +5,7 @@ using System.Linq;
 using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Text;
+using stdole;
 using Office = Microsoft.Office.Core;
 
 // TODO:   按照以下步骤启用功能区(XML)项: 
@@ -29,12 +30,17 @@ using Office = Microsoft.Office.Core;
 namespace Excel.DbTool
 {
     [ComVisible(true)]
-    public class DkRibbon : Office.IRibbonExtensibility,IController
+    public class DkRibbon :MarshalByRefObject, Office.IRibbonExtensibility,IRibbonCallBack
     {
-        private Office.IRibbonUI ribbon;
+        public Office.IRibbonUI ribbonUI;
 
         public DkRibbon()
         {
+        }
+
+        public void onLoad(Office.IRibbonUI ribbonUI)
+        {
+            this.ribbonUI = ribbonUI;
         }
 
         #region IRibbonExtensibility 成员
@@ -460,9 +466,161 @@ namespace Excel.DbTool
 
 
         #endregion
-        public void Start(Office.IRibbonUI ribbonUI)
+
+
+        public string getDescription(Office.IRibbonControl control)
         {
-            this.ribbon = ribbonUI;
+            throw new NotImplementedException();
+        }
+
+        public bool getEnabled(Office.IRibbonControl control)
+        {
+            throw new NotImplementedException();
+        }
+
+        public IPictureDisp getImage(Office.IRibbonControl control)
+        {
+            throw new NotImplementedException();
+        }
+
+        public string getImageMso(Office.IRibbonControl control)
+        {
+            throw new NotImplementedException();
+        }
+
+        public string getLabel(Office.IRibbonControl control)
+        {
+            throw new NotImplementedException();
+        }
+
+        public string getKeytip(Office.IRibbonControl control)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Office.RibbonControlSize getSize(Office.IRibbonControl control)
+        {
+            throw new NotImplementedException();
+        }
+
+        public string getScreentip(Office.IRibbonControl control)
+        {
+            throw new NotImplementedException();
+        }
+
+        public bool getVisible(Office.IRibbonControl control)
+        {
+            throw new NotImplementedException();
+        }
+
+        public bool getShowImage(Office.IRibbonControl control)
+        {
+            throw new NotImplementedException();
+        }
+
+        public bool getShowLabel(Office.IRibbonControl control)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void onAction(Office.IRibbonControl control)
+        {
+            throw new NotImplementedException();
+        }
+
+        public bool getPressed(Office.IRibbonControl control)
+        {
+            throw new NotImplementedException();
+        }
+
+        public int getItemCount(Office.IRibbonControl control)
+        {
+            throw new NotImplementedException();
+        }
+
+        public string getItemID(Office.IRibbonControl control, int index)
+        {
+            throw new NotImplementedException();
+        }
+
+        public IPictureDisp getItemImage(Office.IRibbonControl control, int index)
+        {
+            throw new NotImplementedException();
+        }
+
+        public string getItemLabel(Office.IRibbonControl control, int index)
+        {
+            throw new NotImplementedException();
+        }
+
+        public string getItemScreenTip(Office.IRibbonControl control, int index)
+        {
+            throw new NotImplementedException();
+        }
+
+        public string getScreentip(Office.IRibbonControl control, int index)
+        {
+            throw new NotImplementedException();
+        }
+
+        public string getItemSuperTip(Office.IRibbonControl control, int index)
+        {
+            throw new NotImplementedException();
+        }
+
+        public string getText(Office.IRibbonControl control)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void onChange(Office.IRibbonControl control, string text)
+        {
+            throw new NotImplementedException();
+        }
+
+        public IPictureDisp loadImage(string image_id)
+        {
+            throw new NotImplementedException();
+        }
+
+        public string getSelectedItemID(Office.IRibbonControl control)
+        {
+            throw new NotImplementedException();
+        }
+
+        public int getSelectedItemIndex(Office.IRibbonControl control)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void onActiondropDown(Office.IRibbonControl control, string selectedId, int selectedIndex)
+        {
+            throw new NotImplementedException();
+        }
+
+        public string getContent(Office.IRibbonControl control)
+        {
+            throw new NotImplementedException();
+        }
+
+        public int getItemHeight(Office.IRibbonControl control)
+        {
+            throw new NotImplementedException();
+        }
+
+        public int getItemWidth(Office.IRibbonControl control)
+        {
+            throw new NotImplementedException();
+        }
+
+        public string getTitle(Office.IRibbonControl control)
+        {
+            throw new NotImplementedException();
+        }
+
+        public string onAction(Office.IRibbonControl control, bool pressed)
+        {
+            throw new NotImplementedException();
         }
     }
 }

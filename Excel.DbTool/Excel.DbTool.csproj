@@ -187,7 +187,10 @@
     <Compile Include="Bll\CommentTarget.cs" />
     <Compile Include="Bll\DbManager.cs" />
     <Compile Include="Bll\DbType.cs" />
+    <Compile Include="DkContext.cs" />
+    <Compile Include="DkRibbonProxy.cs" />
     <Compile Include="IController.cs" />
+    <Compile Include="IRibbonCallBack.cs" />
     <Compile Include="Bll\IDbManager.cs" />
     <Compile Include="Bll\MssqlserverManager.cs" />
     <Compile Include="Bll\MySqlManager.cs" />
@@ -252,6 +255,8 @@
       <DependentUpon>Settings.settings</DependentUpon>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
+    <Compile Include="SettingController.cs" />
+    <Compile Include="TableMetaController.cs" />
     <Compile Include="ThisAddIn.cs">
       <SubType>Code</SubType>
     </Compile>

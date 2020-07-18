@@ -13,7 +13,10 @@ namespace Excel.DbTool
     {
         protected override Office.IRibbonExtensibility CreateRibbonExtensibilityObject()
         {
-            return new DkRibbon();
+            var dkRibbon = new DkRibbon();
+            var dkRibbonProxy = new DkRibbonProxy(dkRibbon);
+            return (DkRibbon)dkRibbonProxy.GetTransparentProxy();
+            //return new DkRibbon();
         }
         private void ThisAddIn_Startup(object sender, System.EventArgs e)
         {

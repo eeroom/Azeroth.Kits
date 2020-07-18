@@ -5,8 +5,13 @@ using System.Text;
 
 namespace Excel.DbTool
 {
-    public interface IController
+    public abstract class Controller
     {
-        void Start(Microsoft.Office.Core.IRibbonUI ribbonUI);
+        protected DkRibbon DkRibbon;
+
+        public void Init(DkRibbon dkRibbon)
+        {
+            this.DkRibbon = dkRibbon;
+        }
     }
 }
