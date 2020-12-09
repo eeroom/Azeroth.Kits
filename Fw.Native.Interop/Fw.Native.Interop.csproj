@@ -7,8 +7,8 @@
     <ProjectGuid>{CAD59DEE-C8D8-4CEA-9607-7FE3DD7D3017}</ProjectGuid>
     <OutputType>Exe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>NativeFunctionInterop</RootNamespace>
-    <AssemblyName>NativeFunctionInterop</AssemblyName>
+    <RootNamespace>Fw.Native.Interop</RootNamespace>
+    <AssemblyName>Fw.Native.Interop</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>

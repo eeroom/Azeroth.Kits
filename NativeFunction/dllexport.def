@@ -1,3 +1,0 @@
-LIBRARY "NativeFunction.dll"
-EXPORTS
-Add @1
