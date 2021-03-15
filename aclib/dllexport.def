@@ -1,0 +1,3 @@
+LIBRARY "aclib.dll"
+EXPORTS
+Add @1
