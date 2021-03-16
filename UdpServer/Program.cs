@@ -6,9 +6,10 @@ using System.Text;
 namespace UdpServer {
     class Program {
         static void Main(string[] args) {
-            var ip = System.Net.IPAddress.Parse("127.0.0.1");
+            //var ip = System.Net.IPAddress.Parse("127.0.0.1");
             var port = 50002;
             var server = new System.Net.Sockets.UdpClient(port,System.Net.Sockets.AddressFamily.InterNetwork);
+            Console.WriteLine("udp监听已经启动");
             while (true) {
                 var remote = new System.Net.IPEndPoint(System.Net.IPAddress.None, 0);
                 var buffer= server.Receive(ref remote);
