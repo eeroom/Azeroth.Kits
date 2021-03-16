@@ -8,7 +8,7 @@ namespace TcpServer {
         static void Main(string[] args) {
             var ip = System.Net.IPAddress.Parse("127.0.0.1");
             var port = 50001;
-            var server = new System.Net.Sockets.TcpListener(ip, port);
+            var server = new System.Net.Sockets.TcpListener(System.Net.IPAddress.Any, port);
             server.Start();
             Console.WriteLine("tcp监听已经启动");
             while (true) {
