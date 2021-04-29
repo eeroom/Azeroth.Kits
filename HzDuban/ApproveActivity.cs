@@ -63,7 +63,7 @@ namespace HzDuban {
             } else {
                 Console.WriteLine("审批驳回，流程终止");
                 //做一些补偿操作，记录驳回的流程实例，后续利用terminal方法删除
-                context.Abort(new ArgumentException("审批驳回，流程继续"));
+                context.Abort(new ArgumentException("审批驳回，流程终止"));
             }
 
         }

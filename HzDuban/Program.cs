@@ -63,25 +63,25 @@ namespace HzDuban {
         }
 
         private static PersistableIdleAction PersistableIdleHandler(WorkflowApplicationIdleEventArgs arg) {
-            Console.WriteLine("UnloadedHandler");
+            Console.WriteLine("PersistableIdleHandler");
             return PersistableIdleAction.Unload;
         }
 
         private static UnhandledExceptionAction OnUnhandledExceptionHandler(WorkflowApplicationUnhandledExceptionEventArgs arg) {
-            Console.WriteLine("UnloadedHandler");
+            Console.WriteLine("OnUnhandledExceptionHandler");
             return UnhandledExceptionAction.Abort;
         }
 
         private static void IdleHandler(WorkflowApplicationIdleEventArgs obj) {
-            Console.WriteLine("UnloadedHandler");
+            Console.WriteLine("IdleHandler");
         }
 
         private static void CompletedHandler(WorkflowApplicationCompletedEventArgs obj) {
-            Console.WriteLine("UnloadedHandler");
+            Console.WriteLine("CompletedHandler");
         }
 
         private static void AbortedHandler(WorkflowApplicationAbortedEventArgs obj) {
-            Console.WriteLine("UnloadedHandler");
+            Console.WriteLine("AbortedHandler");
         }
 
         /// <summary>
