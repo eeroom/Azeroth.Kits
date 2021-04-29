@@ -46,8 +46,9 @@ namespace HzDuban {
         }
 
         protected override void Execute(NativeActivityContext context) {
-            Console.WriteLine("通过各项参数找到审批人，为该审批人添加一条审批任务，并向他发送通知");
-            var bookmark= this.BookMark.Get(context);
+            var bookmark = this.BookMark.Get(context);
+            Console.WriteLine(bookmark+":通过各项参数找到审批人，为该审批人添加一条审批任务，并向他发送通知");
+          
 
             Program.bookmark = bookmark;
             Program.workflowId = context.WorkflowInstanceId;
