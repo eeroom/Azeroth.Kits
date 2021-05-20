@@ -7,8 +7,8 @@
     <ProjectGuid>{2CE5D1B3-A3F1-4E94-8806-DDE8A6E87EBC}</ProjectGuid>
     <OutputType>Exe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>HzDuban</RootNamespace>
-    <AssemblyName>HzDuban</AssemblyName>
+    <RootNamespace>Huazhi.Duban</RootNamespace>
+    <AssemblyName>Huazhi.Duban</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
@@ -62,9 +62,8 @@
   </ItemGroup>
   <ItemGroup>
     <XamlAppDef Include="请假流程.xaml">
-      <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <Generator>MSBuild:Compile</Generator>
     </XamlAppDef>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

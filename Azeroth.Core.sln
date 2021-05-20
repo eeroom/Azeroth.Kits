@@ -33,7 +33,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UdpClient", "UdpClient\UdpC
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MicrosoftLocalReportView", "MicrosoftLocalReportView\MicrosoftLocalReportView.csproj", "{2AA6D304-6A24-4BD5-B84F-33D567BED70B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HzDuban", "HzDuban\HzDuban.csproj", "{2CE5D1B3-A3F1-4E94-8806-DDE8A6E87EBC}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Huazhi.Duban", "Huazhi.Duban\Huazhi.Duban.csproj", "{2CE5D1B3-A3F1-4E94-8806-DDE8A6E87EBC}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TaskDemo", "TaskDemo\TaskDemo.csproj", "{121ADDD4-0408-4389-8908-C38A41582F4B}"
 EndProject

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace HzDuban {
+namespace Huazhi.Duban {
     public class OrginazitionNode {
         public Guid Id { get; set; }
 

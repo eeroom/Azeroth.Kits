@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace HzDuban {
+namespace Huazhi.Duban {
     public class QinJiaFormdata {
         /// <summary>
         /// 请假天数
