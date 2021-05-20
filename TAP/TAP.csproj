@@ -7,8 +7,8 @@
     <ProjectGuid>{121ADDD4-0408-4389-8908-C38A41582F4B}</ProjectGuid>
     <OutputType>Exe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>TaskDemo</RootNamespace>
-    <AssemblyName>TaskDemo</AssemblyName>
+    <RootNamespace>TAP</RootNamespace>
+    <AssemblyName>TAP</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>

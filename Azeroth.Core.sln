@@ -35,7 +35,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MicrosoftLocalReportView", 
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Huazhi.Duban", "Huazhi.Duban\Huazhi.Duban.csproj", "{2CE5D1B3-A3F1-4E94-8806-DDE8A6E87EBC}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TaskDemo", "TaskDemo\TaskDemo.csproj", "{121ADDD4-0408-4389-8908-C38A41582F4B}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TAP", "TAP\TAP.csproj", "{121ADDD4-0408-4389-8908-C38A41582F4B}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
