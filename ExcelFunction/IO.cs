@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace TenpowerExcelFunction {
+namespace ExcelFunction {
     /// <summary>
     /// ClassInterfaceType这个特性可以让这个类的public方法直接暴露给com自动化，默认是不会暴露，
     /// 那样只能利用接口暴露，（接口的情况下，vba引用com，然后使用vba的通用模块实现公式）

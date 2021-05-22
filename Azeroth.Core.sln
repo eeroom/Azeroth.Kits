@@ -21,7 +21,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "报表和打印", "报表�
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Office二次开发", "Office二次开发", "{B7E2E6E8-A32A-46B1-8C97-5B5387DE6F85}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TenpowerExcelFunction", "TenpowerExcelFunction\TenpowerExcelFunction.csproj", "{BCA923A0-B356-4960-863D-417B3718F1E6}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ExcelFunction", "ExcelFunction\ExcelFunction.csproj", "{BCA923A0-B356-4960-863D-417B3718F1E6}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TcpServer", "TcpServer\TcpServer.csproj", "{2EBC1710-BABA-4CCB-AFA2-730C960632D0}"
 EndProject

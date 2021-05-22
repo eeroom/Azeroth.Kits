@@ -7,8 +7,8 @@
     <ProjectGuid>{BCA923A0-B356-4960-863D-417B3718F1E6}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>TenpowerExcelFunction</RootNamespace>
-    <AssemblyName>TenpowerExcelFunction</AssemblyName>
+    <RootNamespace>ExcelFunction</RootNamespace>
+    <AssemblyName>ExcelFunction</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>

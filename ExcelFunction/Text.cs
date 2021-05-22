@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace TenpowerExcelFunction {
+namespace ExcelFunction {
     [System.Runtime.InteropServices.Guid("7FFDC693-76CD-41F9-8BF4-FC995BEFBD16")]
     [System.Runtime.InteropServices.ClassInterface(System.Runtime.InteropServices.ClassInterfaceType.AutoDual)]
     public class Text {
