@@ -41,7 +41,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "线程同步", "线程同�
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "InterlockedDemo", "InterlockedDemo\InterlockedDemo.csproj", "{DF8613F4-ADD0-4625-AE84-5428B83F0F39}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "消息队列", "消息队列", "{603BE789-36A3-46A8-96E6-7AEE99CEA5D6}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "消息队列和缓存", "消息队列和缓存", "{603BE789-36A3-46A8-96E6-7AEE99CEA5D6}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MsmqDemo", "MsmqDemo\MsmqDemo.csproj", "{0E1A8B0A-ECE4-4147-86BF-6CCE0F4F8065}"
 EndProject
