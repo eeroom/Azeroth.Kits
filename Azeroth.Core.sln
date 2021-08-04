@@ -33,7 +33,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UdpClient", "UdpClient\UdpC
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MicrosoftLocalReportView", "MicrosoftLocalReportView\MicrosoftLocalReportView.csproj", "{2AA6D304-6A24-4BD5-B84F-33D567BED70B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Huazhi.Duban", "Huazhi.Duban\Huazhi.Duban.csproj", "{2CE5D1B3-A3F1-4E94-8806-DDE8A6E87EBC}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Duban", "Duban\Duban.csproj", "{2CE5D1B3-A3F1-4E94-8806-DDE8A6E87EBC}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TAP", "TAP\TAP.csproj", "{121ADDD4-0408-4389-8908-C38A41582F4B}"
 EndProject
@@ -47,7 +47,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MsmqDemo", "MsmqDemo\MsmqDe
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ActiveMqDemo", "ActiveMqDemo\ActiveMqDemo.csproj", "{76D606DB-0C90-4CB1-9E92-66529C534EBC}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "JieYaSuo", "JieYaSuo\JieYaSuo.csproj", "{3749CBB7-D962-403F-8E23-130C866F725F}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Util7z", "Util7z\Util7z.csproj", "{3749CBB7-D962-403F-8E23-130C866F725F}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "解压缩", "解压缩", "{D7D7AACD-16A2-4D36-83F5-457E6118713E}"
 EndProject

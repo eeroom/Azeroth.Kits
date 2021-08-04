@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace Huazhi.Duban {
+namespace Duban {
     public enum FindApproverMode {
         所在节点,
         上级节点,

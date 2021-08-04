@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace Huazhi.Duban {
+namespace Duban {
     public enum OrginazitionNodeType {
         总公司=3,
         省公司=1,

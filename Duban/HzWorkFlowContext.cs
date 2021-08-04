@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace Huazhi.Duban {
+namespace Duban {
     public class HzWorkFlowContext {
 
         public Guid Id { get; set; }

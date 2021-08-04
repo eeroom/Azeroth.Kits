@@ -4,11 +4,11 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{3749CBB7-D962-403F-8E23-130C866F725F}</ProjectGuid>
+    <ProjectGuid>{2CE5D1B3-A3F1-4E94-8806-DDE8A6E87EBC}</ProjectGuid>
     <OutputType>Exe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>JieYaSuo</RootNamespace>
-    <AssemblyName>JieYaSuo</AssemblyName>
+    <RootNamespace>Duban</RootNamespace>
+    <AssemblyName>Duban</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
@@ -32,8 +32,18 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Newtonsoft.Json, Version=9.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\packages\Newtonsoft.Json.9.0.1\lib\net40\Newtonsoft.Json.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="System" />
+    <Reference Include="System.Activities" />
+    <Reference Include="System.Activities.DurableInstancing" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Runtime.DurableInstancing" />
+    <Reference Include="System.ServiceModel" />
+    <Reference Include="System.ServiceModel.Activities" />
+    <Reference Include="System.Xaml" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -41,25 +51,24 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="ArchiveFile.cs" />
-    <Compile Include="ArchiveFileCallback.cs" />
-    <Compile Include="ArchiveStreamCallback.cs" />
-    <Compile Include="ArchiveStreamsCallback.cs" />
-    <Compile Include="Entry.cs" />
-    <Compile Include="Formats.cs" />
-    <Compile Include="IArchiveExtractCallback.cs" />
-    <Compile Include="Kernel32Dll.cs" />
+    <Compile Include="ApproveActivity.cs" />
+    <Compile Include="FindApproverMode.cs" />
+    <Compile Include="HzWorkFlowContext.cs" />
+    <Compile Include="OrginazitionNode.cs" />
+    <Compile Include="OrginazitionNodeType.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="SafeLibraryHandle.cs" />
-    <Compile Include="SevenZipException.cs" />
-    <Compile Include="SevenZipFormat.cs" />
-    <Compile Include="SevenZipHandle.cs" />
-    <Compile Include="SevenZipInterface.cs" />
+    <Compile Include="QinJiaFormdata.cs" />
+    <Compile Include="WorkFlowRole.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="x64\" />
-    <Folder Include="x86\" />
+    <XamlAppDef Include="请假流程.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </XamlAppDef>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

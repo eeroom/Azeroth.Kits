@@ -1,7 +1,7 @@
-﻿<Activity mc:Ignorable="sads sap" x:Class="Huazhi.Duban.请假流程"
+﻿<Activity mc:Ignorable="sads sap" x:Class="Duban.请假流程"
  xmlns="http://schemas.microsoft.com/netfx/2009/xaml/activities"
  xmlns:av="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
- xmlns:local="clr-namespace:Huazhi.Duban"
+ xmlns:local="clr-namespace:Duban"
  xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
  xmlns:mv="clr-namespace:Microsoft.VisualBasic;assembly=System"
  xmlns:mva="clr-namespace:Microsoft.VisualBasic.Activities;assembly=System.Activities"
@@ -28,7 +28,7 @@
   </x:Members>
   <sap:VirtualizedContainerService.HintSize>744,716</sap:VirtualizedContainerService.HintSize>
   <mva:VisualBasic.Settings>Assembly references and imported namespaces for internal implementation</mva:VisualBasic.Settings>
-  <Flowchart DisplayName="请假流程" sad:XamlDebuggerXmlReader.FileName="D:\Code\Azeroth.Core\Huazhi.Duban\请假流程.xaml" sap:VirtualizedContainerService.HintSize="704,636">
+  <Flowchart DisplayName="请假流程" sad:XamlDebuggerXmlReader.FileName="D:\Code\Azeroth.Core\Duban\请假流程.xaml" sap:VirtualizedContainerService.HintSize="704,636">
     <Flowchart.Variables>
       <Variable x:TypeArguments="local:QinJiaFormdata" Name="formData" />
     </Flowchart.Variables>

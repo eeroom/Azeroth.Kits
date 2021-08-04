@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace Huazhi.Duban {
+namespace Duban {
     public enum WorkFlowRole {
         经理 = 1,
         总经理 = 2,

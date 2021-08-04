@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Activities;
 
-namespace Huazhi.Duban {
+namespace Duban {
 
     public sealed class ApproveActivity : NativeActivity {
         public InArgument<HzWorkFlowContext> HzWfContext { get; set; }
