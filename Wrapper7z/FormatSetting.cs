@@ -5,75 +5,76 @@ using System.Linq;
 using System.Text;
 
 namespace Wrapper7z {
-   public static class FormatHelper {
+   public static class FormatSetting {
        public static Dictionary<string, ArchiveFormat> ExtensionFormatMapping { set; get; }
 
         public static Dictionary<ArchiveFormat, Guid> FormatGuidMapping { set; get; }
 
         public static Dictionary<ArchiveFormat, byte[]> FileSignatures { set; get; }
-        static FormatHelper() {
+        static FormatSetting() {
             ExtensionFormatMapping = new Dictionary<string, ArchiveFormat>();
-            ExtensionFormatMapping.Add("7z", ArchiveFormat.SevenZip);
-            ExtensionFormatMapping.Add("gz", ArchiveFormat.GZip);
-            ExtensionFormatMapping.Add("tar", ArchiveFormat.Tar);
-            ExtensionFormatMapping.Add("rar", ArchiveFormat.Rar);
-            ExtensionFormatMapping.Add("zip", ArchiveFormat.Zip);
-            ExtensionFormatMapping.Add("lzma", ArchiveFormat.Lzma);
-            ExtensionFormatMapping.Add("lzh", ArchiveFormat.Lzh);
-            ExtensionFormatMapping.Add("arj", ArchiveFormat.Arj);
-            ExtensionFormatMapping.Add("bz2", ArchiveFormat.BZip2);
-            ExtensionFormatMapping.Add("cab", ArchiveFormat.Cab);
-            ExtensionFormatMapping.Add("chm", ArchiveFormat.Chm);
-            ExtensionFormatMapping.Add("deb", ArchiveFormat.Deb);
-            ExtensionFormatMapping.Add("iso", ArchiveFormat.Iso);
-            ExtensionFormatMapping.Add("rpm", ArchiveFormat.Rpm);
-            ExtensionFormatMapping.Add("wim", ArchiveFormat.Wim);
-            ExtensionFormatMapping.Add("udf", ArchiveFormat.Udf);
-            ExtensionFormatMapping.Add("mub", ArchiveFormat.Mub);
-            ExtensionFormatMapping.Add("xar", ArchiveFormat.Xar);
-            ExtensionFormatMapping.Add("hfs", ArchiveFormat.Hfs);
-            ExtensionFormatMapping.Add("dmg", ArchiveFormat.Dmg);
-            ExtensionFormatMapping.Add("z", ArchiveFormat.Lzw);
-            ExtensionFormatMapping.Add("xz", ArchiveFormat.XZ);
-            ExtensionFormatMapping.Add("flv", ArchiveFormat.Flv);
-            ExtensionFormatMapping.Add("swf", ArchiveFormat.Swf);
-            ExtensionFormatMapping.Add("exe", ArchiveFormat.PE);
-            ExtensionFormatMapping.Add("dll", ArchiveFormat.PE);
-            ExtensionFormatMapping.Add("vhd", ArchiveFormat.Vhd);
+            ExtensionFormatMapping.Add(".7z", ArchiveFormat.SevenZip);
+            ExtensionFormatMapping.Add(".gz", ArchiveFormat.GZip);
+            ExtensionFormatMapping.Add(".tar", ArchiveFormat.Tar);
+            ExtensionFormatMapping.Add(".rar", ArchiveFormat.Rar);
+            ExtensionFormatMapping.Add(".zip", ArchiveFormat.Zip);
+            ExtensionFormatMapping.Add(".lzma", ArchiveFormat.Lzma);
+            ExtensionFormatMapping.Add(".lzh", ArchiveFormat.Lzh);
+            ExtensionFormatMapping.Add(".arj", ArchiveFormat.Arj);
+            ExtensionFormatMapping.Add(".bz2", ArchiveFormat.BZip2);
+            ExtensionFormatMapping.Add(".cab", ArchiveFormat.Cab);
+            ExtensionFormatMapping.Add(".chm", ArchiveFormat.Chm);
+            ExtensionFormatMapping.Add(".deb", ArchiveFormat.Deb);
+            ExtensionFormatMapping.Add(".iso", ArchiveFormat.Iso);
+            ExtensionFormatMapping.Add(".rpm", ArchiveFormat.Rpm);
+            ExtensionFormatMapping.Add(".wim", ArchiveFormat.Wim);
+            ExtensionFormatMapping.Add(".udf", ArchiveFormat.Udf);
+            ExtensionFormatMapping.Add(".mub", ArchiveFormat.Mub);
+            ExtensionFormatMapping.Add(".xar", ArchiveFormat.Xar);
+            ExtensionFormatMapping.Add(".hfs", ArchiveFormat.Hfs);
+            ExtensionFormatMapping.Add(".dmg", ArchiveFormat.Dmg);
+            ExtensionFormatMapping.Add(".z", ArchiveFormat.Lzw);
+            ExtensionFormatMapping.Add(".xz", ArchiveFormat.XZ);
+            ExtensionFormatMapping.Add(".flv", ArchiveFormat.Flv);
+            ExtensionFormatMapping.Add(".swf", ArchiveFormat.Swf);
+            ExtensionFormatMapping.Add(".exe", ArchiveFormat.PE);
+            ExtensionFormatMapping.Add(".dll", ArchiveFormat.PE);
+            ExtensionFormatMapping.Add(".vhd", ArchiveFormat.Vhd);
 
             FormatGuidMapping = new Dictionary<ArchiveFormat, Guid>();
+            FormatGuidMapping.Add(ArchiveFormat.Zip, new Guid("23170f69-40c1-278a-1000-000110010000"));
+            FormatGuidMapping.Add(ArchiveFormat.Rar, new Guid("23170f69-40c1-278a-1000-000110030000"));
+            FormatGuidMapping.Add(ArchiveFormat.Rar5, new Guid("23170f69-40c1-278a-1000-000110CC0000"));
             FormatGuidMapping.Add(ArchiveFormat.SevenZip, new Guid("23170f69-40c1-278a-1000-000110070000"));
-            FormatGuidMapping.Add(ArchiveFormat.Arj, new Guid("23170f69-40c1-278a-1000-000110040000"));
+            FormatGuidMapping.Add(ArchiveFormat.Tar, new Guid("23170f69-40c1-278a-1000-000110ee0000"));
+            FormatGuidMapping.Add(ArchiveFormat.GZip, new Guid("23170f69-40c1-278a-1000-000110ef0000"));
             FormatGuidMapping.Add(ArchiveFormat.BZip2, new Guid("23170f69-40c1-278a-1000-000110020000"));
+            FormatGuidMapping.Add(ArchiveFormat.Iso, new Guid("23170f69-40c1-278a-1000-000110e70000"));
+            FormatGuidMapping.Add(ArchiveFormat.Lzh, new Guid("23170f69-40c1-278a-1000-000110060000"));
+            FormatGuidMapping.Add(ArchiveFormat.Lzma, new Guid("23170f69-40c1-278a-1000-0001100a0000"));
+            FormatGuidMapping.Add(ArchiveFormat.Wim, new Guid("23170f69-40c1-278a-1000-000110e60000"));
+            FormatGuidMapping.Add(ArchiveFormat.Dmg, new Guid("23170f69-40c1-278a-1000-000110E40000"));
+            FormatGuidMapping.Add(ArchiveFormat.Vhd, new Guid("23170f69-40c1-278a-1000-000110DC0000"));
+            FormatGuidMapping.Add(ArchiveFormat.XZ, new Guid("23170f69-40c1-278a-1000-0001100C0000"));
             FormatGuidMapping.Add(ArchiveFormat.Cab, new Guid("23170f69-40c1-278a-1000-000110080000"));
+
+            FormatGuidMapping.Add(ArchiveFormat.Arj, new Guid("23170f69-40c1-278a-1000-000110040000"));
             FormatGuidMapping.Add(ArchiveFormat.Chm, new Guid("23170f69-40c1-278a-1000-000110e90000"));
             FormatGuidMapping.Add(ArchiveFormat.Compound, new Guid("23170f69-40c1-278a-1000-000110e50000"));
             FormatGuidMapping.Add(ArchiveFormat.Cpio, new Guid("23170f69-40c1-278a-1000-000110ed0000"));
             FormatGuidMapping.Add(ArchiveFormat.Deb, new Guid("23170f69-40c1-278a-1000-000110ec0000"));
-            FormatGuidMapping.Add(ArchiveFormat.GZip, new Guid("23170f69-40c1-278a-1000-000110ef0000"));
-            FormatGuidMapping.Add(ArchiveFormat.Iso, new Guid("23170f69-40c1-278a-1000-000110e70000"));
-            FormatGuidMapping.Add(ArchiveFormat.Lzh, new Guid("23170f69-40c1-278a-1000-000110060000"));
-            FormatGuidMapping.Add(ArchiveFormat.Lzma, new Guid("23170f69-40c1-278a-1000-0001100a0000"));
             FormatGuidMapping.Add(ArchiveFormat.Nsis, new Guid("23170f69-40c1-278a-1000-000110090000"));
-            FormatGuidMapping.Add(ArchiveFormat.Rar, new Guid("23170f69-40c1-278a-1000-000110030000"));
-            FormatGuidMapping.Add(ArchiveFormat.Rar5, new Guid("23170f69-40c1-278a-1000-000110CC0000"));
             FormatGuidMapping.Add(ArchiveFormat.Rpm, new Guid("23170f69-40c1-278a-1000-000110eb0000"));
             FormatGuidMapping.Add(ArchiveFormat.Split, new Guid("23170f69-40c1-278a-1000-000110ea0000"));
-            FormatGuidMapping.Add(ArchiveFormat.Tar, new Guid("23170f69-40c1-278a-1000-000110ee0000"));
-            FormatGuidMapping.Add(ArchiveFormat.Wim, new Guid("23170f69-40c1-278a-1000-000110e60000"));
             FormatGuidMapping.Add(ArchiveFormat.Lzw, new Guid("23170f69-40c1-278a-1000-000110050000"));
-            FormatGuidMapping.Add(ArchiveFormat.Zip, new Guid("23170f69-40c1-278a-1000-000110010000"));
             FormatGuidMapping.Add(ArchiveFormat.Udf, new Guid("23170f69-40c1-278a-1000-000110E00000"));
             FormatGuidMapping.Add(ArchiveFormat.Xar, new Guid("23170f69-40c1-278a-1000-000110E10000"));
             FormatGuidMapping.Add(ArchiveFormat.Mub, new Guid("23170f69-40c1-278a-1000-000110E20000"));
             FormatGuidMapping.Add(ArchiveFormat.Hfs, new Guid("23170f69-40c1-278a-1000-000110E30000"));
-            FormatGuidMapping.Add(ArchiveFormat.Dmg, new Guid("23170f69-40c1-278a-1000-000110E40000"));
-            FormatGuidMapping.Add(ArchiveFormat.XZ, new Guid("23170f69-40c1-278a-1000-0001100C0000"));
             FormatGuidMapping.Add(ArchiveFormat.Mslz, new Guid("23170f69-40c1-278a-1000-000110D50000"));
             FormatGuidMapping.Add(ArchiveFormat.PE, new Guid("23170f69-40c1-278a-1000-000110DD0000"));
             FormatGuidMapping.Add(ArchiveFormat.Elf, new Guid("23170f69-40c1-278a-1000-000110DE0000"));
             FormatGuidMapping.Add(ArchiveFormat.Swf, new Guid("23170f69-40c1-278a-1000-000110D70000"));
-            FormatGuidMapping.Add(ArchiveFormat.Vhd, new Guid("23170f69-40c1-278a-1000-000110DC0000"));
             FormatGuidMapping.Add(ArchiveFormat.Flv, new Guid("23170f69-40c1-278a-1000-000110D60000"));
             FormatGuidMapping.Add(ArchiveFormat.SquashFS, new Guid("23170f69-40c1-278a-1000-000110D20000"));
             FormatGuidMapping.Add(ArchiveFormat.Lzma86, new Guid("23170f69-40c1-278a-1000-0001100B0000"));
@@ -109,25 +110,6 @@ namespace Wrapper7z {
             FileSignatures.Add(ArchiveFormat.Zip, new byte[] { 0x50, 0x4b });
             FileSignatures.Add(ArchiveFormat.Arj, new byte[] { 0x60, 0xEA });
             FileSignatures.Add(ArchiveFormat.Lzh, new byte[] { 0x2D, 0x6C, 0x68 });
-        }
-
-        public static ArchiveFormat GetFormate(string filePath) {
-            string fileExtension = System.IO.Path.GetExtension(filePath)?.TrimStart('.')?.ToLower();
-            if (!string.IsNullOrEmpty(fileExtension) && fileExtension != "rar" && FormatHelper.ExtensionFormatMapping.ContainsKey(fileExtension))
-                return FormatHelper.ExtensionFormatMapping[fileExtension];
-            using (FileStream fileStream = System.IO.File.OpenRead(filePath)) {
-                int longestSignature = FormatHelper.FileSignatures.Values.OrderByDescending(v => v.Length).First().Length;
-                byte[] archiveFileSignature = new byte[longestSignature];
-                int bytesRead = fileStream.Read(archiveFileSignature, 0, longestSignature);
-                if (bytesRead != longestSignature)
-                    return ArchiveFormat.Undefined;
-                foreach (KeyValuePair<ArchiveFormat, byte[]> kv in FormatHelper.FileSignatures) {
-                    if (archiveFileSignature.Take(kv.Value.Length).SequenceEqual(kv.Value)) {
-                        return kv.Key;
-                    }
-                }
-            }
-            return ArchiveFormat.Undefined;
         }
 
     }

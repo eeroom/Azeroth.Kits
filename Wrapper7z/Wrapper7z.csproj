@@ -43,7 +43,7 @@
   <ItemGroup>
     <Compile Include="Wrapper7z.cs" />
     <Compile Include="Entry.cs" />
-    <Compile Include="FormatHelper.cs" />
+    <Compile Include="FormatSetting.cs" />
     <Compile Include="IArchiveExtractCallback.cs" />
     <Compile Include="WrapperStream7z.cs" />
     <Compile Include="ISequentialInStream.cs" />

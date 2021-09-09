@@ -147,5 +147,7 @@ namespace Wrapper7z {
         {
             
         }
+
+        public string OutputFileName { set; get; }
     }
 }

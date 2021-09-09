@@ -10,105 +10,122 @@ namespace Wrapper7z {
     public class Wrapper7z : IArchiveExtractCallback {
         public event Action<ulong> BeginExtract;
         public event Action<ulong> OnExtract;
-        
+        public ArchiveFormat Format { private set; get; }
         //这个需要在解压缩的时候避免被释放，所以需要作为字段
         MySafeHandleZeroOrMinusOneIsInvalid safeHandle7zlib { set; get; }
-        private  IInArchive archive7z { set; get; }
+        IInArchive archive7z { set; get; }
 
-        public Wrapper7z(string lib7zPath, ArchiveFormat format) {
+        public Wrapper7z(string lib7zPath, string zipFilePath) {
             this.safeHandle7zlib = Kernel32Dll.LoadLibrary(lib7zPath);
             if (this.safeHandle7zlib.IsInvalid)
                 throw new ArgumentException("不能正常调用指定的7z类库文件");
             IntPtr createObjectPointer = Kernel32Dll.GetProcAddress(this.safeHandle7zlib, "CreateObject");
             CreateObjectDelegate createObject = (CreateObjectDelegate)Marshal.GetDelegateForFunctionPointer(createObjectPointer, typeof(CreateObjectDelegate));
-            object result;
-            Guid interfaceId = typeof(IInArchive).GUID;
-            Guid classId = FormatHelper.FormatGuidMapping[format];
-            createObject(ref classId, ref interfaceId, out result);
-            this.archive7z = result as IInArchive;
+            List<ArchiveFormat> lstAF = new List<ArchiveFormat>();
+            var fileExt = System.IO.Path.GetExtension(zipFilePath).ToLower();
+            if (FormatSetting.ExtensionFormatMapping.ContainsKey(fileExt))
+                lstAF.Add(FormatSetting.ExtensionFormatMapping[fileExt]);
+            this.archive7z= this.LoadArchiveFile(createObject, System.IO.File.Open(zipFilePath, FileMode.Open, FileAccess.Read), lstAF);
         }
 
-        public void Extract(string zipFilePath,string outputFolder, bool overwrite = false) {
-            this.Extract(this.GetEntries(zipFilePath), outputFolder, overwrite);
-        }
-
-        List<string> lstOutputFileName { set; get; }
-        public void Extract(IList<Entry> lstEntry,string outputFolder, bool overwrite = false)
+        public Wrapper7z(string lib7zPath, Stream zipStream)
         {
-            this.lstOutputFileName = new List<string>();
-            foreach (Entry entry in lstEntry)
+            this.safeHandle7zlib = Kernel32Dll.LoadLibrary(lib7zPath);
+            if (this.safeHandle7zlib.IsInvalid)
+                throw new ArgumentException("不能正常调用指定的7z类库文件");
+            IntPtr createObjectPointer = Kernel32Dll.GetProcAddress(this.safeHandle7zlib, "CreateObject");
+            CreateObjectDelegate createObject = (CreateObjectDelegate)Marshal.GetDelegateForFunctionPointer(createObjectPointer, typeof(CreateObjectDelegate));
+            List<ArchiveFormat> lstAF = new List<ArchiveFormat>();
+            this.archive7z = this.LoadArchiveFile(createObject, zipStream, lstAF);
+        }
+
+        private IInArchive LoadArchiveFile(CreateObjectDelegate createObject,Stream fs, List<ArchiveFormat> lstAF)
+        {
+            int signatureMaxLength = FormatSetting.FileSignatures.Values.OrderByDescending(v => v.Length).First().Length;
+            byte[] signatureBuffer = new byte[signatureMaxLength];
+            fs.Position = 0;
+            int bytesRead = fs.Read(signatureBuffer, 0, signatureMaxLength);
+            var matchedSignature = FormatSetting.FileSignatures.Where(kv => signatureBuffer.Take(kv.Value.Length).SequenceEqual(kv.Value))
+                .FirstOrDefault();
+            if (matchedSignature.Key != ArchiveFormat.Undefined)
+                lstAF.Add(matchedSignature.Key);
+            var lstAFTemp = FormatSetting.FormatGuidMapping.Select(x => x.Key).Except(lstAF).ToList();
+            lstAF.AddRange(lstAFTemp);
+            ulong checkPos = 32 * 1024;
+            this.Format = ArchiveFormat.Undefined;
+            Guid interfaceId = typeof(IInArchive).GUID;
+            foreach (var af in lstAF)
             {
-                string outputPath = null;
-                string fileName = Path.Combine(outputFolder, entry.FileName);
-                if (entry.IsFolder || !File.Exists(fileName) || overwrite)
+                Guid classId = FormatSetting.FormatGuidMapping[af];
+                object tmp = null;
+                createObject.Invoke(ref classId, ref interfaceId, out tmp);
+                IInArchive archive7z = tmp as IInArchive;
+                fs.Position = 0;
+                try
                 {
-                    outputPath = fileName;
+                    int code = archive7z.Open(new WrapperStream7z(fs), ref checkPos, null);
+                    if (code == 0)
+                    {
+                        this.Format = af;
+                        return archive7z;
+                    }
+                    Marshal.ReleaseComObject(archive7z);
                 }
-                if (outputPath == null) // getOutputPath = null means SKIP
+                catch (Exception)
                 {
-                    lstOutputFileName.Add(string.Empty);
-                    continue;
+                    if (archive7z != null)
+                        Marshal.ReleaseComObject(archive7z);
                 }
-                if (entry.IsFolder)
-                {
-                    Directory.CreateDirectory(outputPath);
-                    lstOutputFileName.Add(string.Empty);
-                    continue;
-                }
-                string directoryName = Path.GetDirectoryName(outputPath);
-                if (!string.IsNullOrWhiteSpace(directoryName))
-                {
-                    Directory.CreateDirectory(directoryName);
-                }
-                lstOutputFileName.Add(outputPath);
             }
+            return null;
+        }
+
+        List<Entry> lstEntry {set; get; }
+        public void Extract(string outputFolder,Func<Entry,string> outputFileNameHandler)
+        {
+            if (outputFileNameHandler == null)
+                this.lstEntry.ForEach(x => x.OutputFileName = Path.Combine(outputFolder, x.FileName ?? string.Empty));
+            else
+                this.lstEntry.ForEach(x => x.OutputFileName = outputFileNameHandler(x));
+            var lstDir = this.lstEntry.Where(x => x.IsFolder).Select(x => x.OutputFileName).Distinct().ToList();
+            var lstDir2 = this.lstEntry.Where(x => !x.IsFolder)
+                            .Select(x => System.IO.Path.GetDirectoryName(x.OutputFileName))
+                            .Distinct();
+            lstDir.AddRange(lstDir2);
+            var lstDirNotExist = lstDir.Distinct().Where(x => !System.IO.Directory.Exists(x)).ToList();
+            lstDirNotExist.ForEach(x => System.IO.Directory.CreateDirectory(x));
             this.archive7z.Extract(null, 0xFFFFFFFF, 0, this);
         }
 
-        public List<Entry> GetEntries(string zipFilePath) {
-            ulong checkPos = 32 * 1024;
-            int open = this.archive7z.Open(new WrapperStream7z(zipFilePath, FileMode.Open, FileAccess.Read), ref checkPos, null);
-            if (open != 0)
-                throw new ArgumentException("按照指定格式打开压缩包发生异常");
+        public List<Entry> GetEntries()
+        {
+            if (this.lstEntry != null)
+                return this.lstEntry;
             uint itemsCount = this.archive7z.GetNumberOfItems();
-            var lstEntry = new List<Entry>((int)itemsCount);
-            for (uint fileIndex = 0; fileIndex < itemsCount; fileIndex++) {
-                string fileName = this.GetProperty<string>(fileIndex, ItemPropId.kpidPath);
-                bool isFolder = this.GetProperty<bool>(fileIndex, ItemPropId.kpidIsFolder);
-                bool isEncrypted = this.GetProperty<bool>(fileIndex, ItemPropId.kpidEncrypted);
-                ulong size = this.GetProperty<ulong>(fileIndex, ItemPropId.kpidSize);
-                ulong packedSize = this.GetProperty<ulong>(fileIndex, ItemPropId.kpidPackedSize);
-                DateTime creationTime = this.GetPropertySafe<DateTime>(fileIndex, ItemPropId.kpidCreationTime);
-                DateTime lastWriteTime = this.GetPropertySafe<DateTime>(fileIndex, ItemPropId.kpidLastWriteTime);
-                DateTime lastAccessTime = this.GetPropertySafe<DateTime>(fileIndex, ItemPropId.kpidLastAccessTime);
-                uint crc = this.GetPropertySafe<uint>(fileIndex, ItemPropId.kpidCRC);
-                uint attributes = this.GetPropertySafe<uint>(fileIndex, ItemPropId.kpidAttributes);
-                string comment = this.GetPropertySafe<string>(fileIndex, ItemPropId.kpidComment);
-                string hostOS = this.GetPropertySafe<string>(fileIndex, ItemPropId.kpidHostOS);
-                string method = this.GetPropertySafe<string>(fileIndex, ItemPropId.kpidMethod);
-
-                bool isSplitBefore = this.GetPropertySafe<bool>(fileIndex, ItemPropId.kpidSplitBefore);
-                bool isSplitAfter = this.GetPropertySafe<bool>(fileIndex, ItemPropId.kpidSplitAfter);
-
-                lstEntry.Add(new Entry(this.archive7z, fileIndex) {
-                    FileName = fileName,
-                    IsFolder = isFolder,
-                    IsEncrypted = isEncrypted,
-                    Size = size,
-                    PackedSize = packedSize,
-                    CreationTime = creationTime,
-                    LastWriteTime = lastWriteTime,
-                    LastAccessTime = lastAccessTime,
-                    CRC = crc,
-                    Attributes = attributes,
-                    Comment = comment,
-                    HostOS = hostOS,
-                    Method = method,
-                    IsSplitBefore = isSplitBefore,
-                    IsSplitAfter = isSplitAfter
-                });
+            this.lstEntry = new List<Entry>((int)itemsCount);
+            for (uint fileIndex = 0; fileIndex < itemsCount; fileIndex++)
+            {
+                var entry = new Entry(this.archive7z, fileIndex)
+                {
+                    FileName = this.GetProperty<string>(fileIndex, ItemPropId.kpidPath),
+                    IsFolder = this.GetProperty<bool>(fileIndex, ItemPropId.kpidIsFolder),
+                    IsEncrypted = this.GetProperty<bool>(fileIndex, ItemPropId.kpidEncrypted),
+                    Size = this.GetProperty<ulong>(fileIndex, ItemPropId.kpidSize),
+                    PackedSize = this.GetProperty<ulong>(fileIndex, ItemPropId.kpidPackedSize),
+                    CreationTime = this.GetPropertySafe<DateTime>(fileIndex, ItemPropId.kpidCreationTime),
+                    LastWriteTime = this.GetPropertySafe<DateTime>(fileIndex, ItemPropId.kpidLastWriteTime),
+                    LastAccessTime = this.GetPropertySafe<DateTime>(fileIndex, ItemPropId.kpidLastAccessTime),
+                    CRC = this.GetPropertySafe<uint>(fileIndex, ItemPropId.kpidCRC),
+                    Attributes = this.GetPropertySafe<uint>(fileIndex, ItemPropId.kpidAttributes),
+                    Comment = this.GetPropertySafe<string>(fileIndex, ItemPropId.kpidComment),
+                    HostOS = this.GetPropertySafe<string>(fileIndex, ItemPropId.kpidHostOS),
+                    Method = this.GetPropertySafe<string>(fileIndex, ItemPropId.kpidMethod),
+                    IsSplitBefore = this.GetPropertySafe<bool>(fileIndex, ItemPropId.kpidSplitBefore),
+                    IsSplitAfter = this.GetPropertySafe<bool>(fileIndex, ItemPropId.kpidSplitAfter)
+                };
+                this.lstEntry.Add(entry);
             }
-            return lstEntry;
+            return this.lstEntry;
         }
 
         private T GetPropertySafe<T>(uint fileIndex, ItemPropId name) {
@@ -164,12 +181,12 @@ namespace Wrapper7z {
             outStream = null;
             if (askExtractMode != AskMode.kExtract)
                 return 0;
-            if (this.lstOutputFileName == null)
+            if (this.lstEntry == null)
                 return 0;
-            var filepath = this.lstOutputFileName[(int)index];
-            if (string.IsNullOrEmpty(filepath))
+            var entry = this.lstEntry[(int)index];
+            if (entry.IsFolder || entry.IsEncrypted)
                 return 0;
-            outStream = new WrapperStream7z(filepath, FileMode.Create, FileAccess.ReadWrite);
+            outStream = new WrapperStream7z(entry.OutputFileName, FileMode.Create, FileAccess.ReadWrite);
             return 0;
         }
 
