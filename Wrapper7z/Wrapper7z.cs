@@ -199,5 +199,14 @@ namespace Wrapper7z {
         {
             
         }
+
+        public void Close()
+        {
+            if (this.archive7z != null)
+                Marshal.ReleaseComObject(this.archive7z);
+            this.archive7z = null;
+            if (this.safeHandle7zlib != null)
+                this.safeHandle7zlib.Close();
+        }
     }
 }
