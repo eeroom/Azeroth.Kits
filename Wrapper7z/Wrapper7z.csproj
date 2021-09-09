@@ -41,16 +41,12 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="ArchiveFile.cs" />
-    <Compile Include="ArchiveStreamCallback.cs" />
-    <Compile Include="ArchiveStreamsCallback.cs" />
+    <Compile Include="Wrapper7z.cs" />
     <Compile Include="Entry.cs" />
     <Compile Include="FormatHelper.cs" />
     <Compile Include="IArchiveExtractCallback.cs" />
-    <Compile Include="OutStreamWrapper.cs" />
-    <Compile Include="InStreamWrapper.cs" />
+    <Compile Include="WrapperStream7z.cs" />
     <Compile Include="ISequentialInStream.cs" />
-    <Compile Include="StreamWrapper.cs" />
     <Compile Include="IInArchive.cs" />
     <Compile Include="IOutStream.cs" />
     <Compile Include="IInStream.cs" />

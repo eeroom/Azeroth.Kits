@@ -5,7 +5,8 @@ using System.Linq;
 using System.Text;
 
 namespace Wrapper7z {
-    public class Entry {
+    public class Entry: IArchiveExtractCallback
+    {
         private readonly IInArchive archive;
         private readonly uint index;
 
@@ -86,6 +87,7 @@ namespace Wrapper7z {
         /// </summary>
         public bool IsSplitAfter { get; set; }
 
+        WrapperStream7z extractTargetStream { set; get; }
         public void Extract(string fileName, bool preserveTimestamp = true) {
             if (this.IsFolder) {
                 Directory.CreateDirectory(fileName);
@@ -97,17 +99,50 @@ namespace Wrapper7z {
             if (!string.IsNullOrWhiteSpace(directoryName)) {
                 Directory.CreateDirectory(directoryName);
             }
-
-            using (FileStream fileStream = File.Create(fileName)) {
-                this.Extract(fileStream);
-            }
+            this.extractTargetStream = new WrapperStream7z(fileName, FileMode.Create, FileAccess.ReadWrite);
+            this.archive.Extract(new[] { this.index }, 1, 0, this);
 
             if (preserveTimestamp) {
                 File.SetLastWriteTime(fileName, this.LastWriteTime);
             }
         }
-        public void Extract(Stream stream) {
-            this.archive.Extract(new[] { this.index }, 1, 0, new ArchiveStreamCallback(this.index, stream));
+
+
+        
+        public void Extract(WrapperStream7z stream) {
+            if (this.IsFolder)
+            {
+                return;
+            }
+            this.extractTargetStream = stream;
+            this.archive.Extract(new[] { this.index }, 1, 0, this);
+        }
+
+
+        void IArchiveExtractCallback.SetTotal(ulong total)
+        {
+            
+        }
+
+        void IArchiveExtractCallback.SetCompleted(ref ulong completeValue)
+        {
+           
+        }
+
+        int IArchiveExtractCallback.GetStream(uint index, out ISequentialOutStream outStream, AskMode askExtractMode)
+        {
+            outStream = this.extractTargetStream;
+            return 0;
+        }
+
+        void IArchiveExtractCallback.PrepareOperation(AskMode askExtractMode)
+        {
+            
+        }
+
+        void IArchiveExtractCallback.SetOperationResult(OperationResult resultEOperationResult)
+        {
+            
         }
     }
 }

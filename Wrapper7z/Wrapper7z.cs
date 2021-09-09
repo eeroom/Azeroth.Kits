@@ -7,80 +7,71 @@ using System.Runtime.InteropServices;
 using System.Text;
 
 namespace Wrapper7z {
-    public class ArchiveFile : IDisposable {
+    public class Wrapper7z : IArchiveExtractCallback {
+        public event Action<ulong> BeginExtract;
+        public event Action<ulong> OnExtract;
+        
+        //这个需要在解压缩的时候避免被释放，所以需要作为字段
         MySafeHandleZeroOrMinusOneIsInvalid safeHandle7zlib { set; get; }
-        private  IInArchive handlerOf7z { set; get; }
-        private  InStreamWrapper archiveFileStream { set; get; }
-        private IList<Entry> lstEntry { set; get; }
+        private  IInArchive archive7z { set; get; }
 
-        private string libraryFilePath { set; get; }
-
-        public ArchiveFile(string filePath, SevenZipFormat format, string libraryFilePath) {
-            this.libraryFilePath = libraryFilePath;
-            this.safeHandle7zlib = Kernel32Dll.LoadLibrary(libraryFilePath);
-            if (this.safeHandle7zlib.IsInvalid) {
-                throw new Win32Exception();
-            }
-            IntPtr functionPtr = Kernel32Dll.GetProcAddress(this.safeHandle7zlib, "GetHandlerProperty");
-
-            // Not valid dll
-            if (functionPtr == IntPtr.Zero) {
-                this.safeHandle7zlib.Close();
-                throw new ArgumentException();
-            }
-            if (archiveFileStream == null)
-                throw new ArgumentException("archiveStream is null");
-            IntPtr procAddress = Kernel32Dll.GetProcAddress(this.safeHandle7zlib, "CreateObject");
-            CreateObjectDelegate createObject = (CreateObjectDelegate)Marshal.GetDelegateForFunctionPointer(procAddress, typeof(CreateObjectDelegate));
+        public Wrapper7z(string lib7zPath, ArchiveFormat format) {
+            this.safeHandle7zlib = Kernel32Dll.LoadLibrary(lib7zPath);
+            if (this.safeHandle7zlib.IsInvalid)
+                throw new ArgumentException("不能正常调用指定的7z类库文件");
+            IntPtr createObjectPointer = Kernel32Dll.GetProcAddress(this.safeHandle7zlib, "CreateObject");
+            CreateObjectDelegate createObject = (CreateObjectDelegate)Marshal.GetDelegateForFunctionPointer(createObjectPointer, typeof(CreateObjectDelegate));
             object result;
             Guid interfaceId = typeof(IInArchive).GUID;
             Guid classId = FormatHelper.FormatGuidMapping[format];
             createObject(ref classId, ref interfaceId, out result);
-            this.handlerOf7z = result as IInArchive;
-            this.archiveFileStream = new InStreamWrapper(System.IO.File.OpenRead(filePath));
+            this.archive7z = result as IInArchive;
         }
 
-        public void Extract(string outputFolder, bool overwrite = false) {
-            IList<Stream> fileStreams = new List<Stream>();
-            foreach (Entry entry in this.GetEntries()) {
+        public void Extract(string zipFilePath,string outputFolder, bool overwrite = false) {
+            this.Extract(this.GetEntries(zipFilePath), outputFolder, overwrite);
+        }
+
+        List<string> lstOutputFileName { set; get; }
+        public void Extract(IList<Entry> lstEntry,string outputFolder, bool overwrite = false)
+        {
+            this.lstOutputFileName = new List<string>();
+            foreach (Entry entry in lstEntry)
+            {
                 string outputPath = null;
                 string fileName = Path.Combine(outputFolder, entry.FileName);
-                if (entry.IsFolder || !File.Exists(fileName) || overwrite) {
+                if (entry.IsFolder || !File.Exists(fileName) || overwrite)
+                {
                     outputPath = fileName;
                 }
                 if (outputPath == null) // getOutputPath = null means SKIP
                 {
-                    fileStreams.Add(null);
+                    lstOutputFileName.Add(string.Empty);
                     continue;
                 }
-                if (entry.IsFolder) {
+                if (entry.IsFolder)
+                {
                     Directory.CreateDirectory(outputPath);
-                    fileStreams.Add(null);
+                    lstOutputFileName.Add(string.Empty);
                     continue;
                 }
                 string directoryName = Path.GetDirectoryName(outputPath);
-                if (!string.IsNullOrWhiteSpace(directoryName)) {
+                if (!string.IsNullOrWhiteSpace(directoryName))
+                {
                     Directory.CreateDirectory(directoryName);
                 }
-                fileStreams.Add(File.Create(outputPath));
+                lstOutputFileName.Add(outputPath);
             }
-            this.handlerOf7z.Extract(null, 0xFFFFFFFF, 0, new ArchiveStreamsCallback(fileStreams));
+            this.archive7z.Extract(null, 0xFFFFFFFF, 0, this);
         }
 
-        public IList<Entry> GetEntries() {
-            if (this.lstEntry != null)
-                return this.lstEntry;
+        public List<Entry> GetEntries(string zipFilePath) {
             ulong checkPos = 32 * 1024;
-            int open = this.handlerOf7z.Open(this.archiveFileStream, ref checkPos, null);
-
-            if (open != 0) {
-                throw new ArgumentException("Unable to open archive");
-            }
-
-            uint itemsCount = this.handlerOf7z.GetNumberOfItems();
-
-            this.lstEntry = new List<Entry>((int)itemsCount);
-
+            int open = this.archive7z.Open(new WrapperStream7z(zipFilePath, FileMode.Open, FileAccess.Read), ref checkPos, null);
+            if (open != 0)
+                throw new ArgumentException("按照指定格式打开压缩包发生异常");
+            uint itemsCount = this.archive7z.GetNumberOfItems();
+            var lstEntry = new List<Entry>((int)itemsCount);
             for (uint fileIndex = 0; fileIndex < itemsCount; fileIndex++) {
                 string fileName = this.GetProperty<string>(fileIndex, ItemPropId.kpidPath);
                 bool isFolder = this.GetProperty<bool>(fileIndex, ItemPropId.kpidIsFolder);
@@ -99,7 +90,7 @@ namespace Wrapper7z {
                 bool isSplitBefore = this.GetPropertySafe<bool>(fileIndex, ItemPropId.kpidSplitBefore);
                 bool isSplitAfter = this.GetPropertySafe<bool>(fileIndex, ItemPropId.kpidSplitAfter);
 
-                this.lstEntry.Add(new Entry(this.handlerOf7z, fileIndex) {
+                lstEntry.Add(new Entry(this.archive7z, fileIndex) {
                     FileName = fileName,
                     IsFolder = isFolder,
                     IsEncrypted = isEncrypted,
@@ -117,8 +108,7 @@ namespace Wrapper7z {
                     IsSplitAfter = isSplitAfter
                 });
             }
-
-            return this.lstEntry;
+            return lstEntry;
         }
 
         private T GetPropertySafe<T>(uint fileIndex, ItemPropId name) {
@@ -131,7 +121,7 @@ namespace Wrapper7z {
 
         private T GetProperty<T>(uint fileIndex, ItemPropId name) {
             PropVariant propVariant = new PropVariant();
-            this.handlerOf7z.GetProperty(fileIndex, name, ref propVariant);
+            this.archive7z.GetProperty(fileIndex, name, ref propVariant);
             object value = propVariant.GetObject();
 
             if (propVariant.VarType == VarEnum.VT_EMPTY) {
@@ -154,29 +144,43 @@ namespace Wrapper7z {
             return result;
         }
 
-        ~ArchiveFile() {
-            this.Dispose(false);
+        /// <summary>
+        /// 解压缩后的文件总大小
+        /// </summary>
+        ulong total;
+        void IArchiveExtractCallback.SetTotal(ulong total)
+        {
+            this.total = total;
+            this.BeginExtract?.Invoke(this.total);
         }
 
-        protected void Dispose(bool disposing) {
-            if (this.archiveFileStream != null) {
-                this.archiveFileStream.Dispose();
-            }
-
-            if (this.handlerOf7z != null) {
-                Marshal.ReleaseComObject(this.handlerOf7z);
-            }
-
-            if ((this.safeHandle7zlib != null) && !this.safeHandle7zlib.IsClosed) {
-                this.safeHandle7zlib.Close();
-            }
-
-            this.safeHandle7zlib = null;
+        void IArchiveExtractCallback.SetCompleted(ref ulong completeValue)
+        {
+            this.OnExtract?.Invoke(completeValue);
         }
 
-        public void Dispose() {
-            this.Dispose(true);
-            GC.SuppressFinalize(this);
+        int IArchiveExtractCallback.GetStream(uint index, out ISequentialOutStream outStream, AskMode askExtractMode)
+        {
+            outStream = null;
+            if (askExtractMode != AskMode.kExtract)
+                return 0;
+            if (this.lstOutputFileName == null)
+                return 0;
+            var filepath = this.lstOutputFileName[(int)index];
+            if (string.IsNullOrEmpty(filepath))
+                return 0;
+            outStream = new WrapperStream7z(filepath, FileMode.Create, FileAccess.ReadWrite);
+            return 0;
+        }
+
+        void IArchiveExtractCallback.PrepareOperation(AskMode askExtractMode)
+        {
+            
+        }
+
+        void IArchiveExtractCallback.SetOperationResult(OperationResult resultEOperationResult)
+        {
+            
         }
     }
 }

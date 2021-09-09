@@ -73,9 +73,10 @@ namespace Wrapper7z {
         kAssociate
     }
 
-    public enum SevenZipFormat {
+    public enum ArchiveFormat {
         // Default invalid format value
         Undefined = 0,
+
 
         /// <summary>
         /// Open 7-zip archive format.
