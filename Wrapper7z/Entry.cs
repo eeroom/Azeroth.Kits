@@ -131,6 +131,9 @@ namespace Wrapper7z {
 
         int IArchiveExtractCallback.GetStream(uint index, out ISequentialOutStream outStream, AskMode askExtractMode)
         {
+            outStream = null;
+            if (index != this.index || askExtractMode != AskMode.kExtract)
+                return 0;
             outStream = this.extractTargetStream;
             return 0;
         }
