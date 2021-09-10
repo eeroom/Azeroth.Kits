@@ -86,9 +86,31 @@ namespace Wrapper7z {
         public void Decompress(string outputPath,Func<Entry,string> outputFileNameHandler, bool overwrite = true)
         {
             this.Overwrite = overwrite;
-            this.lstEntry.ForEach(x => x.OutputFileName = outputFileNameHandler(x));
+            this.GetEntries().ForEach(x => x.OutputFileName = outputFileNameHandler(x));
             this.CreateOutputDirectory(this.lstEntry);
-            this.archive7z.Extract(null, 0xFFFFFFFF, 0, this);
+            try
+            {
+                this.archive7z.Extract(null, 0xFFFFFFFF, 0, this);
+            }
+            finally
+            {
+                this.lstEntry.ForEach(x => x.OutputWrapperStream?.Close());//避免解压生成的文件大小可能为0的情况
+            }
+        }
+
+        public void Decompress(string outputPath, bool overwrite = true)
+        {
+            this.Overwrite = overwrite;
+            this.GetEntries().ForEach(x => x.OutputFileName = Path.Combine(outputPath, x.FileName ?? string.Empty));
+            this.CreateOutputDirectory(this.lstEntry);
+            try
+            {
+                this.archive7z.Extract(null, 0xFFFFFFFF, 0, this);
+            }
+            finally
+            {
+                this.lstEntry.ForEach(x => x.OutputWrapperStream?.Close());//避免解压生成的文件大小可能为0的情况
+            }
         }
 
         private void CreateOutputDirectory(List<Entry> lstEntry)
@@ -102,82 +124,45 @@ namespace Wrapper7z {
             lstDirNotExist.ForEach(x => System.IO.Directory.CreateDirectory(x));
         }
 
-        public void Decompress(string outputPath, bool overwrite=true)
-        {
-            this.Overwrite = overwrite;
-            this.lstEntry.ForEach(x => x.OutputFileName = Path.Combine(outputPath, x.FileName ?? string.Empty));
-            this.CreateOutputDirectory(this.lstEntry);
-            this.archive7z.Extract(null, 0xFFFFFFFF, 0, this);
-        }
-
         public List<Entry> GetEntries()
         {
             if (this.lstEntry != null)
                 return this.lstEntry;
             uint itemsCount = this.archive7z.GetNumberOfItems();
-            this.lstEntry = new List<Entry>((int)itemsCount);
-            for (uint fileIndex = 0; fileIndex < itemsCount; fileIndex++)
-            {
-                var entry = new Entry(this.archive7z, fileIndex)
-                {
-                    FileName = this.GetProperty<string>(fileIndex, ItemPropId.kpidPath),
-                    IsFolder = this.GetProperty<bool>(fileIndex, ItemPropId.kpidIsFolder),
-                    IsEncrypted = this.GetProperty<bool>(fileIndex, ItemPropId.kpidEncrypted),
-                    Size = this.GetProperty<ulong>(fileIndex, ItemPropId.kpidSize),
-                    PackedSize = this.GetProperty<ulong>(fileIndex, ItemPropId.kpidPackedSize),
-                    CreationTime = this.GetPropertySafe<DateTime>(fileIndex, ItemPropId.kpidCreationTime),
-                    LastWriteTime = this.GetPropertySafe<DateTime>(fileIndex, ItemPropId.kpidLastWriteTime),
-                    LastAccessTime = this.GetPropertySafe<DateTime>(fileIndex, ItemPropId.kpidLastAccessTime),
-                    CRC = this.GetPropertySafe<uint>(fileIndex, ItemPropId.kpidCRC),
-                    Attributes = this.GetPropertySafe<uint>(fileIndex, ItemPropId.kpidAttributes),
-                    Comment = this.GetPropertySafe<string>(fileIndex, ItemPropId.kpidComment),
-                    HostOS = this.GetPropertySafe<string>(fileIndex, ItemPropId.kpidHostOS),
-                    Method = this.GetPropertySafe<string>(fileIndex, ItemPropId.kpidMethod),
-                    IsSplitBefore = this.GetPropertySafe<bool>(fileIndex, ItemPropId.kpidSplitBefore),
-                    IsSplitAfter = this.GetPropertySafe<bool>(fileIndex, ItemPropId.kpidSplitAfter)
-                };
-                this.lstEntry.Add(entry);
-            }
+            this.lstEntry = System.Linq.Enumerable.Range(0, (int)itemsCount)
+                .Select(x => (uint)x)
+                .Select(fileIndex => new Entry(this.archive7z, fileIndex){
+                    FileName = this.GetProperty(fileIndex, ItemPropId.kpidPath, x => x.ToString()),
+                    IsFolder = this.GetProperty(fileIndex, ItemPropId.kpidIsFolder, x => (bool)x),
+                    IsEncrypted = this.GetProperty(fileIndex, ItemPropId.kpidEncrypted, x => (bool)x),
+                    Size = this.GetProperty(fileIndex, ItemPropId.kpidSize, x => (ulong)x),
+                    PackedSize = this.GetProperty(fileIndex, ItemPropId.kpidPackedSize, x => (ulong)x),
+                    CreationTime = this.GetProperty(fileIndex, ItemPropId.kpidCreationTime, x => (DateTime)x),
+                    LastWriteTime = this.GetProperty(fileIndex, ItemPropId.kpidLastWriteTime, x => (DateTime)x),
+                    LastAccessTime = this.GetProperty(fileIndex, ItemPropId.kpidLastAccessTime, x => (DateTime)x),
+                    CRC = this.GetProperty(fileIndex, ItemPropId.kpidCRC, x => (uint)x),
+                    Attributes = this.GetProperty(fileIndex, ItemPropId.kpidAttributes, x => (uint)x),
+                    Comment = this.GetProperty(fileIndex, ItemPropId.kpidComment, x => x.ToString()),
+                    HostOS = this.GetProperty(fileIndex, ItemPropId.kpidHostOS, x => x.ToString()),
+                    Method = this.GetProperty(fileIndex, ItemPropId.kpidMethod, x => x.ToString()),
+                    IsSplitBefore = this.GetProperty(fileIndex, ItemPropId.kpidSplitBefore, x => (bool)x),
+                    IsSplitAfter = this.GetProperty(fileIndex, ItemPropId.kpidSplitAfter, x => (bool)x)
+                }).ToList();
             return this.lstEntry;
         }
 
-        private T GetPropertySafe<T>(uint fileIndex, ItemPropId name) {
-            try {
-                return this.GetProperty<T>(fileIndex, name);
-            } catch (InvalidCastException) {
-                return default(T);
-            }
-        }
-
-        private T GetProperty<T>(uint fileIndex, ItemPropId name) {
+        private T GetProperty<T>(uint fileIndex, ItemPropId name,Func<object, T> convert) {
             PropVariant propVariant = new PropVariant();
-            this.archive7z.GetProperty(fileIndex, name, ref propVariant);
-            object value = propVariant.GetObject();
-
-            if (propVariant.VarType == VarEnum.VT_EMPTY) {
-                propVariant.Clear();
-                return default(T);
-            }
-
+            this.archive7z.GetProperty((uint)fileIndex, name, ref propVariant);
+            var value= propVariant.GetValue(convert);
             propVariant.Clear();
-
-            if (value == null) {
-                return default(T);
-            }
-
-            Type type = typeof(T);
-            bool isNullable = type.IsGenericType && type.GetGenericTypeDefinition() == typeof(Nullable<>);
-            Type underlyingType = isNullable ? Nullable.GetUnderlyingType(type) : type;
-
-            T result = (T)Convert.ChangeType(value.ToString(), underlyingType);
-
-            return result;
+            return value;
         }
 
         /// <summary>
         /// 解压缩后的文件总大小
         /// </summary>
-        ulong total;
+        ulong total { set; get; }
         void IArchiveExtractCallback.SetTotal(ulong total)
         {
             this.total = total;
@@ -199,7 +184,8 @@ namespace Wrapper7z {
                 return 0;
             if(System.IO.File.Exists(entry.OutputFileName) && !this.Overwrite)
                 return 0;
-            outStream = new WrapperStream7z(entry.OutputFileName, FileMode.Create, FileAccess.ReadWrite);
+            entry.OutputWrapperStream= new WrapperStream7z(entry.OutputFileName, FileMode.Create, FileAccess.ReadWrite);
+            outStream = entry.OutputWrapperStream;
             return 0;
         }
 

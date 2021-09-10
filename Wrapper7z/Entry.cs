@@ -87,32 +87,35 @@ namespace Wrapper7z {
         /// </summary>
         public bool IsSplitAfter { get; set; }
 
-        WrapperStream7z outputWrapperStream { set; get; }
-        public void Extract(string outputPath, bool preserveTimestamp = true) {
+        internal WrapperStream7z OutputWrapperStream { set; get; }
+        public void Decompress(string outputFilePath, bool preserveTimestamp = true) {
             if (this.IsFolder) {
-                Directory.CreateDirectory(outputPath);
+                Directory.CreateDirectory(outputFilePath);
                 return;
             }
 
-            string directoryName = Path.GetDirectoryName(outputPath);
+            string directoryName = Path.GetDirectoryName(outputFilePath);
             if (!string.IsNullOrWhiteSpace(directoryName)) {
                 Directory.CreateDirectory(directoryName);
             }
-            this.outputWrapperStream = new WrapperStream7z(outputPath, FileMode.Create, FileAccess.ReadWrite);
+            this.OutputWrapperStream = new WrapperStream7z(outputFilePath, FileMode.Create, FileAccess.ReadWrite);
             this.archive.Extract(new[] { this.index }, 1, 0, this);
-
+            //避免解压生成的文件大小为0的问题
+            this.OutputWrapperStream.Close();
             if (preserveTimestamp) {
-                File.SetLastWriteTime(outputPath, this.LastWriteTime);
+                File.SetLastWriteTime(outputFilePath, this.LastWriteTime);
             }
         }
 
 
         
-        public void Extract(WrapperStream7z outputStream) {
+        public void Decompress(WrapperStream7z outputStream) {
             if (this.IsFolder)
                 return;
-            this.outputWrapperStream = outputStream;
+            this.OutputWrapperStream = outputStream;
             this.archive.Extract(new[] { this.index }, 1, 0, this);
+            //避免解压生成的文件大小为0的问题
+            this.OutputWrapperStream.BaseStream.Flush();
         }
 
 
@@ -131,7 +134,7 @@ namespace Wrapper7z {
             outStream = null;
             if (index != this.index || askExtractMode != AskMode.kExtract)
                 return 0;
-            outStream = this.outputWrapperStream;
+            outStream = this.OutputWrapperStream;
             return 0;
         }
 

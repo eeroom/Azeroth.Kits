@@ -11,7 +11,7 @@ namespace Wrapper7z {
         private static extern int PropVariantClear(ref PropVariant pvar);
 
         [FieldOffset(0)]
-        public ushort vt;
+        public VarEnum vt;
         [FieldOffset(8)]
         public IntPtr pointerValue;
         [FieldOffset(8)]
@@ -23,14 +23,8 @@ namespace Wrapper7z {
         [FieldOffset(8)]
         public PropArray propArray;
 
-        public VarEnum VarType {
-            get {
-                return (VarEnum)this.vt;
-            }
-        }
-
         public void Clear() {
-            switch (this.VarType) {
+            switch (this.vt) {
                 case VarEnum.VT_EMPTY:
                     break;
 
@@ -63,22 +57,23 @@ namespace Wrapper7z {
             }
         }
 
-        public object GetObject() {
-            switch (this.VarType) {
-                case VarEnum.VT_EMPTY:
-                    return null;
-
-                case VarEnum.VT_FILETIME:
-                    return DateTime.FromFileTime(this.longValue);
-
-                default:
-                    GCHandle PropHandle = GCHandle.Alloc(this, GCHandleType.Pinned);
-
-                    try {
-                        return Marshal.GetObjectForNativeVariant(PropHandle.AddrOfPinnedObject());
-                    } finally {
-                        PropHandle.Free();
-                    }
+        public T GetValue<T>(Func<object, T> convert) {
+            if (this.vt == VarEnum.VT_EMPTY)
+                return default(T);
+            else if (this.vt == VarEnum.VT_FILETIME)
+                return convert(DateTime.FromFileTime(this.longValue));
+            else
+            {
+                GCHandle PropHandle = GCHandle.Alloc(this, GCHandleType.Pinned);
+                try
+                {
+                    var obj = Marshal.GetObjectForNativeVariant(PropHandle.AddrOfPinnedObject());
+                    return convert(obj);
+                }
+                finally
+                {
+                    PropHandle.Free();
+                }
             }
         }
     }
