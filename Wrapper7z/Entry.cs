@@ -87,34 +87,31 @@ namespace Wrapper7z {
         /// </summary>
         public bool IsSplitAfter { get; set; }
 
-        WrapperStream7z extractTargetStream { set; get; }
-        public void Extract(string fileName, bool preserveTimestamp = true) {
+        WrapperStream7z outputWrapperStream { set; get; }
+        public void Extract(string outputPath, bool preserveTimestamp = true) {
             if (this.IsFolder) {
-                Directory.CreateDirectory(fileName);
+                Directory.CreateDirectory(outputPath);
                 return;
             }
 
-            string directoryName = Path.GetDirectoryName(fileName);
-
+            string directoryName = Path.GetDirectoryName(outputPath);
             if (!string.IsNullOrWhiteSpace(directoryName)) {
                 Directory.CreateDirectory(directoryName);
             }
-            this.extractTargetStream = new WrapperStream7z(fileName, FileMode.Create, FileAccess.ReadWrite);
+            this.outputWrapperStream = new WrapperStream7z(outputPath, FileMode.Create, FileAccess.ReadWrite);
             this.archive.Extract(new[] { this.index }, 1, 0, this);
 
             if (preserveTimestamp) {
-                File.SetLastWriteTime(fileName, this.LastWriteTime);
+                File.SetLastWriteTime(outputPath, this.LastWriteTime);
             }
         }
 
 
         
-        public void Extract(WrapperStream7z stream) {
+        public void Extract(WrapperStream7z outputStream) {
             if (this.IsFolder)
-            {
                 return;
-            }
-            this.extractTargetStream = stream;
+            this.outputWrapperStream = outputStream;
             this.archive.Extract(new[] { this.index }, 1, 0, this);
         }
 
@@ -134,7 +131,7 @@ namespace Wrapper7z {
             outStream = null;
             if (index != this.index || askExtractMode != AskMode.kExtract)
                 return 0;
-            outStream = this.extractTargetStream;
+            outStream = this.outputWrapperStream;
             return 0;
         }
 

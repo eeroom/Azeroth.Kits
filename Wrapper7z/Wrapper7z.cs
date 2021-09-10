@@ -81,12 +81,18 @@ namespace Wrapper7z {
         }
 
         List<Entry> lstEntry {set; get; }
-        public void Extract(string outputFolder,Func<Entry,string> outputFileNameHandler)
+
+        bool Overwrite { set; get; }
+        public void Decompress(string outputPath,Func<Entry,string> outputFileNameHandler, bool overwrite = true)
         {
-            if (outputFileNameHandler == null)
-                this.lstEntry.ForEach(x => x.OutputFileName = Path.Combine(outputFolder, x.FileName ?? string.Empty));
-            else
-                this.lstEntry.ForEach(x => x.OutputFileName = outputFileNameHandler(x));
+            this.Overwrite = overwrite;
+            this.lstEntry.ForEach(x => x.OutputFileName = outputFileNameHandler(x));
+            this.CreateOutputDirectory(this.lstEntry);
+            this.archive7z.Extract(null, 0xFFFFFFFF, 0, this);
+        }
+
+        private void CreateOutputDirectory(List<Entry> lstEntry)
+        {
             var lstDir = this.lstEntry.Where(x => x.IsFolder).Select(x => x.OutputFileName).Distinct().ToList();
             var lstDir2 = this.lstEntry.Where(x => !x.IsFolder)
                             .Select(x => System.IO.Path.GetDirectoryName(x.OutputFileName))
@@ -94,6 +100,13 @@ namespace Wrapper7z {
             lstDir.AddRange(lstDir2);
             var lstDirNotExist = lstDir.Distinct().Where(x => !System.IO.Directory.Exists(x)).ToList();
             lstDirNotExist.ForEach(x => System.IO.Directory.CreateDirectory(x));
+        }
+
+        public void Decompress(string outputPath, bool overwrite=true)
+        {
+            this.Overwrite = overwrite;
+            this.lstEntry.ForEach(x => x.OutputFileName = Path.Combine(outputPath, x.FileName ?? string.Empty));
+            this.CreateOutputDirectory(this.lstEntry);
             this.archive7z.Extract(null, 0xFFFFFFFF, 0, this);
         }
 
@@ -181,10 +194,10 @@ namespace Wrapper7z {
             outStream = null;
             if (askExtractMode != AskMode.kExtract)
                 return 0;
-            if (this.lstEntry == null)
-                return 0;
             var entry = this.lstEntry[(int)index];
             if (entry.IsFolder || entry.IsEncrypted)
+                return 0;
+            if(System.IO.File.Exists(entry.OutputFileName) && !this.Overwrite)
                 return 0;
             outStream = new WrapperStream7z(entry.OutputFileName, FileMode.Create, FileAccess.ReadWrite);
             return 0;
