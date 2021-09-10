@@ -8,8 +8,8 @@ using System.Text;
 
 namespace Wrapper7z {
     public class Wrapper7z : IArchiveExtractCallback {
-        public event Action<ulong> BeginExtract;
-        public event Action<ulong> OnExtract;
+        public event Action<ulong> BeginDecompress;
+        public event Action<ulong> OnDecompress;
         public ArchiveFormat Format { private set; get; }
         //这个需要在解压缩的时候避免被释放，所以需要作为字段
         MySafeHandleZeroOrMinusOneIsInvalid safeHandle7zlib { set; get; }
@@ -181,12 +181,12 @@ namespace Wrapper7z {
         void IArchiveExtractCallback.SetTotal(ulong total)
         {
             this.total = total;
-            this.BeginExtract?.Invoke(this.total);
+            this.BeginDecompress?.Invoke(this.total);
         }
 
         void IArchiveExtractCallback.SetCompleted(ref ulong completeValue)
         {
-            this.OnExtract?.Invoke(completeValue);
+            this.OnDecompress?.Invoke(completeValue);
         }
 
         int IArchiveExtractCallback.GetStream(uint index, out ISequentialOutStream outStream, AskMode askExtractMode)
