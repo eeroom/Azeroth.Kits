@@ -4,7 +4,7 @@ using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
 
-namespace Wrapper7z {
+namespace qiz4net {
     [StructLayout(LayoutKind.Explicit)]
     public struct PropVariant {
         [DllImport("ole32.dll")]

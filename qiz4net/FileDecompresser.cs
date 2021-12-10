@@ -6,8 +6,8 @@ using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
 
-namespace Wrapper7z {
-    public class Wrapper7z : IArchiveExtractCallback {
+namespace qiz4net {
+    public class FileDecompresser : IArchiveExtractCallback {
         public event Action<ulong> BeginDecompress;
         public event Action<ulong> OnDecompress;
         public ArchiveFormat Format { private set; get; }
@@ -15,7 +15,7 @@ namespace Wrapper7z {
         MySafeHandleZeroOrMinusOneIsInvalid safeHandle7zlib { set; get; }
         IInArchive archive7z { set; get; }
 
-        public Wrapper7z(string lib7zPath, string zipFilePath) {
+        public FileDecompresser(string lib7zPath, string zipFilePath) {
             this.safeHandle7zlib = Kernel32Dll.LoadLibrary(lib7zPath);
             if (this.safeHandle7zlib.IsInvalid)
                 throw new ArgumentException("不能正常调用指定的7z类库文件");
@@ -28,7 +28,7 @@ namespace Wrapper7z {
             this.archive7z= this.LoadArchiveFile(createObject, System.IO.File.Open(zipFilePath, FileMode.Open, FileAccess.Read), lstAF);
         }
 
-        public Wrapper7z(string lib7zPath, Stream zipStream)
+        public FileDecompresser(string lib7zPath, Stream zipStream)
         {
             this.safeHandle7zlib = Kernel32Dll.LoadLibrary(lib7zPath);
             if (this.safeHandle7zlib.IsInvalid)
@@ -63,7 +63,7 @@ namespace Wrapper7z {
                 fs.Position = 0;
                 try
                 {
-                    int code = archive7z.Open(new WrapperStream7z(fs), ref checkPos, null);
+                    int code = archive7z.Open(new QizFileStream(fs), ref checkPos, null);
                     if (code == 0)
                     {
                         this.Format = af;
@@ -94,7 +94,7 @@ namespace Wrapper7z {
             }
             finally
             {
-                this.lstEntry.ForEach(x => x.OutputWrapperStream?.Close());//避免解压生成的文件大小可能为0的情况
+                this.lstEntry.ForEach(x => x.OutputStream?.Close());//避免解压生成的文件大小可能为0的情况
             }
         }
 
@@ -109,7 +109,7 @@ namespace Wrapper7z {
             }
             finally
             {
-                this.lstEntry.ForEach(x => x.OutputWrapperStream?.Close());//避免解压生成的文件大小可能为0的情况
+                this.lstEntry.ForEach(x => x.OutputStream?.Close());//避免解压生成的文件大小可能为0的情况
             }
         }
 
@@ -184,8 +184,8 @@ namespace Wrapper7z {
                 return 0;
             if(System.IO.File.Exists(entry.OutputFileName) && !this.Overwrite)
                 return 0;
-            entry.OutputWrapperStream= new WrapperStream7z(entry.OutputFileName, FileMode.Create, FileAccess.ReadWrite);
-            outStream = entry.OutputWrapperStream;
+            entry.OutputStream= new QizFileStream(entry.OutputFileName, FileMode.Create, FileAccess.ReadWrite);
+            outStream = entry.OutputStream;
             return 0;
         }
 

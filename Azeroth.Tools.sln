@@ -49,7 +49,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Util7z", "Util7z\Util7z.csp
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "解压缩", "解压缩", "{D7D7AACD-16A2-4D36-83F5-457E6118713E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Wrapper7z", "Wrapper7z\Wrapper7z.csproj", "{2A2F899D-E78F-49D3-8FD7-C54258AC6F42}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "qiz4net", "qiz4net\qiz4net.csproj", "{2A2F899D-E78F-49D3-8FD7-C54258AC6F42}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

@@ -5,7 +5,7 @@ using System.Linq;
 using System.Runtime.ConstrainedExecution;
 using System.Text;
 
-namespace Wrapper7z {
+namespace qiz4net {
    public class MySafeHandleZeroOrMinusOneIsInvalid : SafeHandleZeroOrMinusOneIsInvalid {
         public MySafeHandleZeroOrMinusOneIsInvalid() : base(true)
         {

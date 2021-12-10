@@ -5,16 +5,16 @@ using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
 
-namespace Wrapper7z {
-    public class WrapperStream7z : ISequentialOutStream, IOutStream, ISequentialInStream, IInStream
+namespace qiz4net {
+    public class QizFileStream : ISequentialOutStream, IOutStream, ISequentialInStream, IInStream
     {
         public Stream BaseStream {private set; get; }
-        public WrapperStream7z(string path, FileMode mode, FileAccess access)
+        public QizFileStream(string path, FileMode mode, FileAccess access)
         {
             this.BaseStream = new FileStream(path, mode, access);
         }
 
-        public WrapperStream7z(Stream stream)
+        public QizFileStream(Stream stream)
         {
             this.BaseStream = stream;
         }
@@ -52,7 +52,7 @@ namespace Wrapper7z {
             }
             catch (Exception ex)
             {
-                System.Diagnostics.EventLog.WriteEntry("WrapperStream7z", ex.Message, System.Diagnostics.EventLogEntryType.Error, 7777);
+                System.Diagnostics.EventLog.WriteEntry("QizFileStream", ex.Message, System.Diagnostics.EventLogEntryType.Error, 7777);
             }
         }
     }

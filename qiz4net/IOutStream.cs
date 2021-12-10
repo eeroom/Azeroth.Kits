@@ -4,7 +4,7 @@ using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
 
-namespace Wrapper7z {
+namespace qiz4net {
     [ComImport]
     [Guid("23170F69-40C1-278A-0000-000300040000")]
     [InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]

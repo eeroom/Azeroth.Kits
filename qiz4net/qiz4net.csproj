@@ -41,11 +41,11 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Wrapper7z.cs" />
+    <Compile Include="FileDecompresser.cs" />
     <Compile Include="Entry.cs" />
     <Compile Include="FormatSetting.cs" />
     <Compile Include="IArchiveExtractCallback.cs" />
-    <Compile Include="WrapperStream7z.cs" />
+    <Compile Include="QizFileStream.cs" />
     <Compile Include="ISequentialInStream.cs" />
     <Compile Include="IInArchive.cs" />
     <Compile Include="IOutStream.cs" />

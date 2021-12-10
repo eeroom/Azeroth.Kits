@@ -4,7 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 
-namespace Wrapper7z {
+namespace qiz4net {
     public class Entry: IArchiveExtractCallback
     {
         private readonly IInArchive archive;
@@ -87,7 +87,7 @@ namespace Wrapper7z {
         /// </summary>
         public bool IsSplitAfter { get; set; }
 
-        internal WrapperStream7z OutputWrapperStream { set; get; }
+        internal QizFileStream OutputStream { set; get; }
         public void Decompress(string outputFilePath, bool preserveTimestamp = true) {
             if (this.IsFolder) {
                 Directory.CreateDirectory(outputFilePath);
@@ -98,10 +98,10 @@ namespace Wrapper7z {
             if (!string.IsNullOrWhiteSpace(directoryName)) {
                 Directory.CreateDirectory(directoryName);
             }
-            this.OutputWrapperStream = new WrapperStream7z(outputFilePath, FileMode.Create, FileAccess.ReadWrite);
+            this.OutputStream = new QizFileStream(outputFilePath, FileMode.Create, FileAccess.ReadWrite);
             this.archive.Extract(new[] { this.index }, 1, 0, this);
             //避免解压生成的文件大小为0的问题
-            this.OutputWrapperStream.Close();
+            this.OutputStream.Close();
             if (preserveTimestamp) {
                 File.SetLastWriteTime(outputFilePath, this.LastWriteTime);
             }
@@ -109,13 +109,13 @@ namespace Wrapper7z {
 
 
         
-        public void Decompress(WrapperStream7z outputStream) {
+        public void Decompress(QizFileStream outputStream) {
             if (this.IsFolder)
                 return;
-            this.OutputWrapperStream = outputStream;
+            this.OutputStream = outputStream;
             this.archive.Extract(new[] { this.index }, 1, 0, this);
             //避免解压生成的文件大小为0的问题
-            this.OutputWrapperStream.BaseStream.Flush();
+            this.OutputStream.BaseStream.Flush();
         }
 
 
@@ -134,7 +134,7 @@ namespace Wrapper7z {
             outStream = null;
             if (index != this.index || askExtractMode != AskMode.kExtract)
                 return 0;
-            outStream = this.OutputWrapperStream;
+            outStream = this.OutputStream;
             return 0;
         }
 

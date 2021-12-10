@@ -4,7 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 
-namespace Wrapper7z {
+namespace qiz4net {
    public static class FormatSetting {
        public static Dictionary<string, ArchiveFormat> ExtensionFormatMapping { set; get; }
 

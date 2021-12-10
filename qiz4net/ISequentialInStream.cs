@@ -4,12 +4,11 @@ using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
 
-namespace Wrapper7z {
+namespace qiz4net {
     [ComImport]
-    [Guid("23170F69-40C1-278A-0000-000300030000")]
+    [Guid("23170F69-40C1-278A-0000-000300010000")]
     [InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
-    public interface IInStream //: ISequentialInStream
-    {
+    public interface ISequentialInStream {
         //[PreserveSig]
         //int Read(
         //  [Out, MarshalAs(UnmanagedType.LPArray, SizeParamIndex = 1)] byte[] data,
@@ -20,10 +19,13 @@ namespace Wrapper7z {
             [Out, MarshalAs(UnmanagedType.LPArray, SizeParamIndex = 1)] byte[] data,
             uint size);
 
-        //[PreserveSig]
-        void Seek(
-            long offset,
-            uint seekOrigin,
-            IntPtr newPosition); // ref long newPosition
+        /*
+    Out: if size != 0, return_value = S_OK and (*processedSize == 0),
+      then there are no more bytes in stream.
+    if (size > 0) && there are bytes in stream, 
+    this function must read at least 1 byte.
+    This function is allowed to read less than number of remaining bytes in stream.
+    You must call Read function in loop, if you need exact amount of data
+    */
     }
 }

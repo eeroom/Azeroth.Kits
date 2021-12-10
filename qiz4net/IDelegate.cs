@@ -4,7 +4,7 @@ using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
 
-namespace Wrapper7z {
+namespace qiz4net {
     [UnmanagedFunctionPointer(CallingConvention.StdCall)]
     public delegate int CreateObjectDelegate(
         [In] ref Guid classID,

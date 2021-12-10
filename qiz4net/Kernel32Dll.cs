@@ -5,7 +5,7 @@ using System.Runtime.InteropServices;
 using System.Security;
 using System.Text;
 
-namespace Wrapper7z {
+namespace qiz4net {
     public class Kernel32Dll {
         [DllImport("kernel32.dll", CharSet = CharSet.Auto, SetLastError = true)]
         internal static extern MySafeHandleZeroOrMinusOneIsInvalid LoadLibrary([MarshalAs(UnmanagedType.LPTStr)] string lpFileName);

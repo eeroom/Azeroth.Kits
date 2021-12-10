@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace Wrapper7z {
+namespace qiz4net {
     public enum AskMode : int {
         kExtract = 0,
         kTest,
