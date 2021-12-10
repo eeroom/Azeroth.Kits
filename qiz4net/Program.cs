@@ -14,11 +14,11 @@ namespace qiz4net {
                 string zipfilepath = Console.ReadLine();
                 Console.WriteLine("请输入输出的目录");
                 string outputPath = Console.ReadLine();
-                var handler = new FileDecompresser(lib7zpath, zipfilepath);
+                var decompresser = new FileDecompresser(lib7zpath, zipfilepath);
                 ulong total = 0;
-                handler.BeginDecompress += x => total = x;
-                handler.OnDecompress += x => Console.WriteLine($"解压进度{Math.Round(100.0d * x / total, MidpointRounding.ToEven)}");
-                handler.Decompress(outputPath);
+                decompresser.BeginDecompress += x => total = x;
+                decompresser.OnDecompress += x => Console.WriteLine($"解压进度{Math.Round(100.0d * x / total, MidpointRounding.ToEven)}");
+                decompresser.Decompress(outputPath);
                 Console.WriteLine("完成解压");
             }
         }
