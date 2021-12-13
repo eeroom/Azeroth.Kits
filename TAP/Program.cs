@@ -19,7 +19,8 @@ namespace TAP
             /// web程序，每个执行线程都不阻塞，iis可以在短时间内接受更多的请求，而不出现503的情况，iis可以接受更高的并发峰值
             /// 但是每个请求的执行时间不会缩短（该多久还是要多久），考虑到TAP模式导致的线程切换，耗时还要增加一点
             /// 另一个优点，代码顺序和普通代码一致，不存在后执行的代码要写在前面的情况
-            Handler1(11);
+            //Handler1(11);
+            Handler1No_awiter(11);
             Console.WriteLine("hello world");
             Console.ReadLine();
 
@@ -48,7 +49,7 @@ namespace TAP
         /// </summary>
         /// <param name="vv"></param>
         /// <returns></returns>
-        public static Task Handler1Clone(int vv)
+        public static Task Handler1No_awiter(int vv)
         {
             Handler1StateMachine h1s = new Handler1StateMachine();
             h1s.vv = vv;
