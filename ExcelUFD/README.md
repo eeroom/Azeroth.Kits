@@ -1,5 +1,8 @@
 ﻿# dna类库说明
 ```
+项目文件中多了一个target，target里面会让执行dna的一个工具exe,这个target会检测是否安装了excel，然后修改项目文件debug设置，会把编译出来的做一些打包操作，
+nuget的项目模板还在properties目录下加了一个空的项目目录.Build.prop，这个也能修改一些编译过程的配置，比如最终生成的包名称
+ <Import Project="..\packages\ExcelDna.AddIn.1.1.1\build\ExcelDna.AddIn.targets"
 ExcelDna.AddIn - NuGet package for creating an Excel-DNA add-in
 ===============================================================
 The Excel-DNA home page is at http://excel-dna.net.
