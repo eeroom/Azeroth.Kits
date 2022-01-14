@@ -7,7 +7,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "T4", "T4\T4.csproj", "{DAD2
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "vclib", "vclib\vclib.vcxproj", "{C6C34CB1-26A1-4D81-BADB-CFB69817A036}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AclibPInvoke", "AclibPInvoke\AclibPInvoke.csproj", "{CAD59DEE-C8D8-4CEA-9607-7FE3DD7D3017}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VclibInvoke", "VclibInvoke\VclibInvoke.csproj", "{CAD59DEE-C8D8-4CEA-9607-7FE3DD7D3017}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "网络编程", "网络编程", "{7BD11C28-A405-4975-894F-5F3DBA698985}"
 EndProject
