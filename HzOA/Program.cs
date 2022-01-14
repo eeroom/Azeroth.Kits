@@ -14,6 +14,7 @@ namespace HzOA {
 
         public static string bookmark;
         static void Main(string[] args) {
+            //使用办法，每个参与人开一个控制台，登陆用户名，然后执行新的申请、代办任务、完成任务
             while (true) {
                 Console.WriteLine("1新的申请，2审批");
                 var cmd = Console.ReadLine();
