@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace WorkFlowConsole {
+namespace HzOA {
     public enum OrginazitionNodeType {
         总公司=3,
         省公司=1,

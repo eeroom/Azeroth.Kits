@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace WorkFlowConsole {
+namespace HzOA {
     public class HzWorkFlowContext {
 
         public Guid Id { get; set; }

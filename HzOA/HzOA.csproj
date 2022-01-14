@@ -7,8 +7,8 @@
     <ProjectGuid>{2CE5D1B3-A3F1-4E94-8806-DDE8A6E87EBC}</ProjectGuid>
     <OutputType>Exe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>WorkFlowConsole</RootNamespace>
-    <AssemblyName>WorkFlowConsole</AssemblyName>
+    <RootNamespace>HzOA</RootNamespace>
+    <AssemblyName>HzOA</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>

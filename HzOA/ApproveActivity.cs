@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Activities;
 
-namespace WorkFlowConsole {
+namespace HzOA {
 
     public sealed class ApproveActivity : NativeActivity {
         public InArgument<HzWorkFlowContext> HzWfContext { get; set; }
