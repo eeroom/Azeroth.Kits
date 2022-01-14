@@ -7,8 +7,8 @@
     <ProjectGuid>{BCA923A0-B356-4960-863D-417B3718F1E6}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>MyExcelFunction</RootNamespace>
-    <AssemblyName>MyExcelFunction</AssemblyName>
+    <RootNamespace>ExcelFunctionCOM</RootNamespace>
+    <AssemblyName>ExcelFunctionCOM</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
@@ -49,7 +49,7 @@
     <Compile Include="RTD.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Read.md" />
+    <None Include="README.md" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
