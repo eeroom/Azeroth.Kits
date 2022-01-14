@@ -7,8 +7,8 @@
     <ProjectGuid>{2AA6D304-6A24-4BD5-B84F-33D567BED70B}</ProjectGuid>
     <OutputType>Exe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>MicrosoftLocalReportView</RootNamespace>
-    <AssemblyName>MicrosoftLocalReportView</AssemblyName>
+    <RootNamespace>ReportView</RootNamespace>
+    <AssemblyName>ReportView</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>

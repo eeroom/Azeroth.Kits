@@ -29,7 +29,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UdpServer", "UdpServer\UdpS
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UdpClient", "UdpClient\UdpClient.csproj", "{3813CCBD-2EB8-4ACD-97CD-92BF8ADCBC26}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MicrosoftLocalReportView", "MicrosoftLocalReportView\MicrosoftLocalReportView.csproj", "{2AA6D304-6A24-4BD5-B84F-33D567BED70B}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ReportView", "ReportView\ReportView.csproj", "{2AA6D304-6A24-4BD5-B84F-33D567BED70B}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WorkFlowConsole", "WorkFlowConsole\WorkFlowConsole.csproj", "{2CE5D1B3-A3F1-4E94-8806-DDE8A6E87EBC}"
 EndProject
