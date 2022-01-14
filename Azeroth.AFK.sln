@@ -5,7 +5,7 @@ VisualStudioVersion = 14.0.23107.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "T4", "T4\T4.csproj", "{DAD24E49-C650-49A2-9C06-86630265657D}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "aclib", "aclib\aclib.vcxproj", "{C6C34CB1-26A1-4D81-BADB-CFB69817A036}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "vclib", "vclib\vclib.vcxproj", "{C6C34CB1-26A1-4D81-BADB-CFB69817A036}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AclibPInvoke", "AclibPInvoke\AclibPInvoke.csproj", "{CAD59DEE-C8D8-4CEA-9607-7FE3DD7D3017}"
 EndProject
