@@ -9,8 +9,8 @@ namespace AkWindowsService
     {
         static void Main(string[] args)
         {
-            var ti = new System.Configuration.Install.TransactedInstaller();
-
+            var p1service = new P1Service.P1ServiceImpl();
+            System.ServiceProcess.ServiceBase.Run(p1service);
         }
     }
 }

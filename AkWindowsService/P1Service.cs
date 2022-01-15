@@ -12,7 +12,12 @@ namespace AkWindowsService
     {
         public class P1ServiceImpl:System.ServiceProcess.ServiceBase
         {
+            public static string MyServiceName = "P1Serveice";
             System.ServiceModel.Web.WebServiceHost hs { set; get; }
+            public P1ServiceImpl() {
+                this.ServiceName = MyServiceName;
+            }
+
             protected override void OnStart(string[] args)
             {
                 this.hs = new System.ServiceModel.Web.WebServiceHost(typeof(Home));
@@ -23,6 +28,29 @@ namespace AkWindowsService
             {
                 this.hs.Close();
             }
+        }
+    }
+
+    /// <summary>
+    /// 这个类是给InstalUtil用的，
+    /// this.p1Installer1.ServiceName = P1ServiceImpl.MyServiceName和运行的serverName产生关联
+    /// </summary>
+    [System.ComponentModel.RunInstaller(true)]
+    public class AkInstaller : System.Configuration.Install.Installer {
+        private System.ServiceProcess.ServiceProcessInstaller processInstaller;
+        private System.ServiceProcess.ServiceInstaller p1Installer1;
+        public AkInstaller() {
+            this.processInstaller = new System.ServiceProcess.ServiceProcessInstaller();
+            this.p1Installer1 = new System.ServiceProcess.ServiceInstaller();
+
+            this.processInstaller.Account = System.ServiceProcess.ServiceAccount.LocalSystem;
+            this.processInstaller.Password = null;
+            this.processInstaller.Username = null;
+
+            this.p1Installer1.ServiceName = P1Service.P1ServiceImpl.MyServiceName;
+
+            this.Installers.Add(this.processInstaller);
+            this.Installers.Add(this.p1Installer1);
         }
     }
 }
