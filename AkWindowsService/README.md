@@ -11,3 +11,13 @@
 4、安装服务：InstallUtil.exe 服务程序
 5、卸载服务：InstallUtil.exe /u 服务程序
 ```
+
+# windows服务启动UI
+```
+xp系统的用户和window service运行在一个session下，
+在xp以后，windows系统改变了用户会话管理的策略，
+window service独立运行在session0下，
+依次给后续的登录用户分配sessionX(X =1,2,3...)，
+session0没有权限运行UI。
+所以在window xp以后的系统下，window service调用有UI的application时只能看到程序进程但不能运行程序的UI
+```
