@@ -10,6 +10,10 @@
 3、InstallUtil.exe 工具，.net会自动这个工具，需要以管理员权限运行，才能正常完成安装
 4、安装服务：InstallUtil.exe 服务程序
 5、卸载服务：InstallUtil.exe /u 服务程序
+6、InstallUtil.exe的本质就是调用System.Configuration.Install.ManagedInstallerClass.InstallHelper()方法，
+	把安装和卸载的逻辑在自己程序中，也可以直接控制台运行，方便调试
+	安装：AkWindowsService.exe /install
+	卸载：AkWindowsService.exe /uninstall
 ```
 
 # windows服务启动UI

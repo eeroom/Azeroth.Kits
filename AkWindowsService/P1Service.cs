@@ -12,10 +12,11 @@ namespace AkWindowsService
     {
         public class P1ServiceImpl:System.ServiceProcess.ServiceBase
         {
-            public static string MyServiceName = "P1Serveice";
+            public static string KeyServiceName = "P1Service:ServiceName";
+            public static string KeyDescription = "P1Service:Description";
             System.ServiceModel.Web.WebServiceHost hs { set; get; }
             public P1ServiceImpl() {
-                this.ServiceName = MyServiceName;
+                this.ServiceName = System.Configuration.ConfigurationManager.AppSettings[KeyServiceName];
             }
 
             protected override void OnStart(string[] args)
@@ -47,8 +48,8 @@ namespace AkWindowsService
             this.processInstaller.Password = null;
             this.processInstaller.Username = null;
 
-            this.p1Installer1.ServiceName = P1Service.P1ServiceImpl.MyServiceName;
-
+            this.p1Installer1.ServiceName = System.Configuration.ConfigurationManager.AppSettings[P1Service.P1ServiceImpl.KeyServiceName];
+            this.p1Installer1.Description = System.Configuration.ConfigurationManager.AppSettings[P1Service.P1ServiceImpl.KeyDescription];
             this.Installers.Add(this.processInstaller);
             this.Installers.Add(this.p1Installer1);
         }
