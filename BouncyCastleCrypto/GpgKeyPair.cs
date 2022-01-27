@@ -16,43 +16,41 @@ namespace BouncyCastleCrypto
         public GpgKeyPair(System.IO.Stream publickKeyStream, System.IO.Stream privateKeyStream,string privateKeyPwd)
         {
             this.PublickKey = ReadPublicKey(publickKeyStream);
-            using (var pkstream= Org.BouncyCastle.Bcpg.OpenPgp.PgpUtilities.GetDecoderStream(privateKeyStream))
+
+            var pkstream = Org.BouncyCastle.Bcpg.OpenPgp.PgpUtilities.GetDecoderStream(privateKeyStream);
+            var bundle = new Org.BouncyCastle.Bcpg.OpenPgp.PgpSecretKeyRingBundle(pkstream);
+            foreach (Org.BouncyCastle.Bcpg.OpenPgp.PgpSecretKeyRing keyRing in bundle.GetKeyRings())
             {
-                var bundle = new Org.BouncyCastle.Bcpg.OpenPgp.PgpSecretKeyRingBundle(pkstream);
-                foreach (Org.BouncyCastle.Bcpg.OpenPgp.PgpSecretKeyRing keyRing in bundle.GetKeyRings())
+                foreach (Org.BouncyCastle.Bcpg.OpenPgp.PgpSecretKey key in keyRing.GetSecretKeys())
                 {
-                    foreach (Org.BouncyCastle.Bcpg.OpenPgp.PgpSecretKey key in keyRing.GetSecretKeys())
+                    if (key?.IsSigningKey ?? false)
                     {
-                        if (key?.IsSigningKey ?? false)
-                        {
-                            this.PrivateKeySecreted = key;
-                        }
+                        this.PrivateKeySecreted = key;
                     }
                 }
-                if (this.PrivateKeySecreted == null)
-                    throw new ArgumentException("私钥数据有问题,没有找到公钥");
             }
+            if (this.PrivateKeySecreted == null)
+                throw new ArgumentException("私钥数据有问题,没有找到公钥");
+
             this.PrivateKey = this.PrivateKeySecreted.ExtractPrivateKey(privateKeyPwd.ToCharArray());
         }
 
 
         public static Org.BouncyCastle.Bcpg.OpenPgp.PgpPublicKey ReadPublicKey(System.IO.Stream publickKeyStream)
         {
-            using (var pkstream = Org.BouncyCastle.Bcpg.OpenPgp.PgpUtilities.GetDecoderStream(publickKeyStream))
+            var pkstream = Org.BouncyCastle.Bcpg.OpenPgp.PgpUtilities.GetDecoderStream(publickKeyStream);
+            var bundle = new Org.BouncyCastle.Bcpg.OpenPgp.PgpPublicKeyRingBundle(pkstream);
+            foreach (Org.BouncyCastle.Bcpg.OpenPgp.PgpPublicKeyRing keyRing in bundle.GetKeyRings())
             {
-                var bundle = new Org.BouncyCastle.Bcpg.OpenPgp.PgpPublicKeyRingBundle(pkstream);
-                foreach (Org.BouncyCastle.Bcpg.OpenPgp.PgpPublicKeyRing keyRing in bundle.GetKeyRings())
+                foreach (Org.BouncyCastle.Bcpg.OpenPgp.PgpPublicKey key in keyRing.GetPublicKeys())
                 {
-                    foreach (Org.BouncyCastle.Bcpg.OpenPgp.PgpPublicKey key in keyRing.GetPublicKeys())
+                    if (key?.IsEncryptionKey ?? false)
                     {
-                        if (key?.IsEncryptionKey ?? false)
-                        {
-                            return key;
-                        }
+                        return key;
                     }
                 }
-                throw new ArgumentException("公钥数据有问题,没有找到公钥");
             }
+            throw new ArgumentException("公钥数据有问题,没有找到公钥");
         }
 
         /// <summary>
