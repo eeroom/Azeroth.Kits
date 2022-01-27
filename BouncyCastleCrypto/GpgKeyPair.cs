@@ -5,7 +5,7 @@ using System.Text;
 
 namespace BouncyCastleCrypto
 {
-    public class EncryptInputGPG
+    public class GpgKeyPair
     {
         /// <summary>
         /// 
@@ -13,7 +13,7 @@ namespace BouncyCastleCrypto
         /// <param name="publickKeyStream">对应gpg4win导出的*.asc公钥文件</param>
         /// <param name="privateKeyStream">对应gpg4win导出的*.gpg私钥文件（被密码加密）</param>
         /// <param name="privateKeyPwd">*.gpg私钥文件的密码</param>
-        public EncryptInputGPG(System.IO.Stream publickKeyStream, System.IO.Stream privateKeyStream,string privateKeyPwd)
+        public GpgKeyPair(System.IO.Stream publickKeyStream, System.IO.Stream privateKeyStream,string privateKeyPwd)
         {
             using (var pkstream= Org.BouncyCastle.Bcpg.OpenPgp.PgpUtilities.GetDecoderStream(publickKeyStream))
             {
@@ -48,10 +48,6 @@ namespace BouncyCastleCrypto
                     throw new ArgumentException("私钥数据有问题,没有找到公钥");
             }
             this.PrivateKey = this.PrivateKeySecreted.ExtractPrivateKey(privateKeyPwd.ToCharArray());
-            this.CompressionAlgorithmTag = Org.BouncyCastle.Bcpg.CompressionAlgorithmTag.Zip;
-            this.IntegrityProtected = true;
-            this.SymmetricKeyAlgorithmTag = Org.BouncyCastle.Bcpg.SymmetricKeyAlgorithmTag.Aes256;
-            this.BufferSize = 8*1024;
         }
 
         /// <summary>
@@ -68,30 +64,6 @@ namespace BouncyCastleCrypto
         /// *.gpg私钥文件的密码
         /// </summary>
         public Org.BouncyCastle.Bcpg.OpenPgp.PgpPrivateKey PrivateKey { get; private set; }
-
-        public System.IO.FileInfo InputFile { get; set; }
-
-        public System.IO.Stream OutputStream { get; set; }
-
-        /// <summary>
-        /// 默认值：AES256
-        /// </summary>
-        public Org.BouncyCastle.Bcpg.SymmetricKeyAlgorithmTag SymmetricKeyAlgorithmTag { get; set; }
-
-        /// <summary>
-        /// 默认值：true
-        /// </summary>
-        public bool IntegrityProtected { get; set; }
-
-        /// <summary>
-        /// 默认值：Zip
-        /// </summary>
-        public Org.BouncyCastle.Bcpg.CompressionAlgorithmTag CompressionAlgorithmTag { get; set; }
-
-        /// <summary>
-        /// 默认值：8*1024
-        /// </summary>
-        public int BufferSize { get; set; }
 
     }
 }
