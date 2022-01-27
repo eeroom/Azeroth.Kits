@@ -153,8 +153,7 @@ namespace BouncyCastleCrypto
             var tmp = obj as Org.BouncyCastle.Bcpg.OpenPgp.PgpEncryptedDataList;
             if (tmp != null)
                 return tmp;
-            var tmp2 = pgpObjFacoty.NextPgpObject();
-            return (Org.BouncyCastle.Bcpg.OpenPgp.PgpEncryptedDataList)tmp2;
+            return (Org.BouncyCastle.Bcpg.OpenPgp.PgpEncryptedDataList)pgpObjFacoty.NextPgpObject();
         }
     }
 }
