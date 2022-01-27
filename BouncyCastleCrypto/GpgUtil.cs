@@ -14,7 +14,7 @@ namespace BouncyCastleCrypto
         /// <param name="cfg"></param>
         /// <param name="InputFile"></param>
         /// <param name="OutputStream"></param>
-        public static void EncryptAndSign(GpgKeyPair kp,GpgEncryptSignCfg cfg,System.IO.FileInfo InputFile,System.IO.Stream OutputStream)
+        public static void EncryptAndSign(System.IO.FileInfo InputFile,System.IO.Stream OutputStream, GpgKeyPair kp, GpgEncryptSignCfg cfg)
         {
             var pgpSignatureGenerator = new Org.BouncyCastle.Bcpg.OpenPgp.PgpSignatureGenerator(kp.PrivateKeySecreted.PublicKey.Algorithm,
                 Org.BouncyCastle.Bcpg.HashAlgorithmTag.Sha256);
