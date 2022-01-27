@@ -48,5 +48,10 @@ namespace BouncyCastleCrypto
 
             }
         }
+
+        public static void Encrypt()
+        {
+
+        }
     }
 }
