@@ -63,11 +63,12 @@ namespace BouncyCastleCrypto
         /// <param name="outputStream">普通的stream,或者Org.BouncyCastle.Bcpg.ArmoredOutputStream（如果使用加密文件使用ASCII）</param>
         /// <param name="pubKey"></param>
         /// <param name="cfg"></param>
-        public static void Encrypt(System.IO.FileInfo inputFile, System.IO.Stream outputStream, Org.BouncyCastle.Bcpg.OpenPgp.PgpPublicKey pubKey, GpgEncryptSignCfg cfg)
+        public static void Encrypt(System.IO.FileInfo inputFile, System.IO.Stream outputStream, System.IO.Stream publickKeyStream, GpgEncryptSignCfg cfg)
         {
             
             var sr = new Org.BouncyCastle.Security.SecureRandom();
             var pgpEncryptedDataGenerator = new Org.BouncyCastle.Bcpg.OpenPgp.PgpEncryptedDataGenerator(cfg.SymmetricKeyAlgorithmTag, cfg.IntegrityProtected, sr);
+            var pubKey = GpgKeyPair.ReadPublicKey(publickKeyStream);
             pgpEncryptedDataGenerator.AddMethod(pubKey);
             var pgpCompressedDataGenerator = new Org.BouncyCastle.Bcpg.OpenPgp.PgpCompressedDataGenerator(cfg.CompressionAlgorithmTag);
             var pgpLiteralDataGenerator = new Org.BouncyCastle.Bcpg.OpenPgp.PgpLiteralDataGenerator();

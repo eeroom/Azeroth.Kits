@@ -35,10 +35,6 @@ namespace BouncyCastleCrypto
             this.PrivateKey = this.PrivateKeySecreted.ExtractPrivateKey(privateKeyPwd.ToCharArray());
         }
 
-        public GpgKeyPair(System.IO.Stream publickKeyStream)
-        {
-            this.PublickKey = ReadPublicKey(publickKeyStream);
-        }
 
         public static Org.BouncyCastle.Bcpg.OpenPgp.PgpPublicKey ReadPublicKey(System.IO.Stream publickKeyStream)
         {
