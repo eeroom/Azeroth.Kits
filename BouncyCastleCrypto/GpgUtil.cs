@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
+using Org.BouncyCastle.Bcpg.OpenPgp;
 
 namespace BouncyCastleCrypto
 {
@@ -83,6 +85,75 @@ namespace BouncyCastleCrypto
                     outputStreamEncryptedCompressedLiteral.Write(buffer, 0, dataLenght);
                 }
             }
+        }
+
+        public static bool Decrypt(System.IO.Stream inputStream,System.IO.Stream outputStream,System.IO.Stream praKeyStream,string praKeyPwd)
+        {
+            var pgpEncryptedDatalist = GetEncryptedDatalist(inputStream);
+            var pgpEncryptedDataWrapper = Decrypt(pgpEncryptedDatalist, praKeyStream, praKeyPwd);
+            if (pgpEncryptedDataWrapper.Item1.IsIntegrityProtected() && !pgpEncryptedDataWrapper.Item1.Verify())
+                return false;
+            var obj = pgpEncryptedDataWrapper.Item2.NextPgpObject();
+            if (obj is PgpCompressedData)
+                Decrypt((PgpCompressedData)obj, outputStream);
+            else if (obj is PgpLiteralData)
+                Decrypt((PgpLiteralData)obj, outputStream);
+            else if (obj is PgpOnePassSignatureList)
+                throw new ArgumentException("加密文件包含签名，请使用其它合适的解密方法");
+            else
+                throw new ArgumentException("不支持的加密文件");
+            return true;
+        }
+
+        private static void Decrypt(PgpLiteralData objLiteral, Stream outputStream)
+        {
+            using (var ms=objLiteral.GetInputStream())
+            {
+                Org.BouncyCastle.Utilities.IO.Streams.PipeAll(ms, outputStream);
+            }
+        }
+
+        private static void Decrypt(PgpCompressedData objCompressed, Stream outputStream)
+        {
+            using (var compressedStream=objCompressed.GetDataStream())
+            {
+                var factory = new PgpObjectFactory(compressedStream);
+                var obj = factory.NextPgpObject();
+                if (obj is PgpOnePassSignatureList)
+                    Decrypt((PgpLiteralData)factory.NextPgpObject(), outputStream);
+                else
+                    Decrypt((PgpLiteralData)obj, outputStream);
+            }
+        }
+
+        private static Tuple< PgpPublicKeyEncryptedData, PgpObjectFactory> Decrypt(PgpEncryptedDataList pgpEncryptedDatalist, Stream privateKeyStream, string praKeyPwd)
+        {
+            var pkstream = Org.BouncyCastle.Bcpg.OpenPgp.PgpUtilities.GetDecoderStream(privateKeyStream);
+            var bundle = new Org.BouncyCastle.Bcpg.OpenPgp.PgpSecretKeyRingBundle(pkstream);
+
+            foreach (PgpPublicKeyEncryptedData encryptedData in pgpEncryptedDatalist.GetEncryptedDataObjects())
+            {
+                var privateKey = bundle.GetSecretKey(encryptedData.KeyId)?.ExtractPrivateKey(praKeyPwd.ToCharArray());
+                if (privateKey == null)
+                    continue;
+                using (var tmp=encryptedData.GetDataStream(privateKey))
+                {
+                    return Tuple.Create(encryptedData, new PgpObjectFactory(tmp));
+                }
+            }
+            throw new ArgumentException("未能正常读取到加密文件内容，请检查文件及密钥");
+        }
+
+        private static Org.BouncyCastle.Bcpg.OpenPgp.PgpEncryptedDataList GetEncryptedDatalist(Stream inputStream)
+        {
+            var dstream = Org.BouncyCastle.Bcpg.OpenPgp.PgpUtilities.GetDecoderStream(inputStream);
+            var pgpObjFacoty = new Org.BouncyCastle.Bcpg.OpenPgp.PgpObjectFactory(dstream);
+            var obj = pgpObjFacoty.NextPgpObject();
+            var tmp = obj as Org.BouncyCastle.Bcpg.OpenPgp.PgpEncryptedDataList;
+            if (tmp != null)
+                return tmp;
+            var tmp2 = pgpObjFacoty.NextPgpObject();
+            return (Org.BouncyCastle.Bcpg.OpenPgp.PgpEncryptedDataList)tmp2;
         }
     }
 }
