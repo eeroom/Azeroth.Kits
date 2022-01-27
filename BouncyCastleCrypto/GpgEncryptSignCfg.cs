@@ -33,5 +33,15 @@ namespace BouncyCastleCrypto
         /// 默认值：8*1024
         /// </summary>
         public int BufferSize { get; set; }
+
+        /// <summary>
+        /// 默认值false
+        /// </summary>
+        public bool IsCritical { get; set; }
+
+        /// <summary>
+        /// 默认值false
+        /// </summary>
+        public bool IsNested { get; set; }
     }
 }

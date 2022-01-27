@@ -35,9 +35,9 @@ namespace BouncyCastleCrypto
                 pgpSignatureGenerator.InitSign(Org.BouncyCastle.Bcpg.OpenPgp.PgpSignature.BinaryDocument, kp.PrivateKey);
                 var userId = kp.PrivateKeySecreted.PublicKey.GetUserIds().Cast<string>().First();
                 var pgpSignatureSubpacketGenerator = new Org.BouncyCastle.Bcpg.OpenPgp.PgpSignatureSubpacketGenerator();
-                pgpSignatureSubpacketGenerator.SetSignerUserId(false, userId);
+                pgpSignatureSubpacketGenerator.SetSignerUserId(cfg.IsCritical, userId);
                 pgpSignatureGenerator.SetHashedSubpackets(pgpSignatureSubpacketGenerator.Generate());
-                pgpSignatureGenerator.GenerateOnePassVersion(false).Encode(outputStreamEncryptedCompressedLiteral);
+                pgpSignatureGenerator.GenerateOnePassVersion(cfg.IsNested).Encode(outputStreamEncryptedCompressedLiteral);
 
                 int dataLenght = 0;
                 var buffer = new byte[cfg.BufferSize];
@@ -52,6 +52,7 @@ namespace BouncyCastleCrypto
         }
 
         /// <summary>
+        /// 加密文件
         /// 使用接收方的公钥加密文件
         /// </summary>
         /// <param name="inputFile"></param>
