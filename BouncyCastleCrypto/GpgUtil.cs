@@ -11,6 +11,7 @@ namespace BouncyCastleCrypto
         /// 加密并签名
         /// 使用接受方的公钥进行加密
         /// 使用发送方的私钥进行签名
+        /// 先压缩，再加密，再签名
         /// </summary>
         /// <param name="kp"></param>
         /// <param name="cfg"></param>
@@ -54,6 +55,7 @@ namespace BouncyCastleCrypto
         /// <summary>
         /// 加密文件
         /// 使用接收方的公钥加密文件
+        /// 先压缩，再加密，
         /// </summary>
         /// <param name="inputFile"></param>
         /// <param name="outputStream">普通的stream,或者Org.BouncyCastle.Bcpg.ArmoredOutputStream（如果使用加密文件使用ASCII）</param>
