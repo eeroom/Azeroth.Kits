@@ -59,6 +59,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BouncyCastleCrypto", "Bounc
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HybridConstructsSynchronization", "HybridConstructsSynchronization\HybridConstructsSynchronization.csproj", "{1B21933B-ED23-4EF8-97E0-3AF3CAA93421}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AsynchronousImplementation", "AsynchronousImplementation\AsynchronousImplementation.csproj", "{A55D9957-0A4B-4759-A852-266C22BC4A3A}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -283,6 +285,18 @@ Global
 		{1B21933B-ED23-4EF8-97E0-3AF3CAA93421}.Release|x64.Build.0 = Release|Any CPU
 		{1B21933B-ED23-4EF8-97E0-3AF3CAA93421}.Release|x86.ActiveCfg = Release|Any CPU
 		{1B21933B-ED23-4EF8-97E0-3AF3CAA93421}.Release|x86.Build.0 = Release|Any CPU
+		{A55D9957-0A4B-4759-A852-266C22BC4A3A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A55D9957-0A4B-4759-A852-266C22BC4A3A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A55D9957-0A4B-4759-A852-266C22BC4A3A}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{A55D9957-0A4B-4759-A852-266C22BC4A3A}.Debug|x64.Build.0 = Debug|Any CPU
+		{A55D9957-0A4B-4759-A852-266C22BC4A3A}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{A55D9957-0A4B-4759-A852-266C22BC4A3A}.Debug|x86.Build.0 = Debug|Any CPU
+		{A55D9957-0A4B-4759-A852-266C22BC4A3A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A55D9957-0A4B-4759-A852-266C22BC4A3A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A55D9957-0A4B-4759-A852-266C22BC4A3A}.Release|x64.ActiveCfg = Release|Any CPU
+		{A55D9957-0A4B-4759-A852-266C22BC4A3A}.Release|x64.Build.0 = Release|Any CPU
+		{A55D9957-0A4B-4759-A852-266C22BC4A3A}.Release|x86.ActiveCfg = Release|Any CPU
+		{A55D9957-0A4B-4759-A852-266C22BC4A3A}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -306,5 +320,6 @@ Global
 		{6948F8F2-BFDF-45DE-BB12-362FFDBA6BFB} = {101AF492-DF98-4133-93D1-6048427A2291}
 		{95ED5A1B-3D68-4416-98C3-CA178D6D8D9F} = {B92597CF-DCD9-45C4-9031-DD085AF9329F}
 		{1B21933B-ED23-4EF8-97E0-3AF3CAA93421} = {C1FF8CE8-C3A3-4611-8879-0F28F172F1AB}
+		{A55D9957-0A4B-4759-A852-266C22BC4A3A} = {C1FF8CE8-C3A3-4611-8879-0F28F172F1AB}
 	EndGlobalSection
 EndGlobal
