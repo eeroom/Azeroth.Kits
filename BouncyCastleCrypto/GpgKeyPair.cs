@@ -10,8 +10,8 @@ namespace BouncyCastleCrypto
         /// <summary>
         /// 
         /// </summary>
-        /// <param name="publickKeyStream">对应gpg4win导出的*.asc公钥文件</param>
-        /// <param name="privateKeyStream">对应gpg4win导出的*.gpg私钥文件（被密码加密）</param>
+        /// <param name="publickKeyStream">对应gpg4win导出公钥的*.asc公钥文件（导出工具分为导出/）</param>
+        /// <param name="privateKeyStream">对应gpg4win导出私钥的*.gpg私钥文件（被密码加密）</param>
         /// <param name="privateKeyPwd">*.gpg私钥文件的密码</param>
         public GpgKeyPair(System.IO.Stream publickKeyStream, System.IO.Stream privateKeyStream,string privateKeyPwd)
         {
