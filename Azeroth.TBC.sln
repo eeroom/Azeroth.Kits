@@ -45,7 +45,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "解压缩", "解压缩", "{
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "qiz4net", "qiz4net\qiz4net.csproj", "{2A2F899D-E78F-49D3-8FD7-C54258AC6F42}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ExcelUserFunctionXll", "XllExcelUserFunction\ExcelUserFunctionXll.csproj", "{1662F937-0D2C-4CF1-8FF4-134C9275973B}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ExcelUserFunctionXll", "ExcelUserFunctionXll\ExcelUserFunctionXll.csproj", "{1662F937-0D2C-4CF1-8FF4-134C9275973B}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PrintImg", "PrintImg\PrintImg.csproj", "{975EAEA7-5237-4CA2-AE5D-77A27E043D23}"
 EndProject
