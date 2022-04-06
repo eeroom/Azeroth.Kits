@@ -6,10 +6,26 @@
         xmlns:local="clr-namespace:TenpowerTalk"
         mc:Ignorable="d"
         Title="艾泽拉斯吧" Height="600" Width="400" MinWidth="350" MinHeight="400" Background="#f0ffff">
+    <Window.Resources>
+        <Storyboard x:Key="xuanzhuang">
+            <DoubleAnimation RepeatBehavior="Forever" From="0" To="360" Duration="0:0:1" Storyboard.TargetName="angleimg" Storyboard.TargetProperty="Angle"></DoubleAnimation>
+        </Storyboard>
+    </Window.Resources>
+    <Window.Triggers>
+        <EventTrigger RoutedEvent="MouseEnter" SourceName="touxiangPanel">
+            <BeginStoryboard Storyboard="{StaticResource xuanzhuang}">
+                
+            </BeginStoryboard>
+        </EventTrigger>
+    </Window.Triggers>
     <DockPanel>
         <DockPanel DockPanel.Dock="Top"  >
-            <StackPanel Orientation="Horizontal">
-                <Image Width="60" Height="60" Source="D:\我的图片\头像.png"></Image>
+            <StackPanel Orientation="Horizontal"  x:Name="touxiangPanel">
+                <Image Width="60" Height="60" Source="D:\我的图片\头像.png" RenderTransformOrigin="0.5,0.5">
+                    <Image.RenderTransform>
+                        <RotateTransform Angle="0" x:Name="angleimg"></RotateTransform>
+                    </Image.RenderTransform>
+                </Image>
             </StackPanel>
             <StackPanel Orientation="Vertical">
                 <TextBlock Margin="4">丢了光影</TextBlock>
