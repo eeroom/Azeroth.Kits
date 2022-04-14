@@ -21,7 +21,7 @@
     <DockPanel>
         <DockPanel DockPanel.Dock="Top"  >
             <StackPanel Orientation="Horizontal"  x:Name="touxiangPanel">
-                <Image Width="60" Height="60" Source="D:\我的图片\头像.png" RenderTransformOrigin="0.5,0.5">
+                <Image Width="60" Height="60" Source="img/头像.png" RenderTransformOrigin="0.5,0.5">
                     <Image.RenderTransform>
                         <RotateTransform Angle="0" x:Name="angleimg"></RotateTransform>
                     </Image.RenderTransform>
@@ -30,15 +30,15 @@
             <StackPanel Orientation="Vertical">
                 <TextBlock Margin="4">丢了光影</TextBlock>
                 <StackPanel Orientation="Horizontal" Margin="4">
-                    <Image Width="12" Source="D:\我的图片\在线.png"></Image>
+                    <Image Width="12" Source="img/在线.png"></Image>
                     <TextBlock>在线</TextBlock>
                 </StackPanel>
                 <TextBlock Margin="4">点击我修改个性签名</TextBlock>
             </StackPanel>
         </DockPanel>
         <DockPanel DockPanel.Dock="Top" Margin="0,5,0,0">
-            <Image DockPanel.Dock="Left" Width="20" Source="D:\我的图片\搜索.png"></Image>
-            <Image DockPanel.Dock="Right" Width="20" Source="D:\我的图片\收藏.png"></Image>
+            <Image DockPanel.Dock="Left" Width="20" Source="img/搜索.png"></Image>
+            <Image DockPanel.Dock="Right" Width="20" Source="img/收藏.png"></Image>
             <TextBox></TextBox>
         </DockPanel>
         <Grid DockPanel.Dock="Top" Margin="0,5,0,0">
@@ -52,21 +52,21 @@
                 <ColumnDefinition></ColumnDefinition>
             </Grid.ColumnDefinitions>
             <Button Grid.Column="0" Background="#f0ffff" BorderBrush="{x:Null}" BorderThickness="0">
-                <Image Width="40" Source="D:\我的图片\QQ.png"></Image></Button>
+                <Image Width="40" Source="img/QQ.png"></Image></Button>
             <Button Grid.Column="1" Background="#f0ffff" BorderBrush="{x:Null}" BorderThickness="0">
-                <Image Width="40" Source="D:\我的图片\雪人.png"></Image>
+                <Image Width="40" Source="img/雪人.png"></Image>
             </Button>
             <Button Grid.Column="2" Background="#f0ffff" BorderBrush="{x:Null}" BorderThickness="0">
-                <Image Width="40" Source="D:\我的图片\电话.png"></Image>
+                <Image Width="40" Source="img/电话.png"></Image>
             </Button>
             <Button Grid.Column="3" Background="#f0ffff" BorderBrush="{x:Null}" BorderThickness="0">
-                <Image Width="40" Source="D:\我的图片\安全.png"></Image>
+                <Image Width="40" Source="img/安全.png"></Image>
             </Button>
         </Grid>
         <DockPanel DockPanel.Dock="Top"  LastChildFill="False">
             <TextBlock  DockPanel.Dock="Left" VerticalAlignment="Center" Margin="4,0,0,0">对话</TextBlock>
-            <Image DockPanel.Dock="Right" Width="20" Source="D:\我的图片\加.png"></Image>
-            <Image DockPanel.Dock="Right" Width="20" Source="D:\我的图片\点.png"></Image>
+            <Image DockPanel.Dock="Right" Width="20" Source="img/加.png"></Image>
+            <Image DockPanel.Dock="Right" Width="20" Source="img/点.png"></Image>
         </DockPanel>
         <Grid DockPanel.Dock="Bottom">
             <Grid.RowDefinitions  >
@@ -99,7 +99,7 @@
             <ListBoxItem HorizontalContentAlignment="Stretch">
                 <DockPanel>
                     <StackPanel Orientation="Horizontal" DockPanel.Dock="Left">
-                        <Image  Source="D:\我的图片\会话.png"></Image>
+                        <Image  Source="img/会话.png"></Image>
                     </StackPanel>
                     <TextBlock DockPanel.Dock="Right" VerticalAlignment="Center" >2021/5/1</TextBlock>
                     <TextBlock DockPanel.Dock="Left" VerticalAlignment="Center">张三,小红</TextBlock>
@@ -108,7 +108,7 @@
             <ListBoxItem HorizontalContentAlignment="Stretch">
                 <DockPanel>
                     <StackPanel Orientation="Horizontal" DockPanel.Dock="Left">
-                        <Image  Source="D:\我的图片\会话.png"></Image>
+                        <Image  Source="img/会话.png"></Image>
                     </StackPanel>
                     <TextBlock DockPanel.Dock="Right" VerticalAlignment="Center"  >2022/5/1</TextBlock>
                     <TextBlock DockPanel.Dock="Left" VerticalAlignment="Center">奥巴马,小炮</TextBlock>
@@ -117,7 +117,7 @@
             <ListBoxItem HorizontalContentAlignment="Stretch">
                 <DockPanel>
                     <StackPanel Orientation="Horizontal" DockPanel.Dock="Left">
-                        <Image  Source="D:\我的图片\会话.png"></Image>
+                        <Image  Source="img/会话.png"></Image>
                     </StackPanel>
                     <TextBlock DockPanel.Dock="Right" VerticalAlignment="Center"  >2023/5/1</TextBlock>
                     <TextBlock DockPanel.Dock="Left" VerticalAlignment="Center">暴走萝莉,伊利丹</TextBlock>
@@ -126,7 +126,7 @@
             <ListBoxItem HorizontalContentAlignment="Stretch">
                 <DockPanel>
                     <StackPanel Orientation="Horizontal" DockPanel.Dock="Left">
-                        <Image  Source="D:\我的图片\会话.png"></Image>
+                        <Image  Source="img/会话.png"></Image>
                     </StackPanel>
                     <TextBlock DockPanel.Dock="Right" VerticalAlignment="Center" >2021/5/1</TextBlock>
                     <TextBlock DockPanel.Dock="Left" VerticalAlignment="Center">张三,小红</TextBlock>
@@ -135,7 +135,7 @@
             <ListBoxItem HorizontalContentAlignment="Stretch">
                 <DockPanel>
                     <StackPanel Orientation="Horizontal" DockPanel.Dock="Left">
-                        <Image  Source="D:\我的图片\会话.png"></Image>
+                        <Image  Source="img/会话.png"></Image>
                     </StackPanel>
                     <TextBlock DockPanel.Dock="Right" VerticalAlignment="Center"  >2022/5/1</TextBlock>
                     <TextBlock DockPanel.Dock="Left" VerticalAlignment="Center">奥巴马,小炮</TextBlock>
@@ -144,7 +144,7 @@
             <ListBoxItem HorizontalContentAlignment="Stretch">
                 <DockPanel>
                     <StackPanel Orientation="Horizontal" DockPanel.Dock="Left">
-                        <Image  Source="D:\我的图片\会话.png"></Image>
+                        <Image  Source="img/会话.png"></Image>
                     </StackPanel>
                     <TextBlock DockPanel.Dock="Right" VerticalAlignment="Center"   >2023/5/1</TextBlock>
                     <TextBlock DockPanel.Dock="Left" VerticalAlignment="Center">暴走萝莉,伊利丹</TextBlock>
@@ -153,7 +153,7 @@
             <ListBoxItem HorizontalContentAlignment="Stretch">
                 <DockPanel>
                     <StackPanel Orientation="Horizontal" DockPanel.Dock="Left">
-                        <Image  Source="D:\我的图片\会话.png"></Image>
+                        <Image  Source="img/会话.png"></Image>
                     </StackPanel>
                     <TextBlock DockPanel.Dock="Right" VerticalAlignment="Center"   >2021/5/1</TextBlock>
                     <TextBlock DockPanel.Dock="Left" VerticalAlignment="Center">张三,小红</TextBlock>
@@ -162,7 +162,7 @@
             <ListBoxItem HorizontalContentAlignment="Stretch">
                 <DockPanel>
                     <StackPanel Orientation="Horizontal" DockPanel.Dock="Left">
-                        <Image  Source="D:\我的图片\会话.png"></Image>
+                        <Image  Source="img/会话.png"></Image>
                     </StackPanel>
                     <TextBlock DockPanel.Dock="Right" VerticalAlignment="Center"  >2022/5/1</TextBlock>
                     <TextBlock DockPanel.Dock="Left" VerticalAlignment="Center">奥巴马,小炮</TextBlock>
@@ -171,7 +171,7 @@
             <ListBoxItem HorizontalContentAlignment="Stretch">
                 <DockPanel>
                     <StackPanel Orientation="Horizontal" DockPanel.Dock="Left">
-                        <Image  Source="D:\我的图片\会话.png"></Image>
+                        <Image  Source="img/会话.png"></Image>
                     </StackPanel>
                     <TextBlock DockPanel.Dock="Right" VerticalAlignment="Center"   >2023/5/1</TextBlock>
                     <TextBlock DockPanel.Dock="Left" VerticalAlignment="Center">暴走萝莉,伊利丹</TextBlock>
