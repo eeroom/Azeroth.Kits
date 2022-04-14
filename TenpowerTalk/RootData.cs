@@ -9,9 +9,9 @@ namespace TenpowerTalk
     {
         public LoginUser User { get; set; }
 
-        public RootData()
+        public RootData(LoginUser loginUser)
         {
-            this.User = new LoginUser() { LoginName = "eeroom" };
+            this.User = loginUser;
         }
     }
 }

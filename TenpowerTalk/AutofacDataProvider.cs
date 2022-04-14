@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-
+using Autofac;
 namespace TenpowerTalk
 {
     public class AutofacDataProvider : System.Windows.Data.ObjectDataProvider
@@ -40,7 +40,7 @@ namespace TenpowerTalk
 
         protected override void BeginQuery()
         {
-            var obj = System.Activator.CreateInstance(this.ObjectType);
+            var obj = App.LifetimeScope.Resolve(this.ObjectType);
             this.OnQueryFinished(obj);
         }
     }

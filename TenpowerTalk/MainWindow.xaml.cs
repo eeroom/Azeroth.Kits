@@ -11,7 +11,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
-
+using Autofac;
 namespace TenpowerTalk
 {
     /// <summary>
@@ -22,6 +22,12 @@ namespace TenpowerTalk
         public MainWindow()
         {
             InitializeComponent();
+        }
+
+        private void Button_Click(object sender, RoutedEventArgs e)
+        {
+            var loginUser= App.Resolve<LoginUser>();
+            loginUser.LoginName = "张三";
         }
     }
 }
