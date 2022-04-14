@@ -7,22 +7,41 @@ namespace TenpowerTalk
 {
     public class AutofacDataProvider : System.Windows.Data.ObjectDataProvider
     {
-       unsafe static AutofacDataProvider()
+        public AutofacDataProvider()
         {
-            var methodPtrO = (long*)typeof(System.Windows.Data.ObjectDataProvider)
-                .GetMethod("CreateObjectInstance")
-                .MethodHandle.Value.ToPointer() + 1;
-            var methodPtrA = (long*)typeof(AutofacDataProvider)
-               .GetMethod("CreateObjectInstance")
-               .MethodHandle.Value.ToPointer() + 1;
-            *methodPtrO = *methodPtrA;
+            //unsafe
+            //{
+            //    var methodPtrO = (long*)typeof(System.Windows.Data.ObjectDataProvider)
+            //    .GetMethod("CreateObjectInstance", System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic)
+            //    .MethodHandle.Value.ToPointer() + 1;
+            //    var methodPtrA = (long*)typeof(AutofacDataProvider)
+            //       .GetMethod("CreateObjectInstance", System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.Public)
+            //       .MethodHandle.Value.ToPointer() + 1;
+            //    *methodPtrO = *methodPtrA;
+            //}
         }
+        //unsafe static AutofacDataProvider()
+        // {
+        //     var methodPtrO = (long*)typeof(System.Windows.Data.ObjectDataProvider)
+        //         .GetMethod("CreateObjectInstance", System.Reflection.BindingFlags.Instance| System.Reflection.BindingFlags.NonPublic)
+        //         .MethodHandle.Value.ToPointer() + 1;
+        //     var methodPtrA = (long*)typeof(AutofacDataProvider)
+        //        .GetMethod("CreateObjectInstance",System.Reflection.BindingFlags.Instance| System.Reflection.BindingFlags.NonPublic)
+        //        .MethodHandle.Value.ToPointer() + 1;
+        //     *methodPtrO = *methodPtrA;
+        // }
 
-        private object CreateObjectInstance(out Exception e)
+        //public object CreateObjectInstance(out Exception e)
+        //{
+        //    e = null;
+        //    var obj = System.Activator.CreateInstance(this.ObjectType);
+        //    return obj;
+        //}
+
+        protected override void BeginQuery()
         {
-            e = null;
             var obj = System.Activator.CreateInstance(this.ObjectType);
-            return obj;
+            this.OnQueryFinished(obj);
         }
     }
 }

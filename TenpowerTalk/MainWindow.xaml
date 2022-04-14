@@ -18,6 +18,11 @@
             </BeginStoryboard>
         </EventTrigger>
     </Window.Triggers>
+    <Window.DataContext>
+        <local:AutofacDataProvider ObjectType="{x:Type local:RootData}">
+            
+        </local:AutofacDataProvider>
+    </Window.DataContext>
     <DockPanel>
         <DockPanel DockPanel.Dock="Top"  >
             <StackPanel Orientation="Horizontal"  x:Name="touxiangPanel">
@@ -28,7 +33,7 @@
                 </Image>
             </StackPanel>
             <StackPanel Orientation="Vertical">
-                <TextBlock Margin="4">丢了光影</TextBlock>
+                <TextBlock Text="{Binding User.LoginName}" Margin="4"></TextBlock>
                 <StackPanel Orientation="Horizontal" Margin="4">
                     <Image Width="12" Source="img/在线.png"></Image>
                     <TextBlock>在线</TextBlock>
