@@ -3,9 +3,10 @@ using System.Collections.Generic;
 using System.Configuration;
 using System.Data;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Windows;
 using Autofac;
-namespace TenpowerTalk
+namespace HzTalk
 {
     /// <summary>
     /// App.xaml 的交互逻辑
@@ -29,6 +30,5 @@ namespace TenpowerTalk
             var container = builder.Build();
             LifetimeScope = container.BeginLifetimeScope(typeof(App).ToString());
         }
-
     }
 }

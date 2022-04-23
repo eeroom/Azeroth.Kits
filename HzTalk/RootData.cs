@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Windows;
+using System.Threading.Tasks;
 
-namespace TenpowerTalk
+namespace HzTalk
 {
     public class RootData
     {
@@ -17,7 +17,7 @@ namespace TenpowerTalk
 
         public void CommandBinding_Executed(object sender, System.Windows.Input.ExecutedRoutedEventArgs e)
         {
-            MessageBox.Show("你点我了");
+            System.Windows.MessageBox.Show("你点我了");
         }
     }
 }
