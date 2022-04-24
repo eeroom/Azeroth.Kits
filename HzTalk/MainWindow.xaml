@@ -10,6 +10,7 @@
         <Storyboard x:Key="xuanzhuang">
             <DoubleAnimation RepeatBehavior="Forever" From="0" To="360" Duration="0:0:1" Storyboard.TargetName="angleimg" Storyboard.TargetProperty="Angle"></DoubleAnimation>
         </Storyboard>
+
     </Window.Resources>
     <Window.Triggers>
         <EventTrigger RoutedEvent="MouseEnter" SourceName="touxiangPanel">
@@ -102,88 +103,35 @@
                 知识
             </Button>
         </Grid>
-        <ListBox>
-            <ListBoxItem HorizontalContentAlignment="Stretch">
-                <DockPanel>
-                    <StackPanel Orientation="Horizontal" DockPanel.Dock="Left">
-                        <Image  Source="img/会话.png"></Image>
-                    </StackPanel>
-                    <TextBlock DockPanel.Dock="Right" VerticalAlignment="Center" >2021/5/1</TextBlock>
-                    <TextBlock DockPanel.Dock="Left" VerticalAlignment="Center">张三,小红</TextBlock>
-                </DockPanel>
-            </ListBoxItem>
-            <ListBoxItem HorizontalContentAlignment="Stretch">
-                <DockPanel>
-                    <StackPanel Orientation="Horizontal" DockPanel.Dock="Left">
-                        <Image  Source="img/会话.png"></Image>
-                    </StackPanel>
-                    <TextBlock DockPanel.Dock="Right" VerticalAlignment="Center"  >2022/5/1</TextBlock>
-                    <TextBlock DockPanel.Dock="Left" VerticalAlignment="Center">奥巴马,小炮</TextBlock>
-                </DockPanel>
-            </ListBoxItem>
-            <ListBoxItem HorizontalContentAlignment="Stretch">
-                <DockPanel>
-                    <StackPanel Orientation="Horizontal" DockPanel.Dock="Left">
-                        <Image  Source="img/会话.png"></Image>
-                    </StackPanel>
-                    <TextBlock DockPanel.Dock="Right" VerticalAlignment="Center"  >2023/5/1</TextBlock>
-                    <TextBlock DockPanel.Dock="Left" VerticalAlignment="Center">暴走萝莉,伊利丹</TextBlock>
-                </DockPanel>
-            </ListBoxItem>
-            <ListBoxItem HorizontalContentAlignment="Stretch">
-                <DockPanel>
-                    <StackPanel Orientation="Horizontal" DockPanel.Dock="Left">
-                        <Image  Source="img/会话.png"></Image>
-                    </StackPanel>
-                    <TextBlock DockPanel.Dock="Right" VerticalAlignment="Center" >2021/5/1</TextBlock>
-                    <TextBlock DockPanel.Dock="Left" VerticalAlignment="Center">张三,小红</TextBlock>
-                </DockPanel>
-            </ListBoxItem>
-            <ListBoxItem HorizontalContentAlignment="Stretch">
-                <DockPanel>
-                    <StackPanel Orientation="Horizontal" DockPanel.Dock="Left">
-                        <Image  Source="img/会话.png"></Image>
-                    </StackPanel>
-                    <TextBlock DockPanel.Dock="Right" VerticalAlignment="Center"  >2022/5/1</TextBlock>
-                    <TextBlock DockPanel.Dock="Left" VerticalAlignment="Center">奥巴马,小炮</TextBlock>
-                </DockPanel>
-            </ListBoxItem>
-            <ListBoxItem HorizontalContentAlignment="Stretch">
-                <DockPanel>
-                    <StackPanel Orientation="Horizontal" DockPanel.Dock="Left">
-                        <Image  Source="img/会话.png"></Image>
-                    </StackPanel>
-                    <TextBlock DockPanel.Dock="Right" VerticalAlignment="Center"   >2023/5/1</TextBlock>
-                    <TextBlock DockPanel.Dock="Left" VerticalAlignment="Center">暴走萝莉,伊利丹</TextBlock>
-                </DockPanel>
-            </ListBoxItem>
-            <ListBoxItem HorizontalContentAlignment="Stretch">
-                <DockPanel>
-                    <StackPanel Orientation="Horizontal" DockPanel.Dock="Left">
-                        <Image  Source="img/会话.png"></Image>
-                    </StackPanel>
-                    <TextBlock DockPanel.Dock="Right" VerticalAlignment="Center"   >2021/5/1</TextBlock>
-                    <TextBlock DockPanel.Dock="Left" VerticalAlignment="Center">张三,小红</TextBlock>
-                </DockPanel>
-            </ListBoxItem>
-            <ListBoxItem HorizontalContentAlignment="Stretch">
-                <DockPanel>
-                    <StackPanel Orientation="Horizontal" DockPanel.Dock="Left">
-                        <Image  Source="img/会话.png"></Image>
-                    </StackPanel>
-                    <TextBlock DockPanel.Dock="Right" VerticalAlignment="Center"  >2022/5/1</TextBlock>
-                    <TextBlock DockPanel.Dock="Left" VerticalAlignment="Center">奥巴马,小炮</TextBlock>
-                </DockPanel>
-            </ListBoxItem>
-            <ListBoxItem HorizontalContentAlignment="Stretch">
-                <DockPanel>
-                    <StackPanel Orientation="Horizontal" DockPanel.Dock="Left">
-                        <Image  Source="img/会话.png"></Image>
-                    </StackPanel>
-                    <TextBlock DockPanel.Dock="Right" VerticalAlignment="Center"   >2023/5/1</TextBlock>
-                    <TextBlock DockPanel.Dock="Left" VerticalAlignment="Center">暴走萝莉,伊利丹</TextBlock>
-                </DockPanel>
-            </ListBoxItem>
+        <ListBox ItemsSource="{Binding  LstChat}">
+            <ListBox.DataContext>
+                <local:AutofacDataProvider ObjectType="{x:Type local:ChatList}"></local:AutofacDataProvider>
+            </ListBox.DataContext>
+            <ListBox.ItemContainerStyle>
+                <Style>
+                    <Setter Property="ListBoxItem.HorizontalContentAlignment" Value="Stretch"></Setter>
+                    <Setter Property="ListBoxItem.Margin" Value="5"></Setter>
+                    <Setter Property="ListBoxItem.Padding" Value="5"></Setter>
+                    <Style.Triggers>
+                        <Trigger Property="ListBoxItem.IsSelected" Value="True">
+                            <Setter Property="ListBoxItem.FontSize" Value="20"></Setter>
+                        </Trigger>
+                    </Style.Triggers>
+                </Style>
+            </ListBox.ItemContainerStyle>
+            <ListBox.ItemTemplate>
+                <DataTemplate>
+                    <DockPanel>
+
+                        <StackPanel Orientation="Horizontal" DockPanel.Dock="Left">
+                            <Image Source="{Binding Path=Img}"  ></Image>
+                        </StackPanel>
+                        <TextBlock DockPanel.Dock="Right" VerticalAlignment="Center" Text="{Binding LastTime}" ></TextBlock>
+                        <TextBlock DockPanel.Dock="Left" VerticalAlignment="Center" Text="{Binding User}"></TextBlock>
+                    </DockPanel>
+
+                </DataTemplate>
+            </ListBox.ItemTemplate>
         </ListBox>
     </DockPanel>
 </Window>

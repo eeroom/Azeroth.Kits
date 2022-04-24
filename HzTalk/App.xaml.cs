@@ -26,6 +26,7 @@ namespace HzTalk
 
             builder.RegisterType<LoginUser>().AsSelf().SingleInstance();
             builder.RegisterType<RootData>().AsSelf().SingleInstance();
+            builder.RegisterType<ChatList>().AsSelf().SingleInstance();
 
             var container = builder.Build();
             LifetimeScope = container.BeginLifetimeScope(typeof(App).ToString());
