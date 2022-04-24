@@ -26,7 +26,7 @@ namespace HzTalk
         public LoginUser()
         {
             this.LoginName = "eeroom";
-            this.Mark = "天天向上";
+            this.Mark = "天天向上33";
         }
     }
 }

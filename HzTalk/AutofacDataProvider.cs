@@ -42,6 +42,7 @@ namespace HzTalk
         protected override void BeginQuery()
         {
             var obj = App.LifetimeScope.Resolve(this.ObjectType);
+            OnPropertyChanged(new System.ComponentModel.PropertyChangedEventArgs("ObjectInstance"));
             this.OnQueryFinished(obj);
         }
     }
