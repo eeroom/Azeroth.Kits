@@ -6,6 +6,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
 using Autofac;
+using Autofac.Extras.DynamicProxy;
 namespace HzTalk
 {
     /// <summary>
@@ -23,8 +24,12 @@ namespace HzTalk
         static App()
         {
             var builder = new Autofac.ContainerBuilder();
+            builder.RegisterType<HzTalk.InterceptedHandler>().AsSelf().SingleInstance();
+            builder.RegisterType<LoginUser>().As<IUserInfo>()
+                 .SingleInstance()
+                .InterceptedBy(typeof(HzTalk.InterceptedHandler))
+                 .EnableInterfaceInterceptors();
 
-            builder.RegisterType<LoginUser>().AsSelf().SingleInstance();
             builder.RegisterType<RootData>().AsSelf().SingleInstance();
             builder.RegisterType<ChatList>().AsSelf().SingleInstance();
 

@@ -6,27 +6,23 @@ using System.Threading.Tasks;
 
 namespace HzTalk
 {
-    public class LoginUser : System.ComponentModel.INotifyPropertyChanged
+    public class LoginUser :ModelBase,IUserInfo
     {
-        string loginName;
         public string LoginName
         {
-            get { return this.loginName; }
-            set
-            {
-                this.loginName = value;
-                this.PropertyChanged?.Invoke(this, new System.ComponentModel.PropertyChangedEventArgs("LoginName"));
-            }
+            get;
+            set;
+            
         }
 
         public string Mark { get; set; }
 
-        public event System.ComponentModel.PropertyChangedEventHandler PropertyChanged;
 
         public LoginUser()
         {
             this.LoginName = "eeroom";
             this.Mark = "天天向上33";
         }
+
     }
 }

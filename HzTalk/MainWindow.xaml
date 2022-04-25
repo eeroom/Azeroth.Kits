@@ -39,7 +39,7 @@
                     <Image Width="12" Source="img/在线.png"></Image>
                     <TextBlock>在线</TextBlock>
                 </StackPanel>
-                <TextBlock Text="{Binding User.Mark}" Margin="4"></TextBlock>
+                <TextBox Text="{Binding User.LoginName}" Margin="4"></TextBox>
                 <TextBlock Text="{Binding User.LoginName}" Margin="4"></TextBlock>
             </StackPanel>
         </DockPanel>

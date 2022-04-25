@@ -8,9 +8,9 @@ namespace HzTalk
 {
     public class RootData
     {
-        public LoginUser User { get; set; }
+        public IUserInfo User { get; set; }
 
-        public RootData(LoginUser loginUser)
+        public RootData(IUserInfo loginUser)
         {
             this.User = loginUser;
         }
