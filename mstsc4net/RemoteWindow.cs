@@ -10,9 +10,9 @@ using System.Windows.Forms;
 
 namespace mstsc4net
 {
-    public partial class MainWindow : Form
+    public partial class RemoteWindow : Form
     {
-        public MainWindow()
+        public RemoteWindow()
         {
             InitializeComponent();
         }
