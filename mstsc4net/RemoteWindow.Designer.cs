@@ -43,6 +43,8 @@
             this.flowLayoutPanel1 = new System.Windows.Forms.FlowLayoutPanel();
             this.ckEnableCredSspSupport = new System.Windows.Forms.CheckBox();
             this.btnMax = new System.Windows.Forms.Button();
+            this.btnDisConnect = new System.Windows.Forms.Button();
+            this.jingdutiao = new System.Windows.Forms.ProgressBar();
             ((System.ComponentModel.ISupportInitialize)(this.rdpClient)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
@@ -178,6 +180,8 @@
             this.flowLayoutPanel1.Controls.Add(this.ckEnableCredSspSupport);
             this.flowLayoutPanel1.Controls.Add(this.btnOk);
             this.flowLayoutPanel1.Controls.Add(this.btnMax);
+            this.flowLayoutPanel1.Controls.Add(this.btnDisConnect);
+            this.flowLayoutPanel1.Controls.Add(this.jingdutiao);
             this.flowLayoutPanel1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.flowLayoutPanel1.FlowDirection = System.Windows.Forms.FlowDirection.TopDown;
             this.flowLayoutPanel1.Location = new System.Drawing.Point(0, 0);
@@ -206,6 +210,25 @@
             this.btnMax.Text = "最大化";
             this.btnMax.UseVisualStyleBackColor = true;
             this.btnMax.Click += new System.EventHandler(this.btnMax_Click);
+            // 
+            // btnDisConnect
+            // 
+            this.btnDisConnect.Dock = System.Windows.Forms.DockStyle.Top;
+            this.btnDisConnect.Location = new System.Drawing.Point(13, 356);
+            this.btnDisConnect.Name = "btnDisConnect";
+            this.btnDisConnect.Size = new System.Drawing.Size(298, 39);
+            this.btnDisConnect.TabIndex = 8;
+            this.btnDisConnect.Text = "断开";
+            this.btnDisConnect.UseVisualStyleBackColor = true;
+            this.btnDisConnect.Click += new System.EventHandler(this.btnDisConnect_Click);
+            // 
+            // jingdutiao
+            // 
+            this.jingdutiao.Dock = System.Windows.Forms.DockStyle.Top;
+            this.jingdutiao.Location = new System.Drawing.Point(13, 401);
+            this.jingdutiao.Name = "jingdutiao";
+            this.jingdutiao.Size = new System.Drawing.Size(298, 23);
+            this.jingdutiao.TabIndex = 9;
             // 
             // RemoteWindow
             // 
@@ -244,6 +267,8 @@
         private System.Windows.Forms.FlowLayoutPanel flowLayoutPanel1;
         private System.Windows.Forms.CheckBox ckEnableCredSspSupport;
         private System.Windows.Forms.Button btnMax;
+        private System.Windows.Forms.Button btnDisConnect;
+        private System.Windows.Forms.ProgressBar jingdutiao;
     }
 }
 
