@@ -16,15 +16,15 @@ namespace mstsc4net
         {
             InitializeComponent();
         }
-
+        public bool OnError { get; set; }
         private void btnOk_Click(object sender, EventArgs e)
         {
+            this.OnError = false;
             this.rdpClient.Server = this.txtIp.Text;
             this.rdpClient.AdvancedSettings7.RDPPort = int.Parse(this.txtPort.Text);
             this.rdpClient.UserName = this.txtUserName.Text;
             this.rdpClient.AdvancedSettings7.ClearTextPassword = this.txtPwd.Text;
             this.rdpClient.AdvancedSettings7.EnableCredSspSupport = this.ckEnableCredSspSupport.Checked;
-            this.rdpClient.Connect();
             this.jingdutiao.Step = 3;
             this.jingdutiao.Style = ProgressBarStyle.Continuous;
             System.Threading.ThreadPool.QueueUserWorkItem(x =>
@@ -33,7 +33,7 @@ namespace mstsc4net
                 while (timesOut++<100)
                 {
                     System.Threading.Thread.Sleep(50);
-                    if (this.rdpClient.Connected !=1)
+                    if (!this.OnError && !this.rdpClient.IsDisposed && this.rdpClient.Connected !=1)
                     {
                         this.BeginInvoke(new MethodInvoker(()=> {
                             this.jingdutiao.PerformStep();
@@ -48,14 +48,16 @@ namespace mstsc4net
                     }
                 }
                 this.BeginInvoke(new MethodInvoker(() => {
-                    this.rdpClient.Disconnect();
+                    if(this.rdpClient.Connected!=0)
+                        this.rdpClient.Disconnect();
                     this.jingdutiao.Value = 0;
                     this.btnOk.Enabled = true;
                     MessageBox.Show("连接失败！,请检查网络、目标机的地址及登陆密码等");
                 }));
 
             });
-            
+            this.rdpClient.Connect();
+
         }
 
         private void btnMax_Click(object sender, EventArgs e)
@@ -71,11 +73,15 @@ namespace mstsc4net
             this.btnDisConnect.Enabled = false;
             this.rdpClient.Dock = DockStyle.Fill;
             this.FormClosing += (el, msg) => {
-                if (this.rdpClient.Connected != 0)
+                if (!this.rdpClient.IsDisposed &&this.rdpClient.Connected != 0)
                     this.rdpClient.Disconnect();
                 if (!this.rdpClient.IsDisposed)
                     this.rdpClient.Dispose();
             };
+            this.rdpClient.OnFatalError += (el, msg) => this.OnError = true;
+            this.rdpClient.OnLogonError += (el, msg) => this.OnError = true;
+            this.rdpClient.OnAuthenticationWarningDismissed += (el, msg) => this.OnError = true;
+            this.rdpClient.OnAuthenticationWarningDisplayed += (el, msg) => this.OnError = true;
             this.rdpClient.OnConnecting += (el,msg)=> this.btnOk.Enabled = false;
             this.rdpClient.OnConnected += (el, msg) =>
             {
