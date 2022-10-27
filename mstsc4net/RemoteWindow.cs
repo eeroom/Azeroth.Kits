@@ -69,7 +69,7 @@ namespace mstsc4net
 
         private void RemoteWindow_Load(object sender, EventArgs e)
         {
-            //固定右边部分，不跟随缩放
+            //固定右边部分，不能手动调整大小，也不跟随缩放
             this.splitContainer1.IsSplitterFixed = false;
             this.splitContainer1.FixedPanel = FixedPanel.Panel2;
             this.btnMax.Enabled = false;
