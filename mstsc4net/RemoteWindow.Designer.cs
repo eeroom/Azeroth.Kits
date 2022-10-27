@@ -29,7 +29,7 @@
         private void InitializeComponent()
         {
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(RemoteWindow));
-            this.axMsRdpClient6NotSafeForScripting1 = new AxMSTSCLib.AxMsRdpClient6NotSafeForScripting();
+            this.rdpClient = new AxMSTSCLib.AxMsRdpClient6NotSafeForScripting();
             this.label1 = new System.Windows.Forms.Label();
             this.txtIp = new System.Windows.Forms.TextBox();
             this.label3 = new System.Windows.Forms.Label();
@@ -39,22 +39,33 @@
             this.btnOk = new System.Windows.Forms.Button();
             this.label2 = new System.Windows.Forms.Label();
             this.txtPort = new System.Windows.Forms.TextBox();
-            ((System.ComponentModel.ISupportInitialize)(this.axMsRdpClient6NotSafeForScripting1)).BeginInit();
+            this.splitContainer1 = new System.Windows.Forms.SplitContainer();
+            this.flowLayoutPanel1 = new System.Windows.Forms.FlowLayoutPanel();
+            this.ckEnableCredSspSupport = new System.Windows.Forms.CheckBox();
+            this.btnMax = new System.Windows.Forms.Button();
+            ((System.ComponentModel.ISupportInitialize)(this.rdpClient)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
+            this.splitContainer1.Panel1.SuspendLayout();
+            this.splitContainer1.Panel2.SuspendLayout();
+            this.splitContainer1.SuspendLayout();
+            this.flowLayoutPanel1.SuspendLayout();
             this.SuspendLayout();
             // 
-            // axMsRdpClient6NotSafeForScripting1
+            // rdpClient
             // 
-            this.axMsRdpClient6NotSafeForScripting1.Enabled = true;
-            this.axMsRdpClient6NotSafeForScripting1.Location = new System.Drawing.Point(-1, -1);
-            this.axMsRdpClient6NotSafeForScripting1.Name = "axMsRdpClient6NotSafeForScripting1";
-            this.axMsRdpClient6NotSafeForScripting1.OcxState = ((System.Windows.Forms.AxHost.State)(resources.GetObject("axMsRdpClient6NotSafeForScripting1.OcxState")));
-            this.axMsRdpClient6NotSafeForScripting1.Size = new System.Drawing.Size(809, 578);
-            this.axMsRdpClient6NotSafeForScripting1.TabIndex = 0;
+            this.rdpClient.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.rdpClient.Enabled = true;
+            this.rdpClient.Location = new System.Drawing.Point(0, 0);
+            this.rdpClient.Name = "rdpClient";
+            this.rdpClient.OcxState = ((System.Windows.Forms.AxHost.State)(resources.GetObject("rdpClient.OcxState")));
+            this.rdpClient.Size = new System.Drawing.Size(665, 573);
+            this.rdpClient.TabIndex = 0;
             // 
             // label1
             // 
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(840, 19);
+            this.label1.Location = new System.Drawing.Point(13, 15);
+            this.label1.Margin = new System.Windows.Forms.Padding(3, 15, 3, 2);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(29, 12);
             this.label1.TabIndex = 1;
@@ -62,16 +73,17 @@
             // 
             // txtIp
             // 
-            this.txtIp.Location = new System.Drawing.Point(875, 16);
+            this.txtIp.Location = new System.Drawing.Point(13, 32);
             this.txtIp.Name = "txtIp";
-            this.txtIp.Size = new System.Drawing.Size(242, 21);
-            this.txtIp.TabIndex = 2;
-            this.txtIp.Text = "192.168.1.1";
+            this.txtIp.Size = new System.Drawing.Size(298, 21);
+            this.txtIp.TabIndex = 1;
+            this.txtIp.Text = "192.168.56.101";
             // 
             // label3
             // 
             this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(829, 79);
+            this.label3.Location = new System.Drawing.Point(13, 127);
+            this.label3.Margin = new System.Windows.Forms.Padding(3, 15, 3, 2);
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(41, 12);
             this.label3.TabIndex = 1;
@@ -79,16 +91,18 @@
             // 
             // txtUserName
             // 
-            this.txtUserName.Location = new System.Drawing.Point(875, 76);
+            this.txtUserName.Dock = System.Windows.Forms.DockStyle.Top;
+            this.txtUserName.Location = new System.Drawing.Point(13, 144);
             this.txtUserName.Name = "txtUserName";
-            this.txtUserName.Size = new System.Drawing.Size(242, 21);
-            this.txtUserName.TabIndex = 2;
-            this.txtUserName.Text = "sa";
+            this.txtUserName.Size = new System.Drawing.Size(298, 21);
+            this.txtUserName.TabIndex = 4;
+            this.txtUserName.Text = "eeroom";
             // 
             // label4
             // 
             this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(840, 106);
+            this.label4.Location = new System.Drawing.Point(13, 183);
+            this.label4.Margin = new System.Windows.Forms.Padding(3, 15, 3, 2);
             this.label4.Name = "label4";
             this.label4.Size = new System.Drawing.Size(29, 12);
             this.label4.TabIndex = 1;
@@ -96,18 +110,21 @@
             // 
             // txtPwd
             // 
-            this.txtPwd.Location = new System.Drawing.Point(875, 103);
+            this.txtPwd.Dock = System.Windows.Forms.DockStyle.Top;
+            this.txtPwd.Location = new System.Drawing.Point(13, 200);
             this.txtPwd.Name = "txtPwd";
-            this.txtPwd.Size = new System.Drawing.Size(242, 21);
-            this.txtPwd.TabIndex = 2;
-            this.txtPwd.Text = "123";
+            this.txtPwd.Size = new System.Drawing.Size(298, 21);
+            this.txtPwd.TabIndex = 3;
+            this.txtPwd.Text = "123456";
             // 
             // btnOk
             // 
-            this.btnOk.Location = new System.Drawing.Point(875, 524);
+            this.btnOk.Dock = System.Windows.Forms.DockStyle.Top;
+            this.btnOk.Location = new System.Drawing.Point(13, 266);
+            this.btnOk.Margin = new System.Windows.Forms.Padding(3, 20, 3, 3);
             this.btnOk.Name = "btnOk";
-            this.btnOk.Size = new System.Drawing.Size(219, 39);
-            this.btnOk.TabIndex = 3;
+            this.btnOk.Size = new System.Drawing.Size(298, 39);
+            this.btnOk.TabIndex = 5;
             this.btnOk.Text = "确定";
             this.btnOk.UseVisualStyleBackColor = true;
             this.btnOk.Click += new System.EventHandler(this.btnOk_Click);
@@ -115,7 +132,8 @@
             // label2
             // 
             this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(840, 49);
+            this.label2.Location = new System.Drawing.Point(13, 71);
+            this.label2.Margin = new System.Windows.Forms.Padding(3, 15, 3, 2);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(29, 12);
             this.label2.TabIndex = 1;
@@ -123,38 +141,96 @@
             // 
             // txtPort
             // 
-            this.txtPort.Location = new System.Drawing.Point(875, 46);
+            this.txtPort.Dock = System.Windows.Forms.DockStyle.Top;
+            this.txtPort.Location = new System.Drawing.Point(13, 88);
             this.txtPort.Name = "txtPort";
-            this.txtPort.Size = new System.Drawing.Size(242, 21);
+            this.txtPort.Size = new System.Drawing.Size(298, 21);
             this.txtPort.TabIndex = 2;
             this.txtPort.Text = "3389";
             // 
-            // MainWindow
+            // splitContainer1
+            // 
+            this.splitContainer1.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.splitContainer1.Location = new System.Drawing.Point(0, 0);
+            this.splitContainer1.Name = "splitContainer1";
+            // 
+            // splitContainer1.Panel1
+            // 
+            this.splitContainer1.Panel1.Controls.Add(this.rdpClient);
+            // 
+            // splitContainer1.Panel2
+            // 
+            this.splitContainer1.Panel2.Controls.Add(this.flowLayoutPanel1);
+            this.splitContainer1.Size = new System.Drawing.Size(992, 573);
+            this.splitContainer1.SplitterDistance = 665;
+            this.splitContainer1.TabIndex = 4;
+            // 
+            // flowLayoutPanel1
+            // 
+            this.flowLayoutPanel1.Controls.Add(this.label1);
+            this.flowLayoutPanel1.Controls.Add(this.txtIp);
+            this.flowLayoutPanel1.Controls.Add(this.label2);
+            this.flowLayoutPanel1.Controls.Add(this.txtPort);
+            this.flowLayoutPanel1.Controls.Add(this.label3);
+            this.flowLayoutPanel1.Controls.Add(this.txtUserName);
+            this.flowLayoutPanel1.Controls.Add(this.label4);
+            this.flowLayoutPanel1.Controls.Add(this.txtPwd);
+            this.flowLayoutPanel1.Controls.Add(this.ckEnableCredSspSupport);
+            this.flowLayoutPanel1.Controls.Add(this.btnOk);
+            this.flowLayoutPanel1.Controls.Add(this.btnMax);
+            this.flowLayoutPanel1.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.flowLayoutPanel1.FlowDirection = System.Windows.Forms.FlowDirection.TopDown;
+            this.flowLayoutPanel1.Location = new System.Drawing.Point(0, 0);
+            this.flowLayoutPanel1.Name = "flowLayoutPanel1";
+            this.flowLayoutPanel1.Padding = new System.Windows.Forms.Padding(10, 0, 10, 0);
+            this.flowLayoutPanel1.Size = new System.Drawing.Size(323, 573);
+            this.flowLayoutPanel1.TabIndex = 0;
+            // 
+            // ckEnableCredSspSupport
+            // 
+            this.ckEnableCredSspSupport.AutoSize = true;
+            this.ckEnableCredSspSupport.Location = new System.Drawing.Point(13, 227);
+            this.ckEnableCredSspSupport.Name = "ckEnableCredSspSupport";
+            this.ckEnableCredSspSupport.Size = new System.Drawing.Size(144, 16);
+            this.ckEnableCredSspSupport.TabIndex = 6;
+            this.ckEnableCredSspSupport.Text = "EnableCredSspSupport";
+            this.ckEnableCredSspSupport.UseVisualStyleBackColor = true;
+            // 
+            // btnMax
+            // 
+            this.btnMax.Dock = System.Windows.Forms.DockStyle.Top;
+            this.btnMax.Location = new System.Drawing.Point(13, 311);
+            this.btnMax.Name = "btnMax";
+            this.btnMax.Size = new System.Drawing.Size(298, 39);
+            this.btnMax.TabIndex = 7;
+            this.btnMax.Text = "最大化";
+            this.btnMax.UseVisualStyleBackColor = true;
+            this.btnMax.Click += new System.EventHandler(this.btnMax_Click);
+            // 
+            // RemoteWindow
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1237, 575);
-            this.Controls.Add(this.btnOk);
-            this.Controls.Add(this.txtPwd);
-            this.Controls.Add(this.label4);
-            this.Controls.Add(this.txtUserName);
-            this.Controls.Add(this.label3);
-            this.Controls.Add(this.txtPort);
-            this.Controls.Add(this.label2);
-            this.Controls.Add(this.txtIp);
-            this.Controls.Add(this.label1);
-            this.Controls.Add(this.axMsRdpClient6NotSafeForScripting1);
-            this.Name = "MainWindow";
-            this.Text = "Form1";
-            ((System.ComponentModel.ISupportInitialize)(this.axMsRdpClient6NotSafeForScripting1)).EndInit();
+            this.ClientSize = new System.Drawing.Size(992, 573);
+            this.Controls.Add(this.splitContainer1);
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
+            this.Name = "RemoteWindow";
+            this.Text = "RemoteWindow";
+            this.Load += new System.EventHandler(this.RemoteWindow_Load);
+            ((System.ComponentModel.ISupportInitialize)(this.rdpClient)).EndInit();
+            this.splitContainer1.Panel1.ResumeLayout(false);
+            this.splitContainer1.Panel2.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).EndInit();
+            this.splitContainer1.ResumeLayout(false);
+            this.flowLayoutPanel1.ResumeLayout(false);
+            this.flowLayoutPanel1.PerformLayout();
             this.ResumeLayout(false);
-            this.PerformLayout();
 
         }
 
         #endregion
 
-        private AxMSTSCLib.AxMsRdpClient6NotSafeForScripting axMsRdpClient6NotSafeForScripting1;
+        private AxMSTSCLib.AxMsRdpClient6NotSafeForScripting rdpClient;
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.TextBox txtIp;
         private System.Windows.Forms.Label label3;
@@ -164,6 +240,10 @@
         private System.Windows.Forms.Button btnOk;
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.TextBox txtPort;
+        private System.Windows.Forms.SplitContainer splitContainer1;
+        private System.Windows.Forms.FlowLayoutPanel flowLayoutPanel1;
+        private System.Windows.Forms.CheckBox ckEnableCredSspSupport;
+        private System.Windows.Forms.Button btnMax;
     }
 }
 
