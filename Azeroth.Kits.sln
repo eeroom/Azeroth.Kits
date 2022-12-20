@@ -81,7 +81,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "001", "001", "{34B6DC44-8A6
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "mstsc4net", "mstsc4net\mstsc4net.csproj", "{685BF711-F428-4A3B-B6AE-10BDAFB238C4}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "logUtil", "logUtil\logUtil.csproj", "{4CA354D8-7F98-48AB-8FDD-848602811E58}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "logTools", "logUtil\logTools.csproj", "{4CA354D8-7F98-48AB-8FDD-848602811E58}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

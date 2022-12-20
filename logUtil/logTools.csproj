@@ -7,8 +7,8 @@
     <ProjectGuid>{4CA354D8-7F98-48AB-8FDD-848602811E58}</ProjectGuid>
     <OutputType>Exe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>logUtil</RootNamespace>
-    <AssemblyName>logUtil</AssemblyName>
+    <RootNamespace>logTools</RootNamespace>
+    <AssemblyName>logTools</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
