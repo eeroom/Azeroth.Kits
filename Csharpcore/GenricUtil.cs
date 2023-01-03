@@ -24,7 +24,7 @@ namespace Csharpcore
             协变
             ProcessHandlerOut<People>ProcessHandlerOut<Student>没有继承关系
             People是Student的父类
-            ProcessHandlerOut<People>ProcessHandlerOut<Student>的实例，形式上类似于：父类的变量指向子类的实例，所以是协变
+            ProcessHandlerOut<People>的变量指向ProcessHandlerOut<Student>的实例，形式上类似于：父类的变量指向子类的实例，所以是协变
             因为类型参数仅作用于返回值位置，当父类变量调用方法的时候，返回值类型要求是父类型，而变量实际返回值得类型是子类型，所以调用肯定没问题
             返回值仍然遵循父类的变量指向子类的实例
             */
