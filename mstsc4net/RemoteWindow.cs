@@ -25,37 +25,39 @@ namespace mstsc4net
             this.rdpClient.UserName = this.txtUserName.Text;
             this.rdpClient.AdvancedSettings7.ClearTextPassword = this.txtPwd.Text;
             this.rdpClient.AdvancedSettings7.EnableCredSspSupport = this.ckEnableCredSspSupport.Checked;
+            if(!string.IsNullOrWhiteSpace(this.textLoadBalanceInfo.Text))
+                this.rdpClient.AdvancedSettings7.LoadBalanceInfo = this.textLoadBalanceInfo.Text;
             this.jingdutiao.Step = 3;
             this.jingdutiao.Style = ProgressBarStyle.Continuous;
-            System.Threading.ThreadPool.QueueUserWorkItem(x =>
-            {
-                var timesOut = 0;
-                while (timesOut++<100)
-                {
-                    System.Threading.Thread.Sleep(50);
-                    if (!this.OnError && !this.rdpClient.IsDisposed && this.rdpClient.Connected !=1)
-                    {
-                        this.BeginInvoke(new MethodInvoker(()=> {
-                            this.jingdutiao.PerformStep();
-                            if (this.jingdutiao.Value >= 100)
-                                this.jingdutiao.Value = 0;
-                        }));
-                    }
-                    else
-                    {
-                        this.BeginInvoke(new MethodInvoker(() => this.jingdutiao.Value = 0));
-                        return;
-                    }
-                }
-                this.BeginInvoke(new MethodInvoker(() => {
-                    if(this.rdpClient.Connected!=0)
-                        this.rdpClient.Disconnect();
-                    this.jingdutiao.Value = 0;
-                    this.btnOk.Enabled = true;
-                    MessageBox.Show("连接失败！,请检查网络、目标机的地址及登陆密码等");
-                }));
+            //System.Threading.ThreadPool.QueueUserWorkItem(x =>
+            //{
+            //    var timesOut = 0;
+            //    while (timesOut++<100)
+            //    {
+            //        System.Threading.Thread.Sleep(50);
+            //        if (!this.OnError && !this.rdpClient.IsDisposed && this.rdpClient.Connected !=1)
+            //        {
+            //            this.BeginInvoke(new MethodInvoker(()=> {
+            //                this.jingdutiao.PerformStep();
+            //                if (this.jingdutiao.Value >= 100)
+            //                    this.jingdutiao.Value = 0;
+            //            }));
+            //        }
+            //        else
+            //        {
+            //            this.BeginInvoke(new MethodInvoker(() => this.jingdutiao.Value = 0));
+            //            return;
+            //        }
+            //    }
+            //    this.BeginInvoke(new MethodInvoker(() => {
+            //        if(this.rdpClient.Connected!=0)
+            //            this.rdpClient.Disconnect();
+            //        this.jingdutiao.Value = 0;
+            //        this.btnOk.Enabled = true;
+            //        MessageBox.Show("连接失败！,请检查网络、目标机的地址及登陆密码等");
+            //    }));
 
-            });
+            //});
             this.rdpClient.Connect();
 
         }

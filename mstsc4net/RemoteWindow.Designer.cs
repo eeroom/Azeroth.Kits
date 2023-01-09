@@ -45,6 +45,8 @@
             this.btnMax = new System.Windows.Forms.Button();
             this.btnDisConnect = new System.Windows.Forms.Button();
             this.jingdutiao = new System.Windows.Forms.ProgressBar();
+            this.label5 = new System.Windows.Forms.Label();
+            this.textLoadBalanceInfo = new System.Windows.Forms.TextBox();
             ((System.ComponentModel.ISupportInitialize)(this.rdpClient)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
@@ -79,7 +81,7 @@
             this.txtIp.Name = "txtIp";
             this.txtIp.Size = new System.Drawing.Size(298, 21);
             this.txtIp.TabIndex = 1;
-            this.txtIp.Text = "192.168.56.101";
+            this.txtIp.Text = "192.168.1.3";
             // 
             // label3
             // 
@@ -97,8 +99,8 @@
             this.txtUserName.Location = new System.Drawing.Point(13, 144);
             this.txtUserName.Name = "txtUserName";
             this.txtUserName.Size = new System.Drawing.Size(298, 21);
-            this.txtUserName.TabIndex = 4;
-            this.txtUserName.Text = "eeroom";
+            this.txtUserName.TabIndex = 3;
+            this.txtUserName.Text = "Administrator";
             // 
             // label4
             // 
@@ -116,13 +118,13 @@
             this.txtPwd.Location = new System.Drawing.Point(13, 200);
             this.txtPwd.Name = "txtPwd";
             this.txtPwd.Size = new System.Drawing.Size(298, 21);
-            this.txtPwd.TabIndex = 3;
+            this.txtPwd.TabIndex = 4;
             this.txtPwd.Text = "123456";
             // 
             // btnOk
             // 
             this.btnOk.Dock = System.Windows.Forms.DockStyle.Top;
-            this.btnOk.Location = new System.Drawing.Point(13, 266);
+            this.btnOk.Location = new System.Drawing.Point(13, 322);
             this.btnOk.Margin = new System.Windows.Forms.Padding(3, 20, 3, 3);
             this.btnOk.Name = "btnOk";
             this.btnOk.Size = new System.Drawing.Size(298, 39);
@@ -178,6 +180,8 @@
             this.flowLayoutPanel1.Controls.Add(this.label4);
             this.flowLayoutPanel1.Controls.Add(this.txtPwd);
             this.flowLayoutPanel1.Controls.Add(this.ckEnableCredSspSupport);
+            this.flowLayoutPanel1.Controls.Add(this.label5);
+            this.flowLayoutPanel1.Controls.Add(this.textLoadBalanceInfo);
             this.flowLayoutPanel1.Controls.Add(this.btnOk);
             this.flowLayoutPanel1.Controls.Add(this.btnMax);
             this.flowLayoutPanel1.Controls.Add(this.btnDisConnect);
@@ -203,7 +207,7 @@
             // btnMax
             // 
             this.btnMax.Dock = System.Windows.Forms.DockStyle.Top;
-            this.btnMax.Location = new System.Drawing.Point(13, 311);
+            this.btnMax.Location = new System.Drawing.Point(13, 367);
             this.btnMax.Name = "btnMax";
             this.btnMax.Size = new System.Drawing.Size(298, 39);
             this.btnMax.TabIndex = 7;
@@ -214,7 +218,7 @@
             // btnDisConnect
             // 
             this.btnDisConnect.Dock = System.Windows.Forms.DockStyle.Top;
-            this.btnDisConnect.Location = new System.Drawing.Point(13, 356);
+            this.btnDisConnect.Location = new System.Drawing.Point(13, 412);
             this.btnDisConnect.Name = "btnDisConnect";
             this.btnDisConnect.Size = new System.Drawing.Size(298, 39);
             this.btnDisConnect.TabIndex = 8;
@@ -225,10 +229,28 @@
             // jingdutiao
             // 
             this.jingdutiao.Dock = System.Windows.Forms.DockStyle.Top;
-            this.jingdutiao.Location = new System.Drawing.Point(13, 401);
+            this.jingdutiao.Location = new System.Drawing.Point(13, 457);
             this.jingdutiao.Name = "jingdutiao";
             this.jingdutiao.Size = new System.Drawing.Size(298, 23);
             this.jingdutiao.TabIndex = 9;
+            // 
+            // label5
+            // 
+            this.label5.AutoSize = true;
+            this.label5.Location = new System.Drawing.Point(13, 261);
+            this.label5.Margin = new System.Windows.Forms.Padding(3, 15, 3, 2);
+            this.label5.Name = "label5";
+            this.label5.Size = new System.Drawing.Size(95, 12);
+            this.label5.TabIndex = 1;
+            this.label5.Text = "LoadBalanceInfo";
+            // 
+            // textLoadBalanceInfo
+            // 
+            this.textLoadBalanceInfo.Dock = System.Windows.Forms.DockStyle.Top;
+            this.textLoadBalanceInfo.Location = new System.Drawing.Point(13, 278);
+            this.textLoadBalanceInfo.Name = "textLoadBalanceInfo";
+            this.textLoadBalanceInfo.Size = new System.Drawing.Size(298, 21);
+            this.textLoadBalanceInfo.TabIndex = 5;
             // 
             // RemoteWindow
             // 
@@ -269,6 +291,8 @@
         private System.Windows.Forms.Button btnMax;
         private System.Windows.Forms.Button btnDisConnect;
         private System.Windows.Forms.ProgressBar jingdutiao;
+        private System.Windows.Forms.Label label5;
+        private System.Windows.Forms.TextBox textLoadBalanceInfo;
     }
 }
 
