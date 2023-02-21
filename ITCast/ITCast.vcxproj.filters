@@ -15,13 +15,13 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="dm01_测试.c">
-      <Filter>源文件</Filter>
-    </ClCompile>
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="socketclient.h">
+    <ClInclude Include="day01线性表顺序存储.h">
       <Filter>头文件</Filter>
     </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="day01线性表顺序存储.c">
+      <Filter>源文件</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

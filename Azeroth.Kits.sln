@@ -87,7 +87,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "泛型和算法", "泛型�
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Csharpcore", "Csharpcore\Csharpcore.csproj", "{39644453-50E6-46E7-BF2D-358CEB52FBF6}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Vezel", "Vezel\Vezel.vcxproj", "{1D23CD4D-4D63-4B41-9BDF-F7AF41308FC3}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ITCast", "ITCast\ITCast.vcxproj", "{44540DC2-E3B8-45AB-B6F0-783B3C61AF93}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -433,16 +433,16 @@ Global
 		{39644453-50E6-46E7-BF2D-358CEB52FBF6}.Release|x64.Build.0 = Release|Any CPU
 		{39644453-50E6-46E7-BF2D-358CEB52FBF6}.Release|x86.ActiveCfg = Release|Any CPU
 		{39644453-50E6-46E7-BF2D-358CEB52FBF6}.Release|x86.Build.0 = Release|Any CPU
-		{1D23CD4D-4D63-4B41-9BDF-F7AF41308FC3}.Debug|Any CPU.ActiveCfg = Debug|Win32
-		{1D23CD4D-4D63-4B41-9BDF-F7AF41308FC3}.Debug|x64.ActiveCfg = Debug|x64
-		{1D23CD4D-4D63-4B41-9BDF-F7AF41308FC3}.Debug|x64.Build.0 = Debug|x64
-		{1D23CD4D-4D63-4B41-9BDF-F7AF41308FC3}.Debug|x86.ActiveCfg = Debug|Win32
-		{1D23CD4D-4D63-4B41-9BDF-F7AF41308FC3}.Debug|x86.Build.0 = Debug|Win32
-		{1D23CD4D-4D63-4B41-9BDF-F7AF41308FC3}.Release|Any CPU.ActiveCfg = Release|Win32
-		{1D23CD4D-4D63-4B41-9BDF-F7AF41308FC3}.Release|x64.ActiveCfg = Release|x64
-		{1D23CD4D-4D63-4B41-9BDF-F7AF41308FC3}.Release|x64.Build.0 = Release|x64
-		{1D23CD4D-4D63-4B41-9BDF-F7AF41308FC3}.Release|x86.ActiveCfg = Release|Win32
-		{1D23CD4D-4D63-4B41-9BDF-F7AF41308FC3}.Release|x86.Build.0 = Release|Win32
+		{44540DC2-E3B8-45AB-B6F0-783B3C61AF93}.Debug|Any CPU.ActiveCfg = Debug|Win32
+		{44540DC2-E3B8-45AB-B6F0-783B3C61AF93}.Debug|x64.ActiveCfg = Debug|x64
+		{44540DC2-E3B8-45AB-B6F0-783B3C61AF93}.Debug|x64.Build.0 = Debug|x64
+		{44540DC2-E3B8-45AB-B6F0-783B3C61AF93}.Debug|x86.ActiveCfg = Debug|Win32
+		{44540DC2-E3B8-45AB-B6F0-783B3C61AF93}.Debug|x86.Build.0 = Debug|Win32
+		{44540DC2-E3B8-45AB-B6F0-783B3C61AF93}.Release|Any CPU.ActiveCfg = Release|Win32
+		{44540DC2-E3B8-45AB-B6F0-783B3C61AF93}.Release|x64.ActiveCfg = Release|x64
+		{44540DC2-E3B8-45AB-B6F0-783B3C61AF93}.Release|x64.Build.0 = Release|x64
+		{44540DC2-E3B8-45AB-B6F0-783B3C61AF93}.Release|x86.ActiveCfg = Release|Win32
+		{44540DC2-E3B8-45AB-B6F0-783B3C61AF93}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
